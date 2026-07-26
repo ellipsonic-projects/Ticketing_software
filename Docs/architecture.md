@@ -1,4 +1,5 @@
 # Multi-Tenant Ticketing System
+
 # Software Architecture Document
 
 **Version:** 1.0  
@@ -93,13 +94,13 @@ API --> Email
 
 ### Component Description
 
-| Component | Responsibility |
-|------------|----------------|
-| Web Application | Provides the user interface for all platform users. |
+| Component          | Responsibility                                        |
+| ------------------ | ----------------------------------------------------- |
+| Web Application    | Provides the user interface for all platform users.   |
 | Application Server | Processes business logic and coordinates all modules. |
-| PostgreSQL | Stores application data. |
-| Object Storage | Stores ticket attachments and uploaded files. |
-| Email Service | Sends transactional notifications. |
+| PostgreSQL         | Stores application data.                              |
+| Object Storage     | Stores ticket attachments and uploaded files.         |
+| Email Service      | Sends transactional notifications.                    |
 
 ---
 
@@ -137,20 +138,20 @@ Critical business operations are designed to preserve data consistency and suppo
 
 The Multi-Tenant Ticketing System is built using a modern web technology stack that emphasizes maintainability, scalability, developer productivity, and long-term extensibility.
 
-| Layer | Technology | Purpose |
-|---------|------------|---------|
-| Frontend | Next.js | Web application and user interface |
-| Language | TypeScript | Type-safe application development |
-| Styling | Tailwind CSS | Responsive and consistent UI styling |
-| UI Components | shadcn/ui | Reusable and accessible UI components |
-| Backend | Next.js Route Handlers | API layer and business logic |
-| ORM | Prisma ORM | Database access and schema management |
-| Database | PostgreSQL | Primary relational database |
-| Authentication | JWT + HTTP-Only Cookies | User authentication and session management |
-| Validation | Zod | Request validation |
-| File Storage | S3-Compatible Object Storage | Ticket attachments |
-| Email | SMTP / Email Service Provider | Notification delivery |
-| Logging | Structured Application Logs | Monitoring and troubleshooting |
+| Layer          | Technology                    | Purpose                                    |
+| -------------- | ----------------------------- | ------------------------------------------ |
+| Frontend       | Next.js                       | Web application and user interface         |
+| Language       | TypeScript                    | Type-safe application development          |
+| Styling        | Tailwind CSS                  | Responsive and consistent UI styling       |
+| UI Components  | shadcn/ui                     | Reusable and accessible UI components      |
+| Backend        | Next.js Route Handlers        | API layer and business logic               |
+| ORM            | Prisma ORM                    | Database access and schema management      |
+| Database       | PostgreSQL                    | Primary relational database                |
+| Authentication | JWT + HTTP-Only Cookies       | User authentication and session management |
+| Validation     | Zod                           | Request validation                         |
+| File Storage   | S3-Compatible Object Storage  | Ticket attachments                         |
+| Email          | SMTP / Email Service Provider | Notification delivery                      |
+| Logging        | Structured Application Logs   | Monitoring and troubleshooting             |
 
 ---
 
@@ -259,11 +260,11 @@ Creates and tracks support tickets related to their projects.
 
 ## 4.2 External Services
 
-| Service | Responsibility |
-|----------|----------------|
-| PostgreSQL | Persistent application data |
-| Object Storage | File attachments |
-| Email Service | Transactional notifications |
+| Service        | Responsibility              |
+| -------------- | --------------------------- |
+| PostgreSQL     | Persistent application data |
+| Object Storage | File attachments            |
+| Email Service  | Transactional notifications |
 
 ---
 
@@ -274,6 +275,7 @@ All users interact with the platform through the web application.
 Business requests are processed by the application server, which coordinates authentication, business logic, data persistence, file storage, and notification delivery.
 
 The application server acts as the single entry point for all business operations, ensuring consistent enforcement of authentication, authorization, tenant isolation, and business rules.
+
 # 5. High-Level Component Architecture
 
 The application is organized into independent business modules. Each module owns a specific business capability and collaborates with other modules through well-defined interfaces.
@@ -337,19 +339,19 @@ FILE --> STORAGE
 
 ## 5.1 Component Responsibilities
 
-| Component | Responsibility |
-|------------|----------------|
-| Authentication | Authenticates users and enforces authorization. |
-| Tenant Management | Manages tenant organizations and tenant configuration. |
-| User Management | Manages tenant users and roles. |
-| Client Management | Manages client organizations. |
-| Project Management | Manages client projects and project configuration. |
-| Ticket Management | Handles the complete support ticket lifecycle. |
-| SLA Management | Tracks and evaluates SLA compliance. |
-| Notification Service | Delivers application and email notifications. |
-| Reporting & Analytics | Generates dashboards and operational reports. |
-| File Management | Stores and retrieves ticket attachments. |
-| Audit Logging | Records security and business events. |
+| Component             | Responsibility                                         |
+| --------------------- | ------------------------------------------------------ |
+| Authentication        | Authenticates users and enforces authorization.        |
+| Tenant Management     | Manages tenant organizations and tenant configuration. |
+| User Management       | Manages tenant users and roles.                        |
+| Client Management     | Manages client organizations.                          |
+| Project Management    | Manages client projects and project configuration.     |
+| Ticket Management     | Handles the complete support ticket lifecycle.         |
+| SLA Management        | Tracks and evaluates SLA compliance.                   |
+| Notification Service  | Delivers application and email notifications.          |
+| Reporting & Analytics | Generates dashboards and operational reports.          |
+| File Management       | Stores and retrieves ticket attachments.               |
+| Audit Logging         | Records security and business events.                  |
 
 ---
 
@@ -689,12 +691,12 @@ Shared layouts, navigation, forms, dialogs, and feedback mechanisms provide a co
 
 The frontend maintains application state at multiple levels.
 
-| State Type | Purpose |
-|------------|---------|
-| Authentication | Current user session |
-| UI State | Dialogs, menus, loading indicators |
-| Server State | API responses and cached data |
-| Form State | User input and validation |
+| State Type     | Purpose                            |
+| -------------- | ---------------------------------- |
+| Authentication | Current user session               |
+| UI State       | Dialogs, menus, loading indicators |
+| Server State   | API responses and cached data      |
+| Form State     | User input and validation          |
 
 Business data remains the source of truth on the server.
 
@@ -754,13 +756,13 @@ Final authorization decisions remain the responsibility of the backend.
 
 Errors are categorized to provide appropriate feedback.
 
-| Category | Handling |
-|----------|----------|
-| Validation | Display field-level validation messages |
-| Authentication | Redirect to login when required |
-| Authorization | Display access denied message |
-| Network | Inform the user and allow retry |
-| Server | Display generic error notification |
+| Category       | Handling                                |
+| -------------- | --------------------------------------- |
+| Validation     | Display field-level validation messages |
+| Authentication | Redirect to login when required         |
+| Authorization  | Display access denied message           |
+| Network        | Inform the user and allow retry         |
+| Server         | Display generic error notification      |
 
 Application errors are logged for operational monitoring.
 
@@ -830,12 +832,12 @@ SERVICES --> EMAIL
 
 ## 8.4 Layer Responsibilities
 
-| Layer | Responsibility |
-|--------|----------------|
-| Presentation | Accept requests, validate input, and return responses. |
-| Application | Coordinate business operations and module interactions. |
-| Domain | Implement business rules and domain behavior. |
-| Infrastructure | Interact with databases and external services. |
+| Layer          | Responsibility                                          |
+| -------------- | ------------------------------------------------------- |
+| Presentation   | Accept requests, validate input, and return responses.  |
+| Application    | Coordinate business operations and module interactions. |
+| Domain         | Implement business rules and domain behavior.           |
+| Infrastructure | Interact with databases and external services.          |
 
 ---
 
@@ -932,13 +934,13 @@ Business modules do not communicate directly with the database. Instead, they in
 
 Errors are categorized and handled consistently across the application.
 
-| Error Type | Response |
-|------------|----------|
-| Validation | Reject invalid requests with descriptive messages. |
-| Authentication | Reject unauthenticated requests. |
-| Authorization | Reject unauthorized operations. |
-| Business Rule | Prevent invalid business operations. |
-| System | Log the error and return a generic response. |
+| Error Type     | Response                                           |
+| -------------- | -------------------------------------------------- |
+| Validation     | Reject invalid requests with descriptive messages. |
+| Authentication | Reject unauthenticated requests.                   |
+| Authorization  | Reject unauthorized operations.                    |
+| Business Rule  | Prevent invalid business operations.               |
+| System         | Log the error and return a generic response.       |
 
 Sensitive implementation details shall never be exposed to end users.
 
@@ -1518,17 +1520,17 @@ TICKET --> NOTIFICATION
 
 Every business entity has a clearly defined owner.
 
-| Entity | Owned By |
-|---------|----------|
-| User | Tenant |
-| Client | Tenant |
-| Project | Client |
-| Ticket | Project |
-| Comment | Ticket |
-| Attachment | Ticket |
-| Notification | Tenant |
-| SLA Policy | Tenant |
-| Audit Log | Tenant |
+| Entity       | Owned By |
+| ------------ | -------- |
+| User         | Tenant   |
+| Client       | Tenant   |
+| Project      | Client   |
+| Ticket       | Project  |
+| Comment      | Ticket   |
+| Attachment   | Ticket   |
+| Notification | Tenant   |
+| SLA Policy   | Tenant   |
+| Audit Log    | Tenant   |
 
 This ownership hierarchy establishes clear authorization boundaries and simplifies data lifecycle management.
 
@@ -1641,13 +1643,13 @@ Not every entity follows every stage; the lifecycle depends on business requirem
 
 Different categories of data are stored according to their characteristics.
 
-| Data Type | Storage |
-|------------|---------|
-| Business Data | Relational Database |
-| Attachments | Object Storage |
-| Audit Records | Relational Database |
-| Notifications | Relational Database |
-| Session Data | Session Store / Cache (if applicable) |
+| Data Type     | Storage                               |
+| ------------- | ------------------------------------- |
+| Business Data | Relational Database                   |
+| Attachments   | Object Storage                        |
+| Audit Records | Relational Database                   |
+| Notifications | Relational Database                   |
+| Session Data  | Session Store / Cache (if applicable) |
 
 This separation improves scalability while keeping transactional data consistent.
 
@@ -2161,14 +2163,14 @@ Infrastructure should scale incrementally based on demand rather than requiring 
 
 The architecture is designed to accommodate growth across multiple dimensions:
 
-| Growth Dimension | Example |
-|------------------|---------|
-| Tenants | Increasing customer organizations |
-| Users | Growing user base |
-| Projects | More client projects |
-| Tickets | Higher support volume |
-| Attachments | Increased storage requirements |
-| Background Jobs | Greater asynchronous workload |
+| Growth Dimension | Example                           |
+| ---------------- | --------------------------------- |
+| Tenants          | Increasing customer organizations |
+| Users            | Growing user base                 |
+| Projects         | More client projects              |
+| Tickets          | Higher support volume             |
+| Attachments      | Increased storage requirements    |
+| Background Jobs  | Greater asynchronous workload     |
 
 Capacity should be monitored continuously to identify scaling requirements before performance degradation occurs.
 
@@ -2241,16 +2243,16 @@ Logs should be structured to support efficient searching and filtering.
 
 ## 14.4 Log Categories
 
-| Category | Examples |
-|-----------|----------|
-| Application | Startup, shutdown, configuration |
-| Authentication | Login, logout, failed authentication |
-| Authorization | Permission denied |
-| Business | Ticket creation, assignment, closure |
-| Background Jobs | SLA evaluation, email delivery |
-| Database | Query failures, transaction failures |
-| External Services | Email service, object storage |
-| System | Unexpected exceptions |
+| Category          | Examples                             |
+| ----------------- | ------------------------------------ |
+| Application       | Startup, shutdown, configuration     |
+| Authentication    | Login, logout, failed authentication |
+| Authorization     | Permission denied                    |
+| Business          | Ticket creation, assignment, closure |
+| Background Jobs   | SLA evaluation, email delivery       |
+| Database          | Query failures, transaction failures |
+| External Services | Email service, object storage        |
+| System            | Unexpected exceptions                |
 
 ---
 
@@ -2363,14 +2365,14 @@ Operational dashboards provide real-time visibility into platform health.
 
 Typical dashboards include:
 
-| Dashboard | Purpose |
-|------------|---------|
-| Application Health | Overall system status |
-| API Performance | Request volume and latency |
-| Background Jobs | Worker activity and failures |
-| SLA Monitoring | SLA processing statistics |
-| Infrastructure | Resource utilization |
-| Security | Authentication and authorization events |
+| Dashboard          | Purpose                                 |
+| ------------------ | --------------------------------------- |
+| Application Health | Overall system status                   |
+| API Performance    | Request volume and latency              |
+| Background Jobs    | Worker activity and failures            |
+| SLA Monitoring     | SLA processing statistics               |
+| Infrastructure     | Resource utilization                    |
+| Security           | Authentication and authorization events |
 
 ---
 
@@ -2501,15 +2503,15 @@ WORKER --> EMAIL
 
 ## 15.3 Deployment Components
 
-| Component | Responsibility |
-|------------|----------------|
-| Load Balancer | Distributes incoming requests across application instances |
-| Application Instances | Execute business logic and serve API requests |
-| Background Workers | Process asynchronous tasks and scheduled jobs |
-| PostgreSQL | Persistent relational data storage |
-| Cache | Improve response times and reduce database load |
-| Object Storage | Store ticket attachments and uploaded files |
-| Email Service | Deliver transactional email notifications |
+| Component             | Responsibility                                             |
+| --------------------- | ---------------------------------------------------------- |
+| Load Balancer         | Distributes incoming requests across application instances |
+| Application Instances | Execute business logic and serve API requests              |
+| Background Workers    | Process asynchronous tasks and scheduled jobs              |
+| PostgreSQL            | Persistent relational data storage                         |
+| Cache                 | Improve response times and reduce database load            |
+| Object Storage        | Store ticket attachments and uploaded files                |
+| Email Service         | Deliver transactional email notifications                  |
 
 ---
 
@@ -2517,12 +2519,12 @@ WORKER --> EMAIL
 
 The platform supports multiple isolated environments throughout the software lifecycle.
 
-| Environment | Purpose |
-|------------|---------|
-| Development | Feature development and local testing |
-| Testing | Automated integration and quality assurance |
-| Staging | Pre-production validation |
-| Production | Live customer environment |
+| Environment | Purpose                                     |
+| ----------- | ------------------------------------------- |
+| Development | Feature development and local testing       |
+| Testing     | Automated integration and quality assurance |
+| Staging     | Pre-production validation                   |
+| Production  | Live customer environment                   |
 
 Each environment maintains independent configuration, infrastructure, and application data.
 
@@ -3112,20 +3114,20 @@ Architectural Decision Records should accompany significant changes.
 
 # 21. Glossary
 
-| Term | Definition |
-|------|------------|
-| Tenant | An independent customer organization using the platform. |
-| Platform Administrator | User responsible for managing the overall platform and all tenant organizations. |
-| Tenant Administrator | User responsible for managing users, clients, projects, tickets, and SLAs within their tenant. |
-| Client | An organization receiving support services from a tenant. |
-| Project | A logical grouping of support tickets for a client. |
-| Ticket | A support request created by a client and tracked through the system. |
-| Engineer | A user responsible for resolving assigned support tickets. |
-| SLA | Service Level Agreement defining response and resolution time targets. |
-| RBAC | Role-Based Access Control — the authorization model used to enforce permissions. |
-| Background Worker | Component responsible for executing asynchronous and scheduled tasks. |
-| Object Storage | Storage system for ticket attachments and uploaded files. |
-| ADR | Architectural Decision Record — documents a significant design decision and its rationale. |
-| Modular Monolith | A single deployable application organized into independent, loosely coupled modules. |
-| Tenant Context | The tenant identity attached to every authenticated request to enforce data isolation. |
-| Dead-letter Queue | A queue that holds tasks that could not be processed after all retry attempts. |
+| Term                   | Definition                                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------------------------- |
+| Tenant                 | An independent customer organization using the platform.                                       |
+| Platform Administrator | User responsible for managing the overall platform and all tenant organizations.               |
+| Tenant Administrator   | User responsible for managing users, clients, projects, tickets, and SLAs within their tenant. |
+| Client                 | An organization receiving support services from a tenant.                                      |
+| Project                | A logical grouping of support tickets for a client.                                            |
+| Ticket                 | A support request created by a client and tracked through the system.                          |
+| Engineer               | A user responsible for resolving assigned support tickets.                                     |
+| SLA                    | Service Level Agreement defining response and resolution time targets.                         |
+| RBAC                   | Role-Based Access Control — the authorization model used to enforce permissions.               |
+| Background Worker      | Component responsible for executing asynchronous and scheduled tasks.                          |
+| Object Storage         | Storage system for ticket attachments and uploaded files.                                      |
+| ADR                    | Architectural Decision Record — documents a significant design decision and its rationale.     |
+| Modular Monolith       | A single deployable application organized into independent, loosely coupled modules.           |
+| Tenant Context         | The tenant identity attached to every authenticated request to enforce data isolation.         |
+| Dead-letter Queue      | A queue that holds tasks that could not be processed after all retry attempts.                 |

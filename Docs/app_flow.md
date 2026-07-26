@@ -1,7 +1,9 @@
 # Multi-Tenant Ticketing System
 
 # Application Flow
+
 ---
+
 title: "Application Flow"
 subtitle: "Multi-Tenant Ticketing System"
 author: "Shreyas"
@@ -266,6 +268,7 @@ F --> C
 ```
 
 ---
+
 ---
 
 # 6. Engineer Workflows
@@ -515,6 +518,7 @@ Closed --> Dashboard
 
 Dashboard --> Logout
 ```
+
 ---
 
 # 5. Ticket Management Workflows
@@ -716,6 +720,7 @@ CLOSED --> [*]
 ```
 
 > **Status notes:**
+>
 > - `Assigned` is not a distinct status — assignment is a field change on an `OPEN` ticket.
 > - `ClientVerification` is a workflow phase, not a persisted status. It maps to the `RESOLVED` state.
 > - Reopening a ticket transitions it back to `IN_PROGRESS`, not a separate `REOPENED` state.
@@ -1024,6 +1029,7 @@ AcceptResolution --> TicketClosed
 
 ReopenTicket --> SubmitFeedback
 ```
+
 ---
 
 # 9. Notification Workflows
@@ -1419,12 +1425,12 @@ Logout --> Login
 
 # Appendix A - Primary User Journeys
 
-| Role | Primary Journey |
-|------|-----------------|
-| Platform Admin | Login → Manage Tenants → Reports |
-| Tenant Admin | Login → Dashboard → Projects → Tickets → Assign Engineer |
-| Engineer | Login → Assigned Tickets → Resolve Ticket → Client Verification |
-| Client | Login → Projects → Create Ticket → Track Ticket → Verify Resolution |
+| Role           | Primary Journey                                                     |
+| -------------- | ------------------------------------------------------------------- |
+| Platform Admin | Login → Manage Tenants → Reports                                    |
+| Tenant Admin   | Login → Dashboard → Projects → Tickets → Assign Engineer            |
+| Engineer       | Login → Assigned Tickets → Resolve Ticket → Client Verification     |
+| Client         | Login → Projects → Create Ticket → Track Ticket → Verify Resolution |
 
 ---
 
@@ -1461,74 +1467,75 @@ Reopened --> Engineer
 ```
 
 ---
+
 ---
 
 # 16. Screen Inventory
 
 ## Authentication
 
-| Screen | Description | Next Screens |
-|----------|-------------|--------------|
-| Login | User authentication | Dashboard, Forgot Password |
-| Forgot Password | Password recovery | Login |
-| Reset Password | Create new password | Login |
+| Screen          | Description         | Next Screens               |
+| --------------- | ------------------- | -------------------------- |
+| Login           | User authentication | Dashboard, Forgot Password |
+| Forgot Password | Password recovery   | Login                      |
+| Reset Password  | Create new password | Login                      |
 
 ---
 
 ## Dashboard
 
-| Screen | Description | Next Screens |
-|----------|-------------|--------------|
+| Screen    | Description              | Next Screens                                                 |
+| --------- | ------------------------ | ------------------------------------------------------------ |
 | Dashboard | Landing page after login | Clients, Projects, Tickets, Reports, Settings, Notifications |
 
 ---
 
 ## Client Module
 
-| Screen | Description | Next Screens |
-|----------|-------------|--------------|
-| Client List | View all clients | Client Details, Create Client |
-| Create Client | Add new client | Client Details |
-| Client Details | Client overview | Edit Client, Projects |
+| Screen         | Description      | Next Screens                  |
+| -------------- | ---------------- | ----------------------------- |
+| Client List    | View all clients | Client Details, Create Client |
+| Create Client  | Add new client   | Client Details                |
+| Client Details | Client overview  | Edit Client, Projects         |
 
 ---
 
 ## Project Module
 
-| Screen | Description | Next Screens |
-|----------|-------------|--------------|
-| Project List | View projects | Project Details |
-| Create Project | Create project | Project Details |
-| Project Details | Project information | Ticket List |
+| Screen          | Description         | Next Screens    |
+| --------------- | ------------------- | --------------- |
+| Project List    | View projects       | Project Details |
+| Create Project  | Create project      | Project Details |
+| Project Details | Project information | Ticket List     |
 
 ---
 
 ## Ticket Module
 
-| Screen | Description | Next Screens |
-|----------|-------------|--------------|
-| Ticket List | View tickets | Ticket Details, Create Ticket |
-| Create Ticket | New support request | Ticket Details |
-| Ticket Details | Ticket information | Comments, Attachments, Activity Timeline |
+| Screen         | Description         | Next Screens                             |
+| -------------- | ------------------- | ---------------------------------------- |
+| Ticket List    | View tickets        | Ticket Details, Create Ticket            |
+| Create Ticket  | New support request | Ticket Details                           |
+| Ticket Details | Ticket information  | Comments, Attachments, Activity Timeline |
 
 ---
 
 ## Reports
 
-| Screen | Description | Next Screens |
-|----------|-------------|--------------|
-| Reports | Analytics dashboard | Report Preview |
-| Report Preview | Generated report | Export |
+| Screen         | Description         | Next Screens   |
+| -------------- | ------------------- | -------------- |
+| Reports        | Analytics dashboard | Report Preview |
+| Report Preview | Generated report    | Export         |
 
 ---
 
 ## Settings
 
-| Screen | Description | Next Screens |
-|----------|-------------|--------------|
-| Settings | Application settings | Profile, Notifications |
-| Profile | User profile | Settings |
-| Notification Preferences | Configure alerts | Settings |
+| Screen                   | Description          | Next Screens           |
+| ------------------------ | -------------------- | ---------------------- |
+| Settings                 | Application settings | Profile, Notifications |
+| Profile                  | User profile         | Settings               |
+| Notification Preferences | Configure alerts     | Settings               |
 
 ---
 
@@ -1657,6 +1664,7 @@ Logout --> End([Session Ended])
 ```
 
 ---
+
 ---
 
 # 21. Role-Based Navigation Maps
@@ -2029,8 +2037,8 @@ Logout --> End([Session End])
 
 # Revision History
 
-| Version | Date | Description |
-|----------|------|-------------|
-| 1.0 | Initial Release | Production-ready application flow covering all primary workflows, role journeys, navigation maps, state transitions, and exception handling. |
+| Version | Date            | Description                                                                                                                                  |
+| ------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.0     | Initial Release | Production-ready application flow covering all primary workflows, role journeys, navigation maps, state transitions, and exception handling. |
 
 ---

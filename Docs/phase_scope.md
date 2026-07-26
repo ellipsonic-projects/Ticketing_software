@@ -1,10 +1,10 @@
 ---
-title: "Multi-Tenant Ticketing System"
-subtitle: "Project Phase Scope Document"
-author: "Shreyas"
-version: "1.0"
-status: "Draft"
-date: "July 2026"
+title: 'Multi-Tenant Ticketing System'
+subtitle: 'Project Phase Scope Document'
+author: 'Shreyas'
+version: '1.0'
+status: 'Draft'
+date: 'July 2026'
 ---
 
 # Multi-Tenant Ticketing System
@@ -106,15 +106,15 @@ Before beginning implementation of any phase, the engineer or AI agent responsib
 
 For every phase, verify the following before writing any production code:
 
-| Check | Question |
-|-------|----------|
-| Business Rules | Do all features in this phase match the PRD functional requirements? |
-| Roles & Permissions | Do the roles and permission rules match PRD §8 Permission Matrix? |
-| Ticket Status | Does any ticket status used match the canonical enum: `OPEN \| IN_PROGRESS \| WAITING_FOR_CLIENT \| RESOLVED \| CLOSED`? |
-| Endpoints | Does every API endpoint exist in api_docs.md with the correct method, path, and authorization? |
-| Schema | Does every entity referenced have a corresponding table in schema.md? |
-| App Flow | Does the user flow described here appear in app_flow.md and is it reachable? |
-| Architecture | Does the implementation approach match the architecture decisions in architecture.md? |
+| Check               | Question                                                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Business Rules      | Do all features in this phase match the PRD functional requirements?                                                     |
+| Roles & Permissions | Do the roles and permission rules match PRD §8 Permission Matrix?                                                        |
+| Ticket Status       | Does any ticket status used match the canonical enum: `OPEN \| IN_PROGRESS \| WAITING_FOR_CLIENT \| RESOLVED \| CLOSED`? |
+| Endpoints           | Does every API endpoint exist in api_docs.md with the correct method, path, and authorization?                           |
+| Schema              | Does every entity referenced have a corresponding table in schema.md?                                                    |
+| App Flow            | Does the user flow described here appear in app_flow.md and is it reachable?                                             |
+| Architecture        | Does the implementation approach match the architecture decisions in architecture.md?                                    |
 
 ### Contradiction Reporting
 
@@ -130,28 +130,27 @@ This protocol prevents faithfully implementing a contradiction that slipped into
 
 # 5. Phase Overview
 
-| Phase | Name | Goal |
-|--------|------|------|
-| Phase 0 | Foundation | Establish the technical foundation of the platform |
+| Phase   | Name                         | Goal                                                     |
+| ------- | ---------------------------- | -------------------------------------------------------- |
+| Phase 0 | Foundation                   | Establish the technical foundation of the platform       |
 | Phase 1 | Identity & Tenant Management | Authentication, authorization, and tenant infrastructure |
-| Phase 2 | Organization Management | Users, clients, and projects |
-| Phase 3 | Ticket Management | Complete ticket lifecycle |
-| Phase 4 | SLA & Notifications | SLA monitoring and notification engine |
-| Phase 5 | Reporting & Analytics | Dashboards and operational reporting |
-| Phase 6 | Production Hardening | Security, auditing, optimization, testing, and release |
+| Phase 2 | Organization Management      | Users, clients, and projects                             |
+| Phase 3 | Ticket Management            | Complete ticket lifecycle                                |
+| Phase 4 | SLA & Notifications          | SLA monitoring and notification engine                   |
+| Phase 5 | Reporting & Analytics        | Dashboards and operational reporting                     |
+| Phase 6 | Production Hardening         | Security, auditing, optimization, testing, and release   |
 
 # Roadmap Summary
 
-| Phase | Core Outcome | Key Deliverables |
-|-------|-------------|------------------|
+| Phase       | Core Outcome         | Key Deliverables                                     |
+| ----------- | -------------------- | ---------------------------------------------------- |
 | **Phase 0** | Infrastructure Ready | Next.js setup, DB connected, CI/CD, Shared utilities |
-| **Phase 1** | Identity & Tenants | Auth (JWT/RBAC), Tenant isolation, User provisioning |
-| **Phase 2** | Organization Data | Clients, Projects, Settings management |
-| **Phase 3** | Core Ticketing | Ticket CRUD, Comments, Attachments, Workflow |
-| **Phase 4** | SLAs & Alerts | SLA tracking, Notifications (Email & In-App) |
-| **Phase 5** | Analytics | Dashboards, Exportable Reports, Audit Logs |
-| **Phase 6** | Production Launch | Security hardened, Load tested, Runbooks ready |
-
+| **Phase 1** | Identity & Tenants   | Auth (JWT/RBAC), Tenant isolation, User provisioning |
+| **Phase 2** | Organization Data    | Clients, Projects, Settings management               |
+| **Phase 3** | Core Ticketing       | Ticket CRUD, Comments, Attachments, Workflow         |
+| **Phase 4** | SLAs & Alerts        | SLA tracking, Notifications (Email & In-App)         |
+| **Phase 5** | Analytics            | Dashboards, Exportable Reports, Audit Logs           |
+| **Phase 6** | Production Launch    | Security hardened, Load tested, Runbooks ready       |
 
 ---
 
@@ -180,6 +179,7 @@ Phase 6
 ```
 
 Each phase depends on the successful completion and acceptance of the previous phase.
+
 # Phase 0 — Platform Foundation
 
 ---
@@ -292,16 +292,16 @@ At the completion of Phase 0 the following shall exist.
 
 ## 0.4 Modules Included
 
-| Module | Status |
-|----------|--------|
-| Repository | ✅ |
-| Frontend Setup | ✅ |
-| Backend Setup | ✅ |
-| Tenant Infrastructure | ✅ |
-| Database | ✅ |
-| Shared Components | ✅ |
-| CI/CD | ✅ |
-| Logging | ✅ |
+| Module                | Status |
+| --------------------- | ------ |
+| Repository            | ✅     |
+| Frontend Setup        | ✅     |
+| Backend Setup         | ✅     |
+| Tenant Infrastructure | ✅     |
+| Database              | ✅     |
+| Shared Components     | ✅     |
+| CI/CD                 | ✅     |
+| Logging               | ✅     |
 
 ---
 
@@ -426,7 +426,7 @@ This phase has no implementation dependencies.
 
 It is the prerequisite for every subsequent phase.
 
-```
+`````
 
 ---
 
@@ -3074,3 +3074,4 @@ Phase 6 shall be considered complete when:
 ✓ Release approved by stakeholders
 
 **Project Status:** 🚀 **Production Ready**
+`````

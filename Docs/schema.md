@@ -1,10 +1,10 @@
 ---
-title: "Multi-Tenant Ticketing System"
-subtitle: "Database Schema Specification"
-author: "Shreyas"
-version: "1.0"
-status: "Draft"
-date: "July 2026"
+title: 'Multi-Tenant Ticketing System'
+subtitle: 'Database Schema Specification'
+author: 'Shreyas'
+version: '1.0'
+status: 'Draft'
+date: 'July 2026'
 ---
 
 # Multi-Tenant Ticketing System
@@ -48,17 +48,17 @@ This document complements:
 
 # 2. Database Overview
 
-| Property | Value |
-|----------|-------|
-| Database | PostgreSQL |
-| ORM | Prisma |
-| ID Strategy | UUID v4 |
-| Multi-Tenant | Shared Database, Shared Schema |
-| Soft Delete | Supported |
-| Audit Logging | Supported |
-| Transactions | ACID |
-| Timezone | UTC |
-| Character Encoding | UTF-8 |
+| Property           | Value                          |
+| ------------------ | ------------------------------ |
+| Database           | PostgreSQL                     |
+| ORM                | Prisma                         |
+| ID Strategy        | UUID v4                        |
+| Multi-Tenant       | Shared Database, Shared Schema |
+| Soft Delete        | Supported                      |
+| Audit Logging      | Supported                      |
+| Transactions       | ACID                           |
+| Timezone           | UTC                            |
+| Character Encoding | UTF-8                          |
 
 ---
 
@@ -201,15 +201,15 @@ All timestamps are stored in UTC.
 
 Unless otherwise specified, every business table contains the following columns.
 
-| Column | Type | Description |
-|---------|------|-------------|
-| id | UUID | Primary key |
-| tenant_id | UUID | Tenant owner |
-| created_at | TIMESTAMP | Record creation |
-| updated_at | TIMESTAMP | Last modification |
-| created_by | UUID | User who created the record |
-| updated_by | UUID | Last user to modify |
-| archived_at | TIMESTAMP NULL | Soft archive timestamp |
+| Column      | Type           | Description                 |
+| ----------- | -------------- | --------------------------- |
+| id          | UUID           | Primary key                 |
+| tenant_id   | UUID           | Tenant owner                |
+| created_at  | TIMESTAMP      | Record creation             |
+| updated_at  | TIMESTAMP      | Last modification           |
+| created_by  | UUID           | User who created the record |
+| updated_by  | UUID           | Last user to modify         |
+| archived_at | TIMESTAMP NULL | Soft archive timestamp      |
 
 ---
 
@@ -326,19 +326,19 @@ TICKET ||--o{ AUDIT_LOG : records
 
 # 11. High-Level Entity Summary
 
-| Entity | Purpose |
-|---------|---------|
-| Tenant | Service provider organization |
-| User | Internal platform user (Tenant Admin, Engineer) |
+| Entity              | Purpose                                             |
+| ------------------- | --------------------------------------------------- |
+| Tenant              | Service provider organization                       |
+| User                | Internal platform user (Tenant Admin, Engineer)     |
 | ClientPortalAccount | Authentication credential for a Client organization |
-| Client | Customer organization |
-| Project | Client project |
-| ProjectMember | Engineer assignment |
-| Ticket | Support request |
-| Comment | Ticket discussion (public or internal) |
-| Attachment | Files linked to tickets |
-| Notification | System notifications |
-| AuditLog | Security and activity audit |
+| Client              | Customer organization                               |
+| Project             | Client project                                      |
+| ProjectMember       | Engineer assignment                                 |
+| Ticket              | Support request                                     |
+| Comment             | Ticket discussion (public or internal)              |
+| Attachment          | Files linked to tickets                             |
+| Notification        | System notifications                                |
+| AuditLog            | Security and activity audit                         |
 
 ---
 
@@ -352,6 +352,7 @@ The next section of this document defines each database table, including:
 - Foreign Keys
 - Indexes
 - Business Rules
+
 ---
 
 # 13. Identity & Access
@@ -368,17 +369,17 @@ Represents a tenant (service company) using the platform.
 
 ### Columns
 
-| Column | Type | Constraints | Description |
-|---------|------|------------|-------------|
-| id | UUID | PK | Tenant identifier |
-| name | VARCHAR(150) | NOT NULL | Company name |
-| slug | VARCHAR(100) | UNIQUE | URL-friendly identifier |
-| email | VARCHAR(255) | NOT NULL | Primary contact email |
-| phone | VARCHAR(30) | NULL | Contact number |
-| status | VARCHAR(20) | DEFAULT 'ACTIVE' | Tenant status |
-| created_at | TIMESTAMP | NOT NULL | Creation timestamp |
-| updated_at | TIMESTAMP | NOT NULL | Last update |
-| archived_at | TIMESTAMP | NULL | Soft archive |
+| Column      | Type         | Constraints      | Description             |
+| ----------- | ------------ | ---------------- | ----------------------- |
+| id          | UUID         | PK               | Tenant identifier       |
+| name        | VARCHAR(150) | NOT NULL         | Company name            |
+| slug        | VARCHAR(100) | UNIQUE           | URL-friendly identifier |
+| email       | VARCHAR(255) | NOT NULL         | Primary contact email   |
+| phone       | VARCHAR(30)  | NULL             | Contact number          |
+| status      | VARCHAR(20)  | DEFAULT 'ACTIVE' | Tenant status           |
+| created_at  | TIMESTAMP    | NOT NULL         | Creation timestamp      |
+| updated_at  | TIMESTAMP    | NOT NULL         | Last update             |
+| archived_at | TIMESTAMP    | NULL             | Soft archive            |
 
 ### Relationships
 
@@ -414,20 +415,20 @@ Platform administrators are stored separately from tenant users.
 
 ### Columns
 
-| Column | Type | Constraints |
-|---------|------|------------|
-| id | UUID | PK |
-| tenant_id | UUID | FK → Tenant |
-| first_name | VARCHAR(100) | NOT NULL |
-| last_name | VARCHAR(100) | NOT NULL |
-| email | VARCHAR(255) | NOT NULL |
-| password_hash | TEXT | NOT NULL |
-| role | UserRole | NOT NULL |
-| is_active | BOOLEAN | DEFAULT TRUE |
-| last_login_at | TIMESTAMP | NULL |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
-| archived_at | TIMESTAMP | NULL |
+| Column        | Type         | Constraints  |
+| ------------- | ------------ | ------------ |
+| id            | UUID         | PK           |
+| tenant_id     | UUID         | FK → Tenant  |
+| first_name    | VARCHAR(100) | NOT NULL     |
+| last_name     | VARCHAR(100) | NOT NULL     |
+| email         | VARCHAR(255) | NOT NULL     |
+| password_hash | TEXT         | NOT NULL     |
+| role          | UserRole     | NOT NULL     |
+| is_active     | BOOLEAN      | DEFAULT TRUE |
+| last_login_at | TIMESTAMP    | NULL         |
+| created_at    | TIMESTAMP    | NOT NULL     |
+| updated_at    | TIMESTAMP    | NOT NULL     |
+| archived_at   | TIMESTAMP    | NULL         |
 
 ### Constraints
 
@@ -463,16 +464,16 @@ Supports refresh-token rotation and secure logout.
 
 ### Columns
 
-| Column | Type |
-|---------|------|
-| id | UUID |
-| user_id | UUID |
-| refresh_token_hash | TEXT |
-| expires_at | TIMESTAMP |
-| ip_address | VARCHAR(100) |
-| user_agent | TEXT |
-| revoked_at | TIMESTAMP |
-| created_at | TIMESTAMP |
+| Column             | Type         |
+| ------------------ | ------------ |
+| id                 | UUID         |
+| user_id            | UUID         |
+| refresh_token_hash | TEXT         |
+| expires_at         | TIMESTAMP    |
+| ip_address         | VARCHAR(100) |
+| user_agent         | TEXT         |
+| revoked_at         | TIMESTAMP    |
+| created_at         | TIMESTAMP    |
 
 ### Relationships
 
@@ -502,13 +503,13 @@ Stores password reset requests.
 
 ### Columns
 
-| Column | Type |
-|---------|------|
-| id | UUID |
-| user_id | UUID |
-| token_hash | TEXT |
+| Column     | Type      |
+| ---------- | --------- |
+| id         | UUID      |
+| user_id    | UUID      |
+| token_hash | TEXT      |
 | expires_at | TIMESTAMP |
-| used_at | TIMESTAMP |
+| used_at    | TIMESTAMP |
 | created_at | TIMESTAMP |
 
 ### Business Rules
@@ -529,18 +530,18 @@ This is intentionally separate from the User table to preserve a clean boundary 
 
 ### Columns
 
-| Column | Type | Constraints | Description |
-|---------|------|------------|-------------|
-| id | UUID | PK | Account identifier |
-| tenant_id | UUID | FK → Tenant | Owning tenant |
-| client_id | UUID | FK → Client, UNIQUE | The client this account represents |
-| email | VARCHAR(255) | NOT NULL | Login email |
-| password_hash | TEXT | NOT NULL | Bcrypt/Argon2 hash |
-| is_active | BOOLEAN | DEFAULT TRUE | Account enabled flag |
-| last_login_at | TIMESTAMP | NULL | Last successful login |
-| created_at | TIMESTAMP | NOT NULL | Creation timestamp |
-| updated_at | TIMESTAMP | NOT NULL | Last update |
-| archived_at | TIMESTAMP | NULL | Soft archive |
+| Column        | Type         | Constraints         | Description                        |
+| ------------- | ------------ | ------------------- | ---------------------------------- |
+| id            | UUID         | PK                  | Account identifier                 |
+| tenant_id     | UUID         | FK → Tenant         | Owning tenant                      |
+| client_id     | UUID         | FK → Client, UNIQUE | The client this account represents |
+| email         | VARCHAR(255) | NOT NULL            | Login email                        |
+| password_hash | TEXT         | NOT NULL            | Bcrypt/Argon2 hash                 |
+| is_active     | BOOLEAN      | DEFAULT TRUE        | Account enabled flag               |
+| last_login_at | TIMESTAMP    | NULL                | Last successful login              |
+| created_at    | TIMESTAMP    | NOT NULL            | Creation timestamp                 |
+| updated_at    | TIMESTAMP    | NOT NULL            | Last update                        |
+| archived_at   | TIMESTAMP    | NULL                | Soft archive                       |
 
 ### Constraints
 
@@ -576,16 +577,16 @@ Mirrors the Session table but references ClientPortalAccount instead of User.
 
 ### Columns
 
-| Column | Type | Constraints |
-|---------|------|------------|
-| id | UUID | PK |
-| account_id | UUID | FK → ClientPortalAccount |
-| refresh_token_hash | TEXT | NOT NULL |
-| expires_at | TIMESTAMP | NOT NULL |
-| ip_address | VARCHAR(100) | NULL |
-| user_agent | TEXT | NULL |
-| revoked_at | TIMESTAMP | NULL |
-| created_at | TIMESTAMP | NOT NULL |
+| Column             | Type         | Constraints              |
+| ------------------ | ------------ | ------------------------ |
+| id                 | UUID         | PK                       |
+| account_id         | UUID         | FK → ClientPortalAccount |
+| refresh_token_hash | TEXT         | NOT NULL                 |
+| expires_at         | TIMESTAMP    | NOT NULL                 |
+| ip_address         | VARCHAR(100) | NULL                     |
+| user_agent         | TEXT         | NULL                     |
+| revoked_at         | TIMESTAMP    | NULL                     |
+| created_at         | TIMESTAMP    | NOT NULL                 |
 
 ### Business Rules
 
@@ -722,6 +723,7 @@ The Identity schema is complete when:
 - Foreign keys validated.
 - Indexes reviewed.
 - Constraints documented.
+
 ---
 
 # 14. Organization Management
@@ -740,18 +742,18 @@ A tenant may manage multiple clients.
 
 ### Columns
 
-| Column | Type | Constraints | Description |
-|---------|------|------------|-------------|
-| id | UUID | PK | Client identifier |
-| tenant_id | UUID | FK → Tenant | Tenant owner |
-| name | VARCHAR(150) | NOT NULL | Client name |
-| email | VARCHAR(255) | NULL | Primary contact email |
-| phone | VARCHAR(30) | NULL | Contact number |
-| company | VARCHAR(150) | NULL | Company name |
-| status | VARCHAR(20) | DEFAULT 'ACTIVE' | Client status |
-| created_at | TIMESTAMP | NOT NULL | Creation timestamp |
-| updated_at | TIMESTAMP | NOT NULL | Last modification |
-| archived_at | TIMESTAMP | NULL | Soft archive |
+| Column      | Type         | Constraints      | Description           |
+| ----------- | ------------ | ---------------- | --------------------- |
+| id          | UUID         | PK               | Client identifier     |
+| tenant_id   | UUID         | FK → Tenant      | Tenant owner          |
+| name        | VARCHAR(150) | NOT NULL         | Client name           |
+| email       | VARCHAR(255) | NULL             | Primary contact email |
+| phone       | VARCHAR(30)  | NULL             | Contact number        |
+| company     | VARCHAR(150) | NULL             | Company name          |
+| status      | VARCHAR(20)  | DEFAULT 'ACTIVE' | Client status         |
+| created_at  | TIMESTAMP    | NOT NULL         | Creation timestamp    |
+| updated_at  | TIMESTAMP    | NOT NULL         | Last modification     |
+| archived_at | TIMESTAMP    | NULL             | Soft archive          |
 
 ### Constraints
 
@@ -792,17 +794,17 @@ Tickets are always created under a project.
 
 ### Columns
 
-| Column | Type | Constraints |
-|---------|------|------------|
-| id | UUID | PK |
-| tenant_id | UUID | FK → Tenant |
-| client_id | UUID | FK → Client |
-| name | VARCHAR(150) | NOT NULL |
-| description | TEXT | NULL |
-| status | VARCHAR(20) | DEFAULT 'ACTIVE' |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
-| archived_at | TIMESTAMP | NULL |
+| Column      | Type         | Constraints      |
+| ----------- | ------------ | ---------------- |
+| id          | UUID         | PK               |
+| tenant_id   | UUID         | FK → Tenant      |
+| client_id   | UUID         | FK → Client      |
+| name        | VARCHAR(150) | NOT NULL         |
+| description | TEXT         | NULL             |
+| status      | VARCHAR(20)  | DEFAULT 'ACTIVE' |
+| created_at  | TIMESTAMP    | NOT NULL         |
+| updated_at  | TIMESTAMP    | NOT NULL         |
+| archived_at | TIMESTAMP    | NULL             |
 
 ### Constraints
 
@@ -846,14 +848,14 @@ A project may contain multiple engineers.
 
 ### Columns
 
-| Column | Type | Constraints |
-|---------|------|------------|
-| id | UUID | PK |
-| tenant_id | UUID | FK → Tenant |
-| project_id | UUID | FK → Project |
-| user_id | UUID | FK → User |
-| assigned_at | TIMESTAMP | NOT NULL |
-| assigned_by | UUID | FK → User |
+| Column      | Type      | Constraints  |
+| ----------- | --------- | ------------ |
+| id          | UUID      | PK           |
+| tenant_id   | UUID      | FK → Tenant  |
+| project_id  | UUID      | FK → Project |
+| user_id     | UUID      | FK → User    |
+| assigned_at | TIMESTAMP | NOT NULL     |
+| assigned_by | UUID      | FK → User    |
 
 ### Constraints
 
@@ -891,16 +893,16 @@ Each project has one active SLA policy.
 
 ### Columns
 
-| Column | Type | Constraints |
-|---------|------|------------|
-| id | UUID | PK |
-| tenant_id | UUID | FK → Tenant |
-| project_id | UUID | FK → Project |
-| response_time_minutes | INTEGER | NOT NULL |
-| resolution_time_minutes | INTEGER | NOT NULL |
-| business_hours_enabled | BOOLEAN | DEFAULT TRUE |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
+| Column                  | Type      | Constraints  |
+| ----------------------- | --------- | ------------ |
+| id                      | UUID      | PK           |
+| tenant_id               | UUID      | FK → Tenant  |
+| project_id              | UUID      | FK → Project |
+| response_time_minutes   | INTEGER   | NOT NULL     |
+| resolution_time_minutes | INTEGER   | NOT NULL     |
+| business_hours_enabled  | BOOLEAN   | DEFAULT TRUE |
+| created_at              | TIMESTAMP | NOT NULL     |
+| updated_at              | TIMESTAMP | NOT NULL     |
 
 ### Constraints
 
@@ -933,14 +935,14 @@ Stores working hours used for SLA calculations.
 
 ### Columns
 
-| Column | Type |
-|---------|------|
-| id | UUID |
-| tenant_id | UUID |
-| project_id | UUID |
+| Column      | Type     |
+| ----------- | -------- |
+| id          | UUID     |
+| tenant_id   | UUID     |
+| project_id  | UUID     |
 | day_of_week | SMALLINT |
-| start_time | TIME |
-| end_time | TIME |
+| start_time  | TIME     |
+| end_time    | TIME     |
 
 ### Constraints
 
@@ -963,13 +965,13 @@ Defines non-working days excluded from SLA calculations.
 
 ### Columns
 
-| Column | Type |
-|---------|------|
-| id | UUID |
-| tenant_id | UUID |
-| project_id | UUID |
-| holiday_date | DATE |
-| name | VARCHAR(150) |
+| Column       | Type         |
+| ------------ | ------------ |
+| id           | UUID         |
+| tenant_id    | UUID         |
+| project_id   | UUID         |
+| holiday_date | DATE         |
+| name         | VARCHAR(150) |
 
 ### Constraints
 
@@ -1098,6 +1100,7 @@ The Organization schema is complete when:
 - Foreign keys validated.
 - Constraints documented.
 - Indexes reviewed.
+
 ---
 
 # 15. Ticket Management
@@ -1116,23 +1119,23 @@ The Ticket is the central business entity of the platform.
 
 ### Columns
 
-| Column | Type | Constraints | Description |
-|---------|------|------------|-------------|
-| id | UUID | PK | Ticket identifier |
-| tenant_id | UUID | FK → Tenant | Tenant owner |
-| client_id | UUID | FK → Client | Client |
-| project_id | UUID | FK → Project | Project |
-| ticket_number | VARCHAR(30) | UNIQUE | Human-readable ticket ID |
-| title | VARCHAR(200) | NOT NULL | Ticket title |
-| description | TEXT | NOT NULL | Ticket description |
-| status | TicketStatus | DEFAULT OPEN | Current status |
-| priority | TicketPriority | DEFAULT MEDIUM | Priority |
-| assigned_to | UUID | FK → User | Assigned engineer |
-| resolved_at | TIMESTAMP | NULL | Resolution timestamp |
-| closed_at | TIMESTAMP | NULL | Closure timestamp |
-| created_at | TIMESTAMP | NOT NULL | Created |
-| updated_at | TIMESTAMP | NOT NULL | Updated |
-| archived_at | TIMESTAMP | NULL | Soft archive |
+| Column        | Type           | Constraints    | Description              |
+| ------------- | -------------- | -------------- | ------------------------ |
+| id            | UUID           | PK             | Ticket identifier        |
+| tenant_id     | UUID           | FK → Tenant    | Tenant owner             |
+| client_id     | UUID           | FK → Client    | Client                   |
+| project_id    | UUID           | FK → Project   | Project                  |
+| ticket_number | VARCHAR(30)    | UNIQUE         | Human-readable ticket ID |
+| title         | VARCHAR(200)   | NOT NULL       | Ticket title             |
+| description   | TEXT           | NOT NULL       | Ticket description       |
+| status        | TicketStatus   | DEFAULT OPEN   | Current status           |
+| priority      | TicketPriority | DEFAULT MEDIUM | Priority                 |
+| assigned_to   | UUID           | FK → User      | Assigned engineer        |
+| resolved_at   | TIMESTAMP      | NULL           | Resolution timestamp     |
+| closed_at     | TIMESTAMP      | NULL           | Closure timestamp        |
+| created_at    | TIMESTAMP      | NOT NULL       | Created                  |
+| updated_at    | TIMESTAMP      | NOT NULL       | Updated                  |
+| archived_at   | TIMESTAMP      | NULL           | Soft archive             |
 
 ### Constraints
 
@@ -1188,16 +1191,16 @@ Supports public comments and internal notes.
 
 ### Columns
 
-| Column | Type |
-|---------|------|
-| id | UUID |
-| tenant_id | UUID |
-| ticket_id | UUID |
-| user_id | UUID |
-| content | TEXT |
-| is_internal | BOOLEAN |
-| created_at | TIMESTAMP |
-| updated_at | TIMESTAMP |
+| Column      | Type      |
+| ----------- | --------- |
+| id          | UUID      |
+| tenant_id   | UUID      |
+| ticket_id   | UUID      |
+| user_id     | UUID      |
+| content     | TEXT      |
+| is_internal | BOOLEAN   |
+| created_at  | TIMESTAMP |
+| updated_at  | TIMESTAMP |
 
 ### Constraints
 
@@ -1233,17 +1236,17 @@ Actual files are stored in object storage (e.g., S3 or Cloudinary).
 
 ### Columns
 
-| Column | Type |
-|---------|------|
-| id | UUID |
-| tenant_id | UUID |
-| ticket_id | UUID |
-| uploaded_by | UUID |
-| file_name | VARCHAR(255) |
-| storage_key | TEXT |
-| mime_type | VARCHAR(100) |
-| file_size | BIGINT |
-| created_at | TIMESTAMP |
+| Column      | Type         |
+| ----------- | ------------ |
+| id          | UUID         |
+| tenant_id   | UUID         |
+| ticket_id   | UUID         |
+| uploaded_by | UUID         |
+| file_name   | VARCHAR(255) |
+| storage_key | TEXT         |
+| mime_type   | VARCHAR(100) |
+| file_size   | BIGINT       |
+| created_at  | TIMESTAMP    |
 
 ### Constraints
 
@@ -1273,16 +1276,16 @@ Maintains an immutable audit trail of ticket changes.
 
 ### Columns
 
-| Column | Type |
-|---------|------|
-| id | UUID |
-| tenant_id | UUID |
-| ticket_id | UUID |
-| action | VARCHAR(100) |
-| old_value | TEXT |
-| new_value | TEXT |
-| changed_by | UUID |
-| created_at | TIMESTAMP |
+| Column     | Type         |
+| ---------- | ------------ |
+| id         | UUID         |
+| tenant_id  | UUID         |
+| ticket_id  | UUID         |
+| action     | VARCHAR(100) |
+| old_value  | TEXT         |
+| new_value  | TEXT         |
+| changed_by | UUID         |
+| created_at | TIMESTAMP    |
 
 ### Example Actions
 
@@ -1318,15 +1321,15 @@ Tracks every engineer assignment for a ticket.
 
 ### Columns
 
-| Column | Type |
-|---------|------|
-| id | UUID |
-| tenant_id | UUID |
-| ticket_id | UUID |
-| previous_assignee | UUID |
-| new_assignee | UUID |
-| assigned_by | UUID |
-| assigned_at | TIMESTAMP |
+| Column            | Type      |
+| ----------------- | --------- |
+| id                | UUID      |
+| tenant_id         | UUID      |
+| ticket_id         | UUID      |
+| previous_assignee | UUID      |
+| new_assignee      | UUID      |
+| assigned_by       | UUID      |
+| assigned_at       | TIMESTAMP |
 
 ### Constraints
 
@@ -1351,18 +1354,18 @@ Stores notifications generated by system events.
 
 ### Columns
 
-| Column | Type |
-|---------|------|
-| id | UUID |
-| tenant_id | UUID |
-| user_id | UUID |
-| ticket_id | UUID |
-| type | NotificationType |
-| title | VARCHAR(200) |
-| message | TEXT |
-| status | NotificationStatus |
-| read_at | TIMESTAMP |
-| created_at | TIMESTAMP |
+| Column     | Type               |
+| ---------- | ------------------ |
+| id         | UUID               |
+| tenant_id  | UUID               |
+| user_id    | UUID               |
+| ticket_id  | UUID               |
+| type       | NotificationType   |
+| title      | VARCHAR(200)       |
+| message    | TEXT               |
+| status     | NotificationStatus |
+| read_at    | TIMESTAMP          |
+| created_at | TIMESTAMP          |
 
 ### Example Notifications
 
@@ -1399,18 +1402,18 @@ Unlike TicketHistory, AuditLog captures system-wide events.
 
 ### Columns
 
-| Column | Type |
-|---------|------|
-| id | UUID |
-| tenant_id | UUID |
-| user_id | UUID |
-| entity | VARCHAR(100) |
-| entity_id | UUID |
-| action | VARCHAR(100) |
+| Column     | Type         |
+| ---------- | ------------ |
+| id         | UUID         |
+| tenant_id  | UUID         |
+| user_id    | UUID         |
+| entity     | VARCHAR(100) |
+| entity_id  | UUID         |
+| action     | VARCHAR(100) |
 | ip_address | VARCHAR(100) |
-| user_agent | TEXT |
-| metadata | JSONB |
-| created_at | TIMESTAMP |
+| user_agent | TEXT         |
+| metadata   | JSONB        |
+| created_at | TIMESTAMP    |
 
 ### Example Actions
 
@@ -1577,6 +1580,7 @@ The Ticket Management schema is complete when:
 - Foreign keys validated.
 - Constraints documented.
 - Indexes reviewed.
+
 ---
 
 # 16. Global Database Rules
@@ -1644,10 +1648,10 @@ are immutable and are never archived.
 
 Business entities include:
 
-| Column | Description |
-|---------|-------------|
-| created_at | Creation timestamp |
-| updated_at | Last modification |
+| Column      | Description                            |
+| ----------- | -------------------------------------- |
+| created_at  | Creation timestamp                     |
+| updated_at  | Last modification                      |
 | archived_at | Soft archive timestamp (if applicable) |
 
 All timestamps are stored in UTC.
@@ -1670,44 +1674,44 @@ Sequential integer IDs are not used.
 
 # 17. Foreign Key Summary
 
-| Parent | Child |
-|---------|-------|
-| Tenant | User |
-| Tenant | Client |
-| Tenant | ClientPortalAccount |
-| Client | Project |
-| Client | ClientPortalAccount |
-| Project | ProjectMember |
-| Project | Ticket |
-| Ticket | Comment |
-| Ticket | Attachment |
-| Ticket | TicketHistory |
-| Ticket | AssignmentHistory |
-| Ticket | Notification |
-| User | Session |
-| User | PasswordResetToken |
-| User | AuditLog |
-| ClientPortalAccount | ClientSession |
+| Parent              | Child               |
+| ------------------- | ------------------- |
+| Tenant              | User                |
+| Tenant              | Client              |
+| Tenant              | ClientPortalAccount |
+| Client              | Project             |
+| Client              | ClientPortalAccount |
+| Project             | ProjectMember       |
+| Project             | Ticket              |
+| Ticket              | Comment             |
+| Ticket              | Attachment          |
+| Ticket              | TicketHistory       |
+| Ticket              | AssignmentHistory   |
+| Ticket              | Notification        |
+| User                | Session             |
+| User                | PasswordResetToken  |
+| User                | AuditLog            |
+| ClientPortalAccount | ClientSession       |
 
 ---
 
 # 18. Cascade Rules
 
-| Relationship | Action |
-|--------------|--------|
-| Tenant → User | RESTRICT |
-| Tenant → Client | RESTRICT |
-| Tenant → ClientPortalAccount | RESTRICT |
-| Client → Project | RESTRICT |
-| Client → ClientPortalAccount | RESTRICT |
-| Project → Ticket | RESTRICT |
-| Ticket → Comment | CASCADE |
-| Ticket → Attachment | CASCADE |
-| Ticket → TicketHistory | CASCADE |
-| Ticket → AssignmentHistory | CASCADE |
-| User → Session | CASCADE |
-| User → PasswordResetToken | CASCADE |
-| ClientPortalAccount → ClientSession | CASCADE |
+| Relationship                        | Action   |
+| ----------------------------------- | -------- |
+| Tenant → User                       | RESTRICT |
+| Tenant → Client                     | RESTRICT |
+| Tenant → ClientPortalAccount        | RESTRICT |
+| Client → Project                    | RESTRICT |
+| Client → ClientPortalAccount        | RESTRICT |
+| Project → Ticket                    | RESTRICT |
+| Ticket → Comment                    | CASCADE  |
+| Ticket → Attachment                 | CASCADE  |
+| Ticket → TicketHistory              | CASCADE  |
+| Ticket → AssignmentHistory          | CASCADE  |
+| User → Session                      | CASCADE  |
+| User → PasswordResetToken           | CASCADE  |
+| ClientPortalAccount → ClientSession | CASCADE  |
 
 Business entities should never be automatically deleted.
 
@@ -1984,17 +1988,17 @@ Before production deployment, verify:
 
 # 26. Schema Completion Status
 
-| Module | Status |
-|---------|--------|
-| Identity & Access | Complete |
+| Module                  | Status   |
+| ----------------------- | -------- |
+| Identity & Access       | Complete |
 | Organization Management | Complete |
-| Ticket Management | Complete |
-| Notifications | Complete |
-| Audit Logging | Complete |
-| Multi-Tenant Support | Complete |
-| Constraints | Complete |
-| Index Strategy | Complete |
-| Migration Guidelines | Complete |
+| Ticket Management       | Complete |
+| Notifications           | Complete |
+| Audit Logging           | Complete |
+| Multi-Tenant Support    | Complete |
+| Constraints             | Complete |
+| Index Strategy          | Complete |
+| Migration Guidelines    | Complete |
 
 ---
 
@@ -2005,4 +2009,3 @@ This document defines the logical database schema for the Multi-Tenant Ticketing
 Together with the Product Requirements Document (PRD), Software Architecture, Application Flow, API Specification, and Phase Scope, it provides the engineering foundation required to implement a scalable, secure, and production-ready SaaS ticketing platform.
 
 Future schema revisions shall maintain backward compatibility wherever practical and follow the migration guidelines defined in this document.
-

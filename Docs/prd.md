@@ -1,10 +1,12 @@
 ---
-title: "Multi-Tenant Ticketing System"
-subtitle: "Product Requirements Document"
-author: "Your Name"
-date: "July 2026"
+title: 'Multi-Tenant Ticketing System'
+subtitle: 'Product Requirements Document'
+author: 'Your Name'
+date: 'July 2026'
 ---
+
 # Multi-Tenant Ticketing System
+
 # Product Requirements Document (PRD)
 
 **Version:** 1.0  
@@ -82,12 +84,12 @@ The product includes:
 
 # 6. User Roles
 
-| Role | Description |
-|------|-------------|
-| Platform Admin | Manages the SaaS platform and tenant organizations. |
-| Tenant Admin | Manages users, clients, projects, tickets, and SLAs within a tenant. |
-| Engineer | Resolves assigned support tickets. |
-| Client | Creates and tracks tickets for their projects. |
+| Role           | Description                                                          |
+| -------------- | -------------------------------------------------------------------- |
+| Platform Admin | Manages the SaaS platform and tenant organizations.                  |
+| Tenant Admin   | Manages users, clients, projects, tickets, and SLAs within a tenant. |
+| Engineer       | Resolves assigned support tickets.                                   |
+| Client         | Creates and tracks tickets for their projects.                       |
 
 ---
 
@@ -404,6 +406,7 @@ The system shall maintain audit records of significant platform activities.
 
 - Audit history is available for review.
 - Audit records cannot be modified.
+
 # 8. Permission Matrix
 
 The following matrix defines the permissions available to each user role within the platform.
@@ -419,75 +422,75 @@ Legend:
 
 ## 8.1 Authentication
 
-| Action | Platform Admin | Tenant Admin | Engineer | Client |
-|---------|:--------------:|:------------:|:--------:|:------:|
-| Sign In | $\checkmark$ | $\checkmark$ | $\checkmark$ | $\checkmark$ |
-| Sign Out | $\checkmark$ | $\checkmark$ | $\checkmark$ | $\checkmark$ |
-| Reset Password | $\checkmark$ | $\checkmark$ | $\checkmark$ | $\checkmark$ |
-| Change Password | $\checkmark$ | $\checkmark$ | $\checkmark$ | $\checkmark$ |
+| Action          | Platform Admin | Tenant Admin |   Engineer   |    Client    |
+| --------------- | :------------: | :----------: | :----------: | :----------: |
+| Sign In         |  $\checkmark$  | $\checkmark$ | $\checkmark$ | $\checkmark$ |
+| Sign Out        |  $\checkmark$  | $\checkmark$ | $\checkmark$ | $\checkmark$ |
+| Reset Password  |  $\checkmark$  | $\checkmark$ | $\checkmark$ | $\checkmark$ |
+| Change Password |  $\checkmark$  | $\checkmark$ | $\checkmark$ | $\checkmark$ |
 
 ---
 
 ## 8.2 Tenant Management
 
-| Action | Platform Admin | Tenant Admin | Engineer | Client |
-|---------|:--------------:|:------------:|:--------:|:------:|
-| Create Tenant | $\checkmark$ | — | — | — |
-| View Tenant | $\checkmark$ | $\checkmark$ (Own) | — | — |
-| Update Tenant | $\checkmark$ | — | — | — |
-| Suspend Tenant | $\checkmark$ | — | — | — |
+| Action         | Platform Admin |    Tenant Admin    | Engineer | Client |
+| -------------- | :------------: | :----------------: | :------: | :----: |
+| Create Tenant  |  $\checkmark$  |         —          |    —     |   —    |
+| View Tenant    |  $\checkmark$  | $\checkmark$ (Own) |    —     |   —    |
+| Update Tenant  |  $\checkmark$  |         —          |    —     |   —    |
+| Suspend Tenant |  $\checkmark$  |         —          |    —     |   —    |
 
 ---
 
 ## 8.3 User Management
 
-| Action | Platform Admin | Tenant Admin | Engineer | Client |
-|---------|:--------------:|:------------:|:--------:|:------:|
-| Create User | — | $\checkmark$ | — | — |
-| View Users | — | $\checkmark$ | — | — |
-| Update User | — | $\checkmark$ | — | — |
-| Deactivate User | — | $\checkmark$ | — | — |
-| Assign Role | — | $\checkmark$ | — | — |
+| Action          | Platform Admin | Tenant Admin | Engineer | Client |
+| --------------- | :------------: | :----------: | :------: | :----: |
+| Create User     |       —        | $\checkmark$ |    —     |   —    |
+| View Users      |       —        | $\checkmark$ |    —     |   —    |
+| Update User     |       —        | $\checkmark$ |    —     |   —    |
+| Deactivate User |       —        | $\checkmark$ |    —     |   —    |
+| Assign Role     |       —        | $\checkmark$ |    —     |   —    |
 
 ---
 
 ## 8.4 Client Management
 
-| Action | Platform Admin | Tenant Admin | Engineer | Client |
-|---------|:--------------:|:------------:|:--------:|:------:|
-| Create Client | — | $\checkmark$ | — | — |
-| View Clients | — | $\checkmark$ | $\checkmark$ | Own |
-| Update Client | — | $\checkmark$ | — | Own |
-| Deactivate Client | — | $\checkmark$ | — | — |
+| Action            | Platform Admin | Tenant Admin |   Engineer   | Client |
+| ----------------- | :------------: | :----------: | :----------: | :----: |
+| Create Client     |       —        | $\checkmark$ |      —       |   —    |
+| View Clients      |       —        | $\checkmark$ | $\checkmark$ |  Own   |
+| Update Client     |       —        | $\checkmark$ |      —       |  Own   |
+| Deactivate Client |       —        | $\checkmark$ |      —       |   —    |
 
 ---
 
 ## 8.5 Project Management
 
-| Action | Platform Admin | Tenant Admin | Engineer | Client |
-|---------|:--------------:|:------------:|:--------:|:------:|
-| Create Project | — | $\checkmark$ | — | — |
-| View Project | — | $\checkmark$ | $\checkmark$ | Own |
-| Update Project | — | $\checkmark$ | — | — |
-| Archive Project | — | $\checkmark$ | — | — |
+| Action          | Platform Admin | Tenant Admin |   Engineer   | Client |
+| --------------- | :------------: | :----------: | :----------: | :----: |
+| Create Project  |       —        | $\checkmark$ |      —       |   —    |
+| View Project    |       —        | $\checkmark$ | $\checkmark$ |  Own   |
+| Update Project  |       —        | $\checkmark$ |      —       |   —    |
+| Archive Project |       —        | $\checkmark$ |      —       |   —    |
 
 ---
 
 ## 8.6 Ticket Management
 
-| Action | Platform Admin | Tenant Admin | Engineer | Client |
-|---------|:--------------:|:------------:|:--------:|:------:|
-| Create Ticket | — | — | — | $\checkmark$ |
-| View Ticket | — | $\checkmark$ | Assigned | Own |
-| Update Ticket | — | $\checkmark$ | Assigned | Own* |
-| Assign Ticket | — | $\checkmark$ | — | — |
-| Reassign Ticket | — | $\checkmark$ | — | — |
-| Change Status | — | $\checkmark$ | Assigned | — |
-| Change Priority | — | $\checkmark$ | — | — |
-| Add Comment | — | $\checkmark$ | Assigned | Own |
-| Upload Attachment | — | $\checkmark$ | Assigned | Own |
-| Close Ticket | — | $\checkmark$ | Assigned | — |
-| Reopen Ticket | — | $\checkmark$ | Assigned | — |
+| Action            | Platform Admin | Tenant Admin | Engineer |    Client    |
+| ----------------- | :------------: | :----------: | :------: | :----------: |
+| Create Ticket     |       —        |      —       |    —     | $\checkmark$ |
+| View Ticket       |       —        | $\checkmark$ | Assigned |     Own      |
+| Update Ticket     |       —        | $\checkmark$ | Assigned |     Own*     |
+| Assign Ticket     |       —        | $\checkmark$ |    —     |      —       |
+| Reassign Ticket   |       —        | $\checkmark$ |    —     |      —       |
+| Change Status     |       —        | $\checkmark$ | Assigned |      —       |
+| Change Priority   |       —        | $\checkmark$ |    —     |      —       |
+| Add Comment       |       —        | $\checkmark$ | Assigned |     Own      |
+| Upload Attachment |       —        | $\checkmark$ | Assigned |     Own      |
+| Close Ticket      |       —        | $\checkmark$ | Assigned |      —       |
+| Reopen Ticket     |       —        | $\checkmark$ | Assigned |      —       |
 
 \* Clients may update only limited information before the ticket is actively being worked on.
 
@@ -495,29 +498,29 @@ Legend:
 
 ## 8.7 SLA Management
 
-| Action | Platform Admin | Tenant Admin | Engineer | Client |
-|---------|:--------------:|:------------:|:--------:|:------:|
-| Configure SLA | — | $\checkmark$ | — | — |
-| View SLA | — | $\checkmark$ | $\checkmark$ | $\checkmark$ |
-| View SLA Status | — | $\checkmark$ | $\checkmark$ | $\checkmark$ |
+| Action          | Platform Admin | Tenant Admin |   Engineer   |    Client    |
+| --------------- | :------------: | :----------: | :----------: | :----------: |
+| Configure SLA   |       —        | $\checkmark$ |      —       |      —       |
+| View SLA        |       —        | $\checkmark$ | $\checkmark$ | $\checkmark$ |
+| View SLA Status |       —        | $\checkmark$ | $\checkmark$ | $\checkmark$ |
 
 ---
 
 ## 8.8 Reports & Analytics
 
-| Action | Platform Admin | Tenant Admin | Engineer | Client |
-|---------|:--------------:|:------------:|:--------:|:------:|
-| View Dashboard | $\checkmark$ | $\checkmark$ | $\checkmark$ | $\checkmark$ |
-| View Reports | $\checkmark$ | $\checkmark$ | $\checkmark$ | — |
-| Export Reports | $\checkmark$ | $\checkmark$ | — | — |
+| Action         | Platform Admin | Tenant Admin |   Engineer   |    Client    |
+| -------------- | :------------: | :----------: | :----------: | :----------: |
+| View Dashboard |  $\checkmark$  | $\checkmark$ | $\checkmark$ | $\checkmark$ |
+| View Reports   |  $\checkmark$  | $\checkmark$ | $\checkmark$ |      —       |
+| Export Reports |  $\checkmark$  | $\checkmark$ |      —       |      —       |
 
 ---
 
 ## 8.9 Audit Logs
 
-| Action | Platform Admin | Tenant Admin | Engineer | Client |
-|---------|:--------------:|:------------:|:--------:|:------:|
-| View Audit Logs | $\checkmark$ | $\checkmark$ | — | — |
+| Action          | Platform Admin | Tenant Admin | Engineer | Client |
+| --------------- | :------------: | :----------: | :------: | :----: |
+| View Audit Logs |  $\checkmark$  | $\checkmark$ |    —     |   —    |
 
 ---
 
@@ -676,19 +679,19 @@ The following capabilities are excluded from the MVP:
 
 # 15. Glossary
 
-| Term | Description |
-|------|-------------|
-| Tenant | An organization using the platform. |
-| Client | An organization receiving support services from a tenant. |
-| Project | A logical grouping of tickets for a client. |
-| Ticket | A support request created by a client. |
-| Engineer | A user responsible for resolving assigned tickets. |
-| Tenant Admin | A user who manages a tenant and its resources. |
-| Platform Admin | A user who manages the SaaS platform and tenant organizations. |
-| SLA | Service Level Agreement defining response and resolution targets. |
-| RBAC | Role-Based Access Control. |
-| Internal Note | A comment visible only to Tenant Administrators and Engineers, not to Clients. |
-| Activity Log | The system-generated, immutable record of all significant ticket events. |
+| Term                  | Description                                                                        |
+| --------------------- | ---------------------------------------------------------------------------------- |
+| Tenant                | An organization using the platform.                                                |
+| Client                | An organization receiving support services from a tenant.                          |
+| Project               | A logical grouping of tickets for a client.                                        |
+| Ticket                | A support request created by a client.                                             |
+| Engineer              | A user responsible for resolving assigned tickets.                                 |
+| Tenant Admin          | A user who manages a tenant and its resources.                                     |
+| Platform Admin        | A user who manages the SaaS platform and tenant organizations.                     |
+| SLA                   | Service Level Agreement defining response and resolution targets.                  |
+| RBAC                  | Role-Based Access Control.                                                         |
+| Internal Note         | A comment visible only to Tenant Administrators and Engineers, not to Clients.     |
+| Activity Log          | The system-generated, immutable record of all significant ticket events.           |
 | Client Portal Account | The single authentication credential assigned to a Client organization in the MVP. |
 
 ---

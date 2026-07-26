@@ -10,17 +10,17 @@ base_url: /api/v1
 
 ## Document Information
 
-| Property | Value |
-|----------|-------|
-| Document | API Documentation |
-| System | Multi-Tenant Ticketing System |
-| Version | 1.0 |
-| API Version | v1 |
-| Architecture | REST |
-| Format | JSON |
-| Authentication | JWT Access + Refresh Token |
-| Transport | HTTPS |
-| Encoding | UTF-8 |
+| Property       | Value                         |
+| -------------- | ----------------------------- |
+| Document       | API Documentation             |
+| System         | Multi-Tenant Ticketing System |
+| Version        | 1.0                           |
+| API Version    | v1                            |
+| Architecture   | REST                          |
+| Format         | JSON                          |
+| Authentication | JWT Access + Refresh Token    |
+| Transport      | HTTPS                         |
+| Encoding       | UTF-8                         |
 
 ---
 
@@ -242,12 +242,12 @@ Missing or invalid tokens result in:
 
 The API recognizes the following roles.
 
-| Role | Description | Scope |
-|------|-------------|-------|
+| Role           | Description                                            | Scope                                                  |
+| -------------- | ------------------------------------------------------ | ------------------------------------------------------ |
 | Platform Admin | Manages the SaaS platform and all tenant organizations | Platform-level only; no access to tenant business data |
-| Tenant Admin | Full access within their tenant | Scoped to their tenant |
-| Engineer | Assigned project and ticket operations | Scoped to their tenant and assigned projects |
-| Client | Raises and tracks support tickets for their projects | Scoped to their own client data |
+| Tenant Admin   | Full access within their tenant                        | Scoped to their tenant                                 |
+| Engineer       | Assigned project and ticket operations                 | Scoped to their tenant and assigned projects           |
+| Client         | Raises and tracks support tickets for their projects   | Scoped to their own client data                        |
 
 Role checks are enforced on every protected endpoint.
 
@@ -335,7 +335,7 @@ Every failed request returns a standardized error object.
   "error": {
     "code": "VALIDATION_ERROR",
     "message": "Title is required"
-    }
+  }
 }
 ```
 
@@ -343,19 +343,19 @@ Every failed request returns a standardized error object.
 
 # 12. HTTP Status Codes
 
-| Code | Meaning |
-|------|---------|
-| 200 | OK |
-| 201 | Created |
-| 204 | No Content |
-| 400 | Bad Request |
-| 401 | Unauthorized |
-| 403 | Forbidden |
-| 404 | Not Found |
-| 409 | Conflict |
-| 422 | Validation Error |
-| 429 | Too Many Requests |
-| 500 | Internal Server Error |
+| Code | Meaning               |
+| ---- | --------------------- |
+| 200  | OK                    |
+| 201  | Created               |
+| 204  | No Content            |
+| 400  | Bad Request           |
+| 401  | Unauthorized          |
+| 403  | Forbidden             |
+| 404  | Not Found             |
+| 409  | Conflict              |
+| 422  | Validation Error      |
+| 429  | Too Many Requests     |
+| 500  | Internal Server Error |
 
 ---
 
@@ -522,15 +522,15 @@ Response
 
 # 19. Error Codes
 
-| Code | Meaning |
-|------|---------|
-| VALIDATION_ERROR | Invalid request |
-| UNAUTHORIZED | Authentication failed |
-| FORBIDDEN | Permission denied |
-| NOT_FOUND | Resource missing |
+| Code               | Meaning                 |
+| ------------------ | ----------------------- |
+| VALIDATION_ERROR   | Invalid request         |
+| UNAUTHORIZED       | Authentication failed   |
+| FORBIDDEN          | Permission denied       |
+| NOT_FOUND          | Resource missing        |
 | DUPLICATE_RESOURCE | Resource already exists |
-| SLA_BREACHED | SLA exceeded |
-| INTERNAL_ERROR | Unexpected error |
+| SLA_BREACHED       | SLA exceeded            |
+| INTERNAL_ERROR     | Unexpected error        |
 
 ---
 
@@ -563,6 +563,7 @@ The API is organized into the following modules.
 ---
 
 End of Foundation Section
+
 # 5. Tenant Management APIs
 
 Tenant Management APIs are available exclusively to Platform Administrators.
@@ -585,12 +586,12 @@ Platform Admin
 
 ### Query Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| page | Page number |
-| limit | Records per page |
-| status | ACTIVE / SUSPENDED |
-| search | Tenant name |
+| Parameter | Description        |
+| --------- | ------------------ |
+| page      | Page number        |
+| limit     | Records per page   |
+| status    | ACTIVE / SUSPENDED |
+| search    | Tenant name        |
 
 ### Success Response
 
@@ -736,13 +737,13 @@ Platform Admin
 
 ## Tenant API Summary
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | /admin/tenants | List tenants |
-| GET | /admin/tenants/{tenantId} | Get tenant |
-| POST | /admin/tenants | Create tenant |
-| PATCH | /admin/tenants/{tenantId} | Update tenant |
-| PATCH | /admin/tenants/{tenantId}/status | Suspend/activate tenant |
+| Method | Endpoint                         | Description             |
+| ------ | -------------------------------- | ----------------------- |
+| GET    | /admin/tenants                   | List tenants            |
+| GET    | /admin/tenants/{tenantId}        | Get tenant              |
+| POST   | /admin/tenants                   | Create tenant           |
+| PATCH  | /admin/tenants/{tenantId}        | Update tenant           |
+| PATCH  | /admin/tenants/{tenantId}/status | Suspend/activate tenant |
 
 ---
 
@@ -799,12 +800,12 @@ Not Required
 
 ### Errors
 
-| Status | Description |
-|--------|-------------|
-|400|Invalid request|
-|401|Invalid credentials|
-|423|Account disabled|
-|500|Internal server error|
+| Status | Description           |
+| ------ | --------------------- |
+| 400    | Invalid request       |
+| 401    | Invalid credentials   |
+| 423    | Account disabled      |
+| 500    | Internal server error |
 
 ### Business Rules
 
@@ -1025,15 +1026,15 @@ Not Required
 
 ## Authentication Summary
 
-| Endpoint | Method | Auth |
-|----------|--------|------|
-| /auth/login | POST | No |
-| /auth/refresh | POST | Refresh Token |
-| /auth/logout | POST | Bearer |
-| /auth/me | GET | Bearer |
-| /auth/change-password | POST | Bearer |
-| /auth/forgot-password | POST | No |
-| /auth/reset-password | POST | No |
+| Endpoint              | Method | Auth          |
+| --------------------- | ------ | ------------- |
+| /auth/login           | POST   | No            |
+| /auth/refresh         | POST   | Refresh Token |
+| /auth/logout          | POST   | Bearer        |
+| /auth/me              | GET    | Bearer        |
+| /auth/change-password | POST   | Bearer        |
+| /auth/forgot-password | POST   | No            |
+| /auth/reset-password  | POST   | No            |
 
 # 7. User APIs
 
@@ -1066,13 +1067,13 @@ Tenant Admin
 
 ### Query Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| page | Page number |
-| limit | Records per page |
-| search | Search by name/email |
-| role | Filter by role |
-| status | ACTIVE / INACTIVE |
+| Parameter | Description          |
+| --------- | -------------------- |
+| page      | Page number          |
+| limit     | Records per page     |
+| search    | Search by name/email |
+| role      | Filter by role       |
+| status    | ACTIVE / INACTIVE    |
 
 Example
 
@@ -1295,14 +1296,14 @@ Archives the user (soft delete).
 
 ## User API Summary
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | /users | List users |
-| GET | /users/{userId} | Get user details |
-| POST | /users | Create user |
-| PATCH | /users/{userId} | Update user |
-| PATCH | /users/{userId}/status | Activate/Deactivate user |
-| DELETE | /users/{userId} | Archive user |
+| Method | Endpoint               | Description              |
+| ------ | ---------------------- | ------------------------ |
+| GET    | /users                 | List users               |
+| GET    | /users/{userId}        | Get user details         |
+| POST   | /users                 | Create user              |
+| PATCH  | /users/{userId}        | Update user              |
+| PATCH  | /users/{userId}/status | Activate/Deactivate user |
+| DELETE | /users/{userId}        | Archive user             |
 
 # 8. Client APIs
 
@@ -1332,12 +1333,12 @@ Tenant Admin
 
 ### Query Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| page | Page number |
-| limit | Records per page |
-| search | Search by client name |
-| status | ACTIVE / INACTIVE |
+| Parameter | Description           |
+| --------- | --------------------- |
+| page      | Page number           |
+| limit     | Records per page      |
+| search    | Search by client name |
+| status    | ACTIVE / INACTIVE     |
 
 Example
 
@@ -1580,14 +1581,14 @@ Tenant Admin, Engineer
 
 ## Client API Summary
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | /clients | List clients |
-| GET | /clients/{clientId} | Get client details |
-| POST | /clients | Create client |
-| PATCH | /clients/{clientId} | Update client |
-| DELETE | /clients/{clientId} | Archive client |
-| GET | /clients/{clientId}/projects | List client projects |
+| Method | Endpoint                     | Description          |
+| ------ | ---------------------------- | -------------------- |
+| GET    | /clients                     | List clients         |
+| GET    | /clients/{clientId}          | Get client details   |
+| POST   | /clients                     | Create client        |
+| PATCH  | /clients/{clientId}          | Update client        |
+| DELETE | /clients/{clientId}          | Archive client       |
+| GET    | /clients/{clientId}/projects | List client projects |
 
 # 9. Project APIs
 
@@ -1619,13 +1620,13 @@ Tenant Admin, Engineer
 
 ### Query Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| page | Page number |
-| limit | Records per page |
-| clientId | Filter by client |
-| status | ACTIVE / ARCHIVED |
-| search | Project name |
+| Parameter | Description       |
+| --------- | ----------------- |
+| page      | Page number       |
+| limit     | Records per page  |
+| clientId  | Filter by client  |
+| status    | ACTIVE / ARCHIVED |
+| search    | Project name      |
 
 Example
 
@@ -1721,9 +1722,9 @@ Tenant Admin
 
 ```json
 {
-    "clientId": "uuid",
-    "name": "CRM Platform",
-    "description": "Customer relationship management system"
+  "clientId": "uuid",
+  "name": "CRM Platform",
+  "description": "Customer relationship management system"
 }
 ```
 
@@ -1731,11 +1732,11 @@ Tenant Admin
 
 ```json
 {
-    "success": true,
-    "message": "Project created successfully",
-    "data": {
-        "id": "uuid"
-    }
+  "success": true,
+  "message": "Project created successfully",
+  "data": {
+    "id": "uuid"
+  }
 }
 ```
 
@@ -1768,9 +1769,9 @@ Tenant Admin
 
 ```json
 {
-    "name": "CRM Platform V2",
-    "description": "Updated project description",
-    "status": "ACTIVE"
+  "name": "CRM Platform V2",
+  "description": "Updated project description",
+  "status": "ACTIVE"
 }
 ```
 
@@ -1806,8 +1807,8 @@ Soft archives the project.
 
 ```json
 {
-    "success": true,
-    "message": "Project archived successfully"
+  "success": true,
+  "message": "Project archived successfully"
 }
 ```
 
@@ -1839,14 +1840,14 @@ Tenant Admin, Engineer
 
 ```json
 {
-    "success": true,
-    "data": [
-        {
-            "id": "uuid",
-            "name": "John Doe",
-            "role": "ENGINEER"
-        }
-    ]
+  "success": true,
+  "data": [
+    {
+      "id": "uuid",
+      "name": "John Doe",
+      "role": "ENGINEER"
+    }
+  ]
 }
 ```
 
@@ -1872,7 +1873,7 @@ Tenant Admin
 
 ```json
 {
-    "userId": "uuid"
+  "userId": "uuid"
 }
 ```
 
@@ -1880,8 +1881,8 @@ Tenant Admin
 
 ```json
 {
-    "success": true,
-    "message": "Member added successfully"
+  "success": true,
+  "message": "Member added successfully"
 }
 ```
 
@@ -1913,8 +1914,8 @@ Tenant Admin
 
 ```json
 {
-    "success": true,
-    "message": "Member removed successfully"
+  "success": true,
+  "message": "Member removed successfully"
 }
 ```
 
@@ -1946,12 +1947,12 @@ Tenant Admin, Engineer
 
 ```json
 {
-    "success": true,
-    "data": {
-        "responseTimeMinutes": 60,
-        "resolutionTimeMinutes": 480,
-        "businessHoursEnabled": true
-    }
+  "success": true,
+  "data": {
+    "responseTimeMinutes": 60,
+    "resolutionTimeMinutes": 480,
+    "businessHoursEnabled": true
+  }
 }
 ```
 
@@ -1977,9 +1978,9 @@ Tenant Admin
 
 ```json
 {
-    "responseTimeMinutes": 30,
-    "resolutionTimeMinutes": 240,
-    "businessHoursEnabled": true
+  "responseTimeMinutes": 30,
+  "resolutionTimeMinutes": 240,
+  "businessHoursEnabled": true
 }
 ```
 
@@ -1993,18 +1994,18 @@ Tenant Admin
 
 ## Project API Summary
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | /projects | List projects |
-| GET | /projects/{projectId} | Get project |
-| POST | /projects | Create project |
-| PATCH | /projects/{projectId} | Update project |
-| DELETE | /projects/{projectId} | Archive project |
-| GET | /projects/{projectId}/members | List members |
-| POST | /projects/{projectId}/members | Add member |
-| DELETE | /projects/{projectId}/members/{userId} | Remove member |
-| GET | /projects/{projectId}/sla | Get SLA |
-| PATCH | /projects/{projectId}/sla | Update SLA |
+| Method | Endpoint                               | Description     |
+| ------ | -------------------------------------- | --------------- |
+| GET    | /projects                              | List projects   |
+| GET    | /projects/{projectId}                  | Get project     |
+| POST   | /projects                              | Create project  |
+| PATCH  | /projects/{projectId}                  | Update project  |
+| DELETE | /projects/{projectId}                  | Archive project |
+| GET    | /projects/{projectId}/members          | List members    |
+| POST   | /projects/{projectId}/members          | Add member      |
+| DELETE | /projects/{projectId}/members/{userId} | Remove member   |
+| GET    | /projects/{projectId}/sla              | Get SLA         |
+| PATCH  | /projects/{projectId}/sla              | Update SLA      |
 
 # 10. Ticket APIs
 
@@ -2032,16 +2033,16 @@ Tenant Admin, Engineer
 
 ### Query Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| page | Page number |
-| limit | Records per page |
-| projectId | Filter by project |
-| clientId | Filter by client |
-| status | Ticket status |
-| priority | Ticket priority |
-| assignedTo | Assigned engineer |
-| search | Title or ticket number |
+| Parameter  | Description            |
+| ---------- | ---------------------- |
+| page       | Page number            |
+| limit      | Records per page       |
+| projectId  | Filter by project      |
+| clientId   | Filter by client       |
+| status     | Ticket status          |
+| priority   | Ticket priority        |
+| assignedTo | Assigned engineer      |
+| search     | Title or ticket number |
 
 Example
 
@@ -2406,20 +2407,20 @@ Returns ticket statistics for dashboards.
 
 ## Ticket API Summary
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | /tickets | List tickets |
-| GET | /tickets/{ticketId} | Get ticket |
-| POST | /tickets | Create ticket |
-| PATCH | /tickets/{ticketId} | Update ticket |
-| PATCH | /tickets/{ticketId}/status | Update status |
-| PATCH | /tickets/{ticketId}/priority | Update priority |
-| PATCH | /tickets/{ticketId}/assign | Assign engineer |
-| POST | /tickets/{ticketId}/reopen | Reopen ticket |
-| DELETE | /tickets/{ticketId} | Archive ticket |
-| GET | /tickets/{ticketId}/history | Ticket history |
-| GET | /tickets/my | My assigned tickets |
-| GET | /tickets/summary | Ticket statistics |
+| Method | Endpoint                     | Description         |
+| ------ | ---------------------------- | ------------------- |
+| GET    | /tickets                     | List tickets        |
+| GET    | /tickets/{ticketId}          | Get ticket          |
+| POST   | /tickets                     | Create ticket       |
+| PATCH  | /tickets/{ticketId}          | Update ticket       |
+| PATCH  | /tickets/{ticketId}/status   | Update status       |
+| PATCH  | /tickets/{ticketId}/priority | Update priority     |
+| PATCH  | /tickets/{ticketId}/assign   | Assign engineer     |
+| POST   | /tickets/{ticketId}/reopen   | Reopen ticket       |
+| DELETE | /tickets/{ticketId}          | Archive ticket      |
+| GET    | /tickets/{ticketId}/history  | Ticket history      |
+| GET    | /tickets/my                  | My assigned tickets |
+| GET    | /tickets/summary             | Ticket statistics   |
 
 # 11. Comment APIs
 
@@ -2565,12 +2566,12 @@ Soft archives the comment.
 
 ## Comment API Summary
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | /tickets/{ticketId}/comments | List comments |
-| POST | /tickets/{ticketId}/comments | Add comment |
-| PATCH | /comments/{commentId} | Update comment |
-| DELETE | /comments/{commentId} | Archive comment |
+| Method | Endpoint                     | Description     |
+| ------ | ---------------------------- | --------------- |
+| GET    | /tickets/{ticketId}/comments | List comments   |
+| POST   | /tickets/{ticketId}/comments | Add comment     |
+| PATCH  | /comments/{commentId}        | Update comment  |
+| DELETE | /comments/{commentId}        | Archive comment |
 
 ---
 
@@ -2642,9 +2643,9 @@ multipart/form-data
 
 ### Form Fields
 
-| Field | Type | Required |
-|--------|------|----------|
-| file | Binary | Yes |
+| Field | Type   | Required |
+| ----- | ------ | -------- |
+| file  | Binary | Yes      |
 
 ### Success Response
 
@@ -2690,11 +2691,11 @@ Tenant Admin
 
 ## Attachment API Summary
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | /tickets/{ticketId}/attachments | List attachments |
-| POST | /tickets/{ticketId}/attachments | Upload attachment |
-| DELETE | /attachments/{attachmentId} | Delete attachment |
+| Method | Endpoint                        | Description       |
+| ------ | ------------------------------- | ----------------- |
+| GET    | /tickets/{ticketId}/attachments | List attachments  |
+| POST   | /tickets/{ticketId}/attachments | Upload attachment |
+| DELETE | /attachments/{attachmentId}     | Delete attachment |
 
 ---
 
@@ -2722,11 +2723,11 @@ Tenant Admin, Engineer
 
 ### Query Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| status | READ / UNREAD |
-| page | Page number |
-| limit | Records per page |
+| Parameter | Description      |
+| --------- | ---------------- |
+| status    | READ / UNREAD    |
+| page      | Page number      |
+| limit     | Records per page |
 
 ### Success Response
 
@@ -2795,11 +2796,11 @@ Bearer Token
 
 ## Notification API Summary
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | /notifications | List notifications |
-| PATCH | /notifications/{notificationId}/read | Mark notification as read |
-| PATCH | /notifications/read-all | Mark all notifications as read |
+| Method | Endpoint                             | Description                    |
+| ------ | ------------------------------------ | ------------------------------ |
+| GET    | /notifications                       | List notifications             |
+| PATCH  | /notifications/{notificationId}/read | Mark notification as read      |
+| PATCH  | /notifications/read-all              | Mark all notifications as read |
 
 # 14. Dashboard APIs
 
@@ -2861,21 +2862,21 @@ Bearer Token
 ### Query Parameters
 
 | Parameter | Description |
-|-----------|-------------|
-| from | Start date |
-| to | End date |
+| --------- | ----------- |
+| from      | Start date  |
+| to        | End date    |
 
 ### Success Response
 
 ```json
 {
-    "success": true,
-    "data": {
-        "created": 145,
-        "resolved": 132,
-        "averageResolutionHours": 6.2,
-        "slaCompliance": 97.8
-    }
+  "success": true,
+  "data": {
+    "created": 145,
+    "resolved": 132,
+    "averageResolutionHours": 6.2,
+    "slaCompliance": 97.8
+  }
 }
 ```
 
@@ -2901,15 +2902,15 @@ Tenant Admin
 
 ```json
 {
-    "success": true,
-    "data": [
-        {
-            "name": "John Doe",
-            "assigned": 18,
-            "resolved": 16,
-            "avgResolutionHours": 5.4
-        }
-    ]
+  "success": true,
+  "data": [
+    {
+      "name": "John Doe",
+      "assigned": 18,
+      "resolved": 16,
+      "avgResolutionHours": 5.4
+    }
+  ]
 }
 ```
 
@@ -2917,11 +2918,11 @@ Tenant Admin
 
 ## Dashboard API Summary
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | /dashboard | Dashboard overview |
-| GET | /dashboard/tickets | Ticket analytics |
-| GET | /dashboard/engineers | Engineer performance |
+| Method | Endpoint             | Description          |
+| ------ | -------------------- | -------------------- |
+| GET    | /dashboard           | Dashboard overview   |
+| GET    | /dashboard/tickets   | Ticket analytics     |
+| GET    | /dashboard/engineers | Engineer performance |
 
 ---
 
@@ -2951,27 +2952,27 @@ Tenant Admin
 
 ### Query Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| userId | Filter by user |
-| entity | Entity name |
-| action | Action type |
-| from | Start date |
-| to | End date |
+| Parameter | Description    |
+| --------- | -------------- |
+| userId    | Filter by user |
+| entity    | Entity name    |
+| action    | Action type    |
+| from      | Start date     |
+| to        | End date       |
 
 ### Success Response
 
 ```json
 {
-    "success": true,
-    "data": [
-        {
-            "action": "CREATE_TICKET",
-            "entity": "Ticket",
-            "performedBy": "John Doe",
-            "createdAt": "2026-07-23T13:45:00Z"
-        }
-    ]
+  "success": true,
+  "data": [
+    {
+      "action": "CREATE_TICKET",
+      "entity": "Ticket",
+      "performedBy": "John Doe",
+      "createdAt": "2026-07-23T13:45:00Z"
+    }
+  ]
 }
 ```
 
@@ -2997,16 +2998,16 @@ Tenant Admin
 
 ```json
 {
-    "success": true,
-    "data": {
-        "id": "uuid",
-        "action": "ASSIGN_TICKET",
-        "entity": "Ticket",
-        "entityId": "uuid",
-        "performedBy": "John Doe",
-        "ipAddress": "192.168.1.10",
-        "createdAt": "2026-07-23T14:00:00Z"
-    }
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "action": "ASSIGN_TICKET",
+    "entity": "Ticket",
+    "entityId": "uuid",
+    "performedBy": "John Doe",
+    "ipAddress": "192.168.1.10",
+    "createdAt": "2026-07-23T14:00:00Z"
+  }
 }
 ```
 
@@ -3014,29 +3015,29 @@ Tenant Admin
 
 ## Audit API Summary
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | /audit-logs | List audit logs |
-| GET | /audit-logs/{auditLogId} | Get audit log |
+| Method | Endpoint                 | Description     |
+| ------ | ------------------------ | --------------- |
+| GET    | /audit-logs              | List audit logs |
+| GET    | /audit-logs/{auditLogId} | Get audit log   |
 
 ---
 
 # 16. Standard Error Codes
 
-| Code | Description |
-|------|-------------|
-| VALIDATION_ERROR | Invalid request data |
-| UNAUTHORIZED | Authentication failed |
-| FORBIDDEN | Permission denied |
-| NOT_FOUND | Resource not found |
-| CONFLICT | Resource already exists |
-| INVALID_STATUS | Invalid ticket status transition |
-| INVALID_PRIORITY | Invalid priority value |
-| FILE_TOO_LARGE | Attachment exceeds limit |
-| INVALID_FILE_TYPE | Unsupported file type |
-| SLA_BREACH | SLA exceeded |
-| RATE_LIMIT_EXCEEDED | Too many requests |
-| INTERNAL_SERVER_ERROR | Unexpected server error |
+| Code                  | Description                      |
+| --------------------- | -------------------------------- |
+| VALIDATION_ERROR      | Invalid request data             |
+| UNAUTHORIZED          | Authentication failed            |
+| FORBIDDEN             | Permission denied                |
+| NOT_FOUND             | Resource not found               |
+| CONFLICT              | Resource already exists          |
+| INVALID_STATUS        | Invalid ticket status transition |
+| INVALID_PRIORITY      | Invalid priority value           |
+| FILE_TOO_LARGE        | Attachment exceeds limit         |
+| INVALID_FILE_TYPE     | Unsupported file type            |
+| SLA_BREACH            | SLA exceeded                     |
+| RATE_LIMIT_EXCEEDED   | Too many requests                |
+| INTERNAL_SERVER_ERROR | Unexpected server error          |
 
 ---
 
@@ -3141,18 +3142,18 @@ Before production release, verify:
 
 # 19. API Summary
 
-| Module | Status |
-|---------|--------|
+| Module         | Status   |
+| -------------- | -------- |
 | Authentication | Complete |
-| Users | Complete |
-| Clients | Complete |
-| Projects | Complete |
-| Tickets | Complete |
-| Comments | Complete |
-| Attachments | Complete |
-| Notifications | Complete |
-| Dashboard | Complete |
-| Audit Logs | Complete |
+| Users          | Complete |
+| Clients        | Complete |
+| Projects       | Complete |
+| Tickets        | Complete |
+| Comments       | Complete |
+| Attachments    | Complete |
+| Notifications  | Complete |
+| Dashboard      | Complete |
+| Audit Logs     | Complete |
 
 ---
 
@@ -3163,4 +3164,3 @@ This document defines the REST API contract for the Multi-Tenant Ticketing Syste
 Together with the Product Requirements Document (PRD), Architecture, Application Flow, Phase Scope, and Database Schema, it provides a complete technical specification for implementing a secure, scalable, and production-ready multi-tenant SaaS platform.
 
 All future API changes should maintain backward compatibility where possible and follow semantic versioning principles.
-
