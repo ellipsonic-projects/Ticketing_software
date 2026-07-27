@@ -19,7 +19,7 @@ async function main() {
       email: 'admin@default.com',
       name: 'Admin User',
       password: 'hashed_password_placeholder', // TODO: integrate bcrypt when auth is implemented
-      role: Role.SUPER_ADMIN,
+      role: Role.PLATFORM_ADMIN,
       tenantId: defaultTenant.id,
     },
   });

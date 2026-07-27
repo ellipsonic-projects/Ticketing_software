@@ -21,41 +21,104 @@ enum UserStatus {
 }
 
 enum Role {
-  SUPER_ADMIN
+  PLATFORM_ADMIN
   TENANT_ADMIN
-  USER
+  ENGINEER
 }
 
 model Tenant {
-  id        String       @id @default(cuid())
-  name      String
-  slug      String       @unique
-  status    TenantStatus @default(ACTIVE)
+  id           String       @id @default(cuid())
+  name         String
+  slug         String       @unique
+  status       TenantStatus @default(ACTIVE)
+  logoUrl      String?
+  primaryColor String?
+  domain       String?      @unique
+  contactEmail String?
+  contactPhone String?
+  timezone     String       @default("UTC")
+  currency     String       @default("USD")
 
-  users     User[]
+  users User[]
 
-  createdAt DateTime     @default(now())
+  createdAt DateTime  @default(now())
   createdBy String?
-  updatedAt DateTime     @updatedAt
+  updatedAt DateTime  @updatedAt
   updatedBy String?
+  deletedAt DateTime?
+
+  @@index([status])
+  @@index([name])
+  @@index([deletedAt])
 }
 
 model User {
-  id        String     @id @default(cuid())
-  email     String     @unique
-  name      String?
-  password  String
-  status    UserStatus @default(ACTIVE)
-  role      Role       @default(USER)
+  id       String     @id @default(cuid())
+  email    String     @unique
+  name     String?
+  password String
+  status   UserStatus @default(ACTIVE)
+  role     Role       @default(ENGINEER)
 
-  tenantId  String
-  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sessions Session[]
 
-  createdAt DateTime   @default(now())
-  createdBy String?
-  updatedAt DateTime   @updatedAt
-  updatedBy String?
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  createdAt           DateTime             @default(now())
+  createdBy           String?
+  updatedAt           DateTime             @updatedAt
+  updatedBy           String?
+  passwordResetTokens PasswordResetToken[]
 
   @@unique([email, tenantId])
   @@index([tenantId])
+}
+
+model Session {
+  id               String    @id @default(cuid())
+  userId           String
+  tenantId         String?
+  refreshTokenHash String
+  userAgent        String?
+  ipAddress        String?
+  expiresAt        DateTime
+  revokedAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tenantId])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([userId, expiresAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  entity    String
+  entityId  String
+  action    String
+  actorId   String?
+  before    Json?
+  after     Json?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([action])
+  @@index([createdAt])
 }

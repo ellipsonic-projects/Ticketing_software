@@ -11,8 +11,12 @@ export interface PrismaDelegate<T, CreateInput, UpdateInput> {
   create(args: { data: CreateInput }): Promise<T>;
   update(args: { where: { id: string }; data: UpdateInput }): Promise<T>;
   delete(args: { where: { id: string } }): Promise<T>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  findMany(args?: { skip?: number; take?: number; where?: any; orderBy?: any }): Promise<T[]>;
+  findMany(args?: {
+    skip?: number;
+    take?: number;
+    where?: unknown;
+    orderBy?: unknown;
+  }): Promise<T[]>;
 }
 
 export abstract class BaseRepository<T, CreateInput, UpdateInput> {
@@ -38,9 +42,8 @@ export abstract class BaseRepository<T, CreateInput, UpdateInput> {
     return this.getDelegate(db ?? prisma).delete({ where: { id } });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async findMany(
-    params: { skip?: number; take?: number; where?: any; orderBy?: any },
+    params: { skip?: number; take?: number; where?: unknown; orderBy?: unknown },
     db?: DbClient,
   ): Promise<T[]> {
     return this.getDelegate(db ?? prisma).findMany(params);

@@ -13,13 +13,18 @@ const envSchema = z.object({
 
   STORAGE_PROVIDER: z.enum(['local', 's3', 'cloudinary']).default('local'),
   MAIL_PROVIDER: z.enum(['console', 'smtp', 'resend']).default('console'),
+
+  JWT_ACCESS_SECRET: z.string(),
+  JWT_REFRESH_SECRET: z.string(),
+  JWT_ACCESS_EXPIRES: z.string().default('15m'),
+  JWT_REFRESH_EXPIRES: z.string().default('7d'),
 });
 
 const _env = envSchema.safeParse(process.env);
 
 if (!_env.success) {
   console.error('❌ Invalid environment variables:', _env.error.format());
-  process.exit(1); // Fail fast
+  throw new Error('Invalid environment variables');
 }
 
 export const env = _env.data;

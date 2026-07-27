@@ -9,6 +9,11 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
+    env: {
+      JWT_ACCESS_SECRET: 'test-access-secret-1234567890',
+      JWT_REFRESH_SECRET: 'test-refresh-secret-1234567890',
+      DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
+    },
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
