@@ -1,7 +1,15 @@
 'use client';
+
+import { BackgroundCurves } from './background-curves';
+import { BackgroundGlow } from './background-glow';
+import { FloatingParticles } from './floating-particles';
+
 export function BackgroundGradient() {
   return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-gradient-to-br from-slate-50 via-indigo-50/40 to-blue-50/30">
+    <div className="pointer-events-none fixed inset-0 -z-50 overflow-hidden bg-gradient-to-br from-slate-50 via-indigo-50/40 to-blue-50/30">
+      <BackgroundGlow />
+      <BackgroundCurves />
+      <FloatingParticles />
       <div
         className="absolute -top-[20%] -right-[10%] h-[70%] w-[70%] animate-pulse rounded-full bg-gradient-to-br from-blue-300/20 via-indigo-300/15 to-purple-300/12 blur-[160px]"
         style={{ animationDuration: '9s' }}

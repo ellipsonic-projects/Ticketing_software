@@ -36,7 +36,6 @@ export function CreateTenantDialog() {
     defaultValues: {
       name: '',
       domain: '',
-      logoUrl: '',
       primaryColor: '#4f46e5',
       contactEmail: '',
       contactPhone: '',
@@ -46,6 +45,7 @@ export function CreateTenantDialog() {
   });
 
   const onSubmit = async (data: CreateTenantInput) => {
+    console.log('SUBMIT CALLED', data);
     try {
       await tenantApi.createTenant(data, accessToken!);
       toast.success('Tenant created successfully');
@@ -71,7 +71,12 @@ export function CreateTenantDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit as any)} className="mt-4 space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit as any, (errors) =>
+            console.log('Validation errors:', errors),
+          )}
+          className="mt-4 space-y-4"
+        >
           <div className="space-y-1.5">
             <Label htmlFor="name" className="text-xs font-semibold text-slate-700">
               Company Name *

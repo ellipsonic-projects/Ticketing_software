@@ -3,6 +3,7 @@ import { Inter, Manrope } from 'next/font/google';
 import { AuthProvider } from '@/contexts/auth-context';
 import type { Metadata } from 'next';
 
+import { BackgroundGradient } from '@/components/ui/background-gradient';
 import { ThemeProvider } from '@/providers/theme-provider';
 
 import './globals.css';
@@ -31,7 +32,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${manrope.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">
+      <body className="relative flex min-h-full flex-col">
+        <BackgroundGradient />
         <ThemeProvider>
           <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>

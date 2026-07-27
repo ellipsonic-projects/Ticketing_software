@@ -31,11 +31,7 @@ export async function apiClient<T>(endpoint: string, options: FetchOptions = {})
   const data = await response.json();
 
   if (!response.ok) {
-    throw new ApiError(
-      response.status,
-      data.error?.message || 'An error occurred',
-      data.error?.code,
-    );
+    throw new ApiError(response.status, data.message || 'An error occurred', data.meta?.errorCode);
   }
 
   return data as T;

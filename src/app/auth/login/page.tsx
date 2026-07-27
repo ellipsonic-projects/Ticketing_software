@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 
-import { BackgroundGradient } from '@/components/auth/background-gradient';
 import { CompositionBridge } from '@/components/auth/composition-bridge';
 import { HeroIllustration } from '@/components/auth/hero-illustration';
 import { LoginForm } from '@/components/auth/login-form';
@@ -18,9 +17,6 @@ export default function LoginPage() {
      * so its curves bridge illustration → login card as one continuous scene.
      */
     <div className="relative flex min-h-screen w-full flex-col overflow-hidden lg:flex-row">
-      {/* Layer 0 — ambient page gradient */}
-      <BackgroundGradient />
-
       {/* Layer 1 — composition bridge: flows from illustration into the card */}
       <CompositionBridge />
 

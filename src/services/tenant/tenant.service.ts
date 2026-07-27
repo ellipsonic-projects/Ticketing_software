@@ -49,8 +49,6 @@ export class TenantService {
       name: input.name,
       slug,
       domain: input.domain,
-      logoUrl: input.logoUrl,
-      primaryColor: input.primaryColor,
       contactEmail: input.contactEmail,
       contactPhone: input.contactPhone,
       timezone: input.timezone,
@@ -154,6 +152,7 @@ export class TenantService {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
         { slug: { contains: search, mode: 'insensitive' } },
+        { domain: { contains: search, mode: 'insensitive' } },
       ];
     }
     where.deletedAt = null;

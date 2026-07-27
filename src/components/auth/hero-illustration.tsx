@@ -2,10 +2,7 @@
 
 import { AIWidget } from './ai-widget';
 import { AnalyticsCard } from './analytics-card';
-import { BackgroundCurves } from './background-curves';
-import { BackgroundGlow } from './background-glow';
 import { CloudIcon } from './cloud-icon';
-import { FloatingParticles } from './floating-particles';
 import { MetricCard } from './metric-card';
 import { NotificationCard } from './notification-card';
 import { QuickActionCard } from './quick-action-card';
@@ -19,9 +16,6 @@ export function HeroIllustration() {
   return (
     <SimulationProvider>
       <div className="relative flex h-full min-h-[600px] w-full items-center justify-center">
-        <BackgroundGlow />
-        <BackgroundCurves />
-
         {/* Core workflow in center */}
         <WorkflowCard />
 
@@ -41,9 +35,6 @@ export function HeroIllustration() {
 
         {/* AI widget - prominent */}
         <AIWidget />
-
-        {/* Floating particles for atmosphere */}
-        <FloatingParticles />
       </div>
     </SimulationProvider>
   );

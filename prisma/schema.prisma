@@ -31,8 +31,6 @@ model Tenant {
   name         String
   slug         String       @unique
   status       TenantStatus @default(ACTIVE)
-  logoUrl      String?
-  primaryColor String?
   domain       String?      @unique
   contactEmail String?
   contactPhone String?
