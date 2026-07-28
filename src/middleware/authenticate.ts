@@ -1,7 +1,11 @@
 import { NextRequest } from 'next/server';
 
 import { authService } from '@/services/auth/auth.service';
-import { InvalidTenantContextError, MissingTokenError } from '@/lib/errors/auth-errors';
+import {
+  InvalidTenantContextError,
+  MissingTokenError,
+  MustChangePasswordError,
+} from '@/lib/errors/auth-errors';
 import { getRequestContext, RequestContext, requestContextStore } from '@/lib/request-context';
 
 /**
@@ -26,6 +30,14 @@ export function authenticate(handler: (req: NextRequest, ...args: unknown[]) => 
     }
 
     const payload = await authService.authenticate(token);
+
+    if (
+      payload.mustChangePassword &&
+      !req.nextUrl.pathname.startsWith('/api/v1/auth/change-password') &&
+      !req.nextUrl.pathname.startsWith('/api/v1/auth/logout')
+    ) {
+      throw new MustChangePasswordError();
+    }
 
     const currentContext = getRequestContext();
     if (!currentContext) {

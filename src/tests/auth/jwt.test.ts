@@ -20,6 +20,7 @@ describe('JWT Service', () => {
     tenantId: 'tenant-123',
     sessionId: 'session-123',
     role: 'ENGINEER' as const,
+    mustChangePassword: false,
   };
 
   it('should generate and verify an access token', () => {

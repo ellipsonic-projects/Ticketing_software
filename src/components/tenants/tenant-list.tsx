@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -19,7 +17,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -31,6 +28,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { useAuth } from '@/hooks/use-auth';
 import { tenantApi } from '@/services/api/tenant-api';
 
@@ -56,7 +54,7 @@ export function TenantList() {
     try {
       setLoading(true);
       const res = await tenantApi.getTenants(
-        { page, pageSize: 10, search } as unknown as any,
+        { page, pageSize: 10, search } as Record<string, unknown>,
         accessToken,
       );
       setTenants(res.data);
@@ -180,27 +178,7 @@ export function TenantList() {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <Badge
-                        variant="outline"
-                        className={
-                          tenant.status === 'ACTIVE'
-                            ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                            : tenant.status === 'SUSPENDED'
-                              ? 'border-red-200 bg-red-50 text-red-700 hover:bg-red-100'
-                              : 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
-                        }
-                      >
-                        {tenant.status === 'ACTIVE' && (
-                          <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        )}
-                        {tenant.status === 'SUSPENDED' && (
-                          <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-red-500" />
-                        )}
-                        {tenant.status === 'INACTIVE' && (
-                          <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-amber-500" />
-                        )}
-                        {tenant.status}
-                      </Badge>
+                      <StatusBadge status={tenant.status} variant="dot" />
                     </td>
                     <td className="px-6 py-4 text-xs font-medium text-slate-500">
                       {new Date(tenant.createdAt).toLocaleDateString('en-US', {

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Tenant, TenantStatus } from '@prisma/client';
 
 import { CreateTenantInput, ListTenantQuery, UpdateTenantInput } from '@/lib/tenant/tenant.schema';
@@ -12,8 +10,10 @@ export const tenantApi = {
     const cleanParams = Object.fromEntries(
       Object.entries(params).filter(([_, v]) => v !== undefined),
     );
-    const query = new URLSearchParams(cleanParams as any).toString();
-    return apiClient<{ data: Tenant[]; pagination: any }>(`/platform/tenants?${query}`, { token });
+    const query = new URLSearchParams(cleanParams as Record<string, string>).toString();
+    return apiClient<{ data: Tenant[]; pagination: unknown }>(`/platform/tenants?${query}`, {
+      token,
+    });
   },
 
   getTenant: async (id: string, token: string) => {

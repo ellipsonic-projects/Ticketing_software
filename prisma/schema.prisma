@@ -8,42 +8,22 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-enum TenantStatus {
-  ACTIVE
-  INACTIVE
-  SUSPENDED
-}
-
-enum UserStatus {
-  ACTIVE
-  INACTIVE
-  SUSPENDED
-}
-
-enum Role {
-  PLATFORM_ADMIN
-  TENANT_ADMIN
-  ENGINEER
-}
-
 model Tenant {
   id           String       @id @default(cuid())
   name         String
   slug         String       @unique
   status       TenantStatus @default(ACTIVE)
-  domain       String?      @unique
+  createdAt    DateTime     @default(now())
+  createdBy    String?
+  updatedAt    DateTime     @updatedAt
+  updatedBy    String?
   contactEmail String?
   contactPhone String?
-  timezone     String       @default("UTC")
   currency     String       @default("USD")
-
-  users User[]
-
-  createdAt DateTime  @default(now())
-  createdBy String?
-  updatedAt DateTime  @updatedAt
-  updatedBy String?
-  deletedAt DateTime?
+  deletedAt    DateTime?
+  domain       String?      @unique
+  timezone     String       @default("UTC")
+  users        User[]
 
   @@index([status])
   @@index([name])
@@ -51,25 +31,29 @@ model Tenant {
 }
 
 model User {
-  id       String     @id @default(cuid())
-  email    String     @unique
-  name     String?
-  password String
-  status   UserStatus @default(ACTIVE)
-  role     Role       @default(ENGINEER)
-
-  sessions Session[]
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
+  id                  String               @id @default(cuid())
+  email               String               @unique
+  password            String
+  status              UserStatus           @default(ACTIVE)
+  role                Role                 @default(ENGINEER)
+  tenantId            String
   createdAt           DateTime             @default(now())
   createdBy           String?
   updatedAt           DateTime             @updatedAt
   updatedBy           String?
+  deletedAt           DateTime?
+  firstName           String
+  lastName            String
+  mustChangePassword  Boolean              @default(false)
+  invitationTokenHash String?              @unique
+  invitationExpiresAt DateTime?
+  invitedAt           DateTime?
+  activatedAt         DateTime?
   passwordResetTokens PasswordResetToken[]
+  sessions            Session[]
+  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  @@unique([email, tenantId])
+  @@index([deletedAt])
   @@index([tenantId])
 }
 
@@ -82,11 +66,9 @@ model Session {
   ipAddress        String?
   expiresAt        DateTime
   revokedAt        DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([tenantId])
@@ -98,8 +80,7 @@ model PasswordResetToken {
   tokenHash String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([expiresAt])
@@ -119,4 +100,24 @@ model AuditLog {
   @@index([entity, entityId])
   @@index([action])
   @@index([createdAt])
+}
+
+enum TenantStatus {
+  PENDING_ACTIVATION
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum UserStatus {
+  INVITED
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum Role {
+  PLATFORM_ADMIN
+  TENANT_ADMIN
+  ENGINEER
 }

@@ -1,15 +1,18 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 import { ResetPasswordSchema } from '@/validations/auth';
 
 import { authService } from '@/services/auth/auth.service';
 import { withErrorHandler } from '@/lib/errors/global-handler';
 
-export const POST = withErrorHandler(async (req: Request) => {
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const body = await req.json();
-  const data = ResetPasswordSchema.parse(body);
+  const { token, password } = ResetPasswordSchema.parse(body);
 
-  await authService.resetPassword(data.token, data.password);
+  await authService.resetPassword(token, password);
 
-  return NextResponse.json({ success: true, message: 'Password has been reset successfully.' });
+  return NextResponse.json({
+    success: true,
+    message: 'Your password has been successfully reset. You can now log in.',
+  });
 });

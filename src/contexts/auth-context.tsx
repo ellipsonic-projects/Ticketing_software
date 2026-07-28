@@ -2,6 +2,7 @@
 
 import React, { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
 
+import { setGlobalToken } from '@/services/api/api-client';
 import { authApi } from '@/services/api/auth-api';
 import { Role } from '@/lib/auth';
 
@@ -11,6 +12,7 @@ export interface User {
   name: string | null;
   role: Role;
   tenantId: string;
+  mustChangePassword?: boolean;
 }
 
 export interface AuthContextType {
@@ -38,12 +40,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { accessToken: newAccessToken } = await authApi.refresh();
       setAccessToken(newAccessToken);
+      setGlobalToken(newAccessToken);
 
       const { user: refreshedUser } = await authApi.me(newAccessToken);
       setUser(refreshedUser as User);
     } catch (err) {
       setUser(null);
       setAccessToken(null);
+      setGlobalToken(null);
     }
   }, []);
 
@@ -53,12 +57,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refresh().finally(() => setIsLoading(false));
   }, [refresh]);
 
+  useEffect(() => {
+    // Redirect if user must change password
+    if (user?.mustChangePassword && !window.location.pathname.startsWith('/auth/change-password')) {
+      window.location.href = '/auth/change-password';
+    }
+  }, [user]);
+
   const login = useCallback(async (credentials: Record<string, unknown>) => {
     setError(null);
     try {
       setIsLoading(true);
       const { user: loggedInUser, accessToken: newAccessToken } = await authApi.login(credentials);
       setAccessToken(newAccessToken);
+      setGlobalToken(newAccessToken);
       setUser(loggedInUser as User);
       return loggedInUser as User;
     } catch (err: unknown) {
@@ -77,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setUser(null);
       setAccessToken(null);
+      setGlobalToken(null);
       window.location.href = '/auth/login'; // Force redirect and clear state
     }
   };

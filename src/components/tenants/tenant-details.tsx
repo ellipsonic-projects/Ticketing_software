@@ -22,6 +22,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { useAuth } from '@/hooks/use-auth';
 import { tenantApi } from '@/services/api/tenant-api';
 import { UpdateTenantInput, UpdateTenantSchema } from '@/lib/tenant/tenant.schema';
@@ -174,21 +175,7 @@ export function TenantDetails({ id }: { id: string }) {
         <div className="flex flex-col gap-2 border-b border-slate-200 pb-6">
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">{tenant.name}</h1>
-            <span
-              className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                tenant.status === 'ACTIVE'
-                  ? 'bg-emerald-100 text-emerald-700'
-                  : tenant.status === 'SUSPENDED'
-                    ? 'bg-red-100 text-red-700'
-                    : 'bg-slate-100 text-slate-700'
-              }`}
-            >
-              {tenant.status === 'ACTIVE'
-                ? '🟢 Active'
-                : tenant.status === 'SUSPENDED'
-                  ? '🔴 Suspended'
-                  : tenant.status}
-            </span>
+            <StatusBadge status={tenant.status} variant="emoji" className="px-3 py-1" />
           </div>
           <div className="flex items-center gap-4 text-sm text-slate-500">
             <p>

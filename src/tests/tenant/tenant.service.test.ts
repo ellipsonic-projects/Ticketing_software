@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AuditService } from '@/services/audit/audit.service';
@@ -23,7 +21,7 @@ describe('TenantService', () => {
 
     it('should handle collisions by appending a number', async () => {
       vi.mocked(tenantRepository.findBySlug)
-        .mockResolvedValueOnce({ id: '1', slug: 'acme' } as unknown as any)
+        .mockResolvedValueOnce({ id: '1', slug: 'acme' } as unknown as never)
         .mockResolvedValueOnce(null);
 
       const slug = await TenantService.generateUniqueSlug('Acme');
@@ -39,13 +37,18 @@ describe('TenantService', () => {
         id: 't1',
         name: 'Acme',
         status: 'ACTIVE',
-      } as unknown as any);
+      } as unknown as never);
 
       const tenant = await TenantService.createTenant({
         name: 'Acme',
         domain: 'acme.com',
         timezone: 'UTC',
         currency: 'USD',
+        admin: {
+          firstName: 'Test',
+          lastName: 'Admin',
+          email: 'test@admin.com',
+        },
       });
 
       expect(tenantRepository.create).toHaveBeenCalledWith(
@@ -60,11 +63,11 @@ describe('TenantService', () => {
       vi.mocked(tenantRepository.findById).mockResolvedValue({
         id: 't1',
         status: 'ACTIVE',
-      } as unknown as any);
+      } as unknown as never);
       vi.mocked(tenantRepository.updateStatus).mockResolvedValue({
         id: 't1',
         status: 'SUSPENDED',
-      } as unknown as any);
+      } as unknown as never);
 
       await TenantService.updateStatus('t1', 'SUSPENDED');
 

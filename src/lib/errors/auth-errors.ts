@@ -78,3 +78,12 @@ export class InvalidTenantContextError extends AppError {
     super(message, HttpStatus.FORBIDDEN, 'INVALID_TENANT_CONTEXT', undefined, true, options);
   }
 }
+
+export class MustChangePasswordError extends AppError {
+  constructor(
+    message: string = 'You must change your password before proceeding',
+    options?: { cause?: unknown },
+  ) {
+    super(message, HttpStatus.FORBIDDEN, 'MUST_CHANGE_PASSWORD', undefined, true, options);
+  }
+}

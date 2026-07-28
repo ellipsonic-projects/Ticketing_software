@@ -5,5 +5,6 @@ export interface JwtPayload {
   tenantId: string | null;
   sessionId: string;
   role: Role;
+  mustChangePassword: boolean;
   tokenType: 'access' | 'refresh';
 }

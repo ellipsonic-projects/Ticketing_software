@@ -12,13 +12,24 @@ const optionalEmail = z.preprocess(
 );
 
 export const CreateTenantSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100),
-  domain: optionalString,
+  name: z.string().min(1, 'Company name is required'),
+  domain: z
+    .string()
+    .trim()
+    .transform((v) => (v === '' ? undefined : v))
+    .optional()
+    .nullable(),
 
   contactEmail: optionalEmail,
   contactPhone: optionalString,
   timezone: z.string().default('UTC'),
   currency: z.string().default('USD'),
+
+  admin: z.object({
+    firstName: z.string().min(1, 'First name is required'),
+    lastName: z.string().min(1, 'Last name is required'),
+    email: z.string().email('Invalid email address'),
+  }),
 });
 
 export type CreateTenantInput = z.infer<typeof CreateTenantSchema>;

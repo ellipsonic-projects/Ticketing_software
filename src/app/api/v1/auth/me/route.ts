@@ -23,7 +23,8 @@ export const GET = withErrorHandler(
       select: {
         id: true,
         email: true,
-        name: true,
+        firstName: true,
+        lastName: true,
         status: true,
         role: true,
         tenantId: true,

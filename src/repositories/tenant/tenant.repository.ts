@@ -3,25 +3,33 @@ import { Prisma, Tenant } from '@prisma/client';
 import prisma from '@/lib/prisma';
 
 export class TenantRepository {
-  async create(data: Prisma.TenantCreateInput): Promise<Tenant> {
-    return prisma.tenant.create({ data });
+  async create(data: Prisma.TenantCreateInput, tx?: Prisma.TransactionClient): Promise<Tenant> {
+    const db = tx || prisma;
+    return db.tenant.create({ data });
   }
 
-  async update(id: string, data: Prisma.TenantUpdateInput): Promise<Tenant> {
-    return prisma.tenant.update({
+  async update(
+    id: string,
+    data: Prisma.TenantUpdateInput,
+    tx?: Prisma.TransactionClient,
+  ): Promise<Tenant> {
+    const db = tx || prisma;
+    return db.tenant.update({
       where: { id },
       data,
     });
   }
 
-  async findById(id: string): Promise<Tenant | null> {
-    return prisma.tenant.findUnique({
+  async findById(id: string, tx?: Prisma.TransactionClient): Promise<Tenant | null> {
+    const db = tx || prisma;
+    return db.tenant.findUnique({
       where: { id },
     });
   }
 
-  async findBySlug(slug: string): Promise<Tenant | null> {
-    return prisma.tenant.findUnique({
+  async findBySlug(slug: string, tx?: Prisma.TransactionClient): Promise<Tenant | null> {
+    const db = tx || prisma;
+    return db.tenant.findUnique({
       where: { slug },
     });
   }
@@ -38,8 +46,9 @@ export class TenantRepository {
     ]);
   }
 
-  async softDelete(id: string, deletedBy?: string): Promise<Tenant> {
-    return prisma.tenant.update({
+  async softDelete(id: string, deletedBy?: string, tx?: Prisma.TransactionClient): Promise<Tenant> {
+    const db = tx || prisma;
+    return db.tenant.update({
       where: { id },
       data: {
         deletedAt: new Date(),
@@ -52,8 +61,10 @@ export class TenantRepository {
     id: string,
     status: 'ACTIVE' | 'SUSPENDED' | 'INACTIVE',
     updatedBy?: string,
+    tx?: Prisma.TransactionClient,
   ): Promise<Tenant> {
-    return prisma.tenant.update({
+    const db = tx || prisma;
+    return db.tenant.update({
       where: { id },
       data: {
         status,

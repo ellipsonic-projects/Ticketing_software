@@ -39,7 +39,8 @@ async function main() {
     data: {
       email,
       password,
-      name: 'Platform Admin',
+      firstName: 'Platform',
+      lastName: 'Admin',
       role: 'PLATFORM_ADMIN',
       status: 'ACTIVE',
       tenantId: platformTenant.id,

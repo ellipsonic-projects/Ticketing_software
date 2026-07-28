@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -32,7 +30,7 @@ describe('TenantList Component', () => {
           slug: 'test-corp',
           status: 'ACTIVE',
           createdAt: new Date().toISOString(),
-        } as any,
+        } as unknown as React.ComponentProps<typeof TenantList>,
       ],
       pagination: { totalPages: 1 },
     });

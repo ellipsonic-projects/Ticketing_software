@@ -2,6 +2,7 @@ import crypto from 'crypto';
 
 import { env } from '@/config/env';
 
+import { emailService } from '@/services/email/email.service';
 import { authRepository } from '@/repositories/auth/auth.repository';
 import { jwtService } from '@/lib/auth/jwt';
 import * as passwordHash from '@/lib/auth/password';
@@ -11,7 +12,6 @@ import {
   InvalidTokenError,
   MissingTokenError,
 } from '@/lib/errors/auth-errors';
-import { mailService } from '@/lib/mail/mail.service';
 import { clock } from '@/lib/time';
 
 import { sessionService } from './session.service';
@@ -62,6 +62,7 @@ export class AuthService {
       tenantId: user.tenantId,
       sessionId: session.id,
       role: user.role,
+      mustChangePassword: user.mustChangePassword,
     };
 
     // 4. Generate Access Token JWT
@@ -106,6 +107,7 @@ export class AuthService {
       tenantId: session.tenantId,
       sessionId: session.id,
       role: user.role,
+      mustChangePassword: user.mustChangePassword,
     };
 
     const accessToken = jwtService.generateAccessToken(jwtPayload);
@@ -143,9 +145,105 @@ export class AuthService {
       },
     });
 
-    // TODO: Determine absolute app URL via config
-    const resetLink = `http://localhost:3000/auth/reset-password?token=${rawToken}`;
-    await mailService.sendPasswordResetEmail(user.email, resetLink);
+    // Use env NEXT_PUBLIC_APP_URL
+    const appUrl = env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    await emailService.sendPasswordReset(user.email, rawToken, appUrl);
+
+    const { AuditService } = await import('@/services/audit/audit.service');
+    await AuditService.log({
+      entity: 'USER',
+      entityId: user.id,
+      action: 'PASSWORD_RESET_REQUESTED',
+      actorId: user.id,
+    });
+
+    if (process.env.NODE_ENV !== 'production') {
+      const resetLink = `${appUrl}/auth/reset-password?token=${rawToken}`;
+      return resetLink;
+    }
+  }
+
+  async acceptInvitation(rawToken: string, newPass: string) {
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const { prisma } = await import('@/lib/db');
+
+    const user = await prisma.user.findUnique({
+      where: { invitationTokenHash: tokenHash },
+    });
+
+    if (
+      !user ||
+      user.status !== 'INVITED' ||
+      !user.invitationExpiresAt ||
+      user.invitationExpiresAt < clock.now()
+    ) {
+      throw new InvalidCredentialsError('Invalid or expired invitation token');
+    }
+
+    const hashedNew = await passwordHash.hash(newPass);
+
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: user.id },
+        data: {
+          password: hashedNew,
+          status: 'ACTIVE',
+          invitationTokenHash: null,
+          invitationExpiresAt: null,
+          activatedAt: clock.now(),
+        },
+      }),
+      prisma.tenant.update({
+        where: { id: user.tenantId },
+        data: {
+          status: 'ACTIVE',
+        },
+      }),
+    ]);
+
+    const { AuditService } = await import('@/services/audit/audit.service');
+    await AuditService.log({
+      entity: 'USER',
+      entityId: user.id,
+      action: 'INVITATION_ACCEPTED',
+      actorId: user.id,
+    });
+
+    const appUrl = env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    await emailService.sendWelcome(user.email, appUrl);
+  }
+
+  async resendInvitation(email: string, actorId: string) {
+    const { prisma } = await import('@/lib/db');
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user || user.status !== 'INVITED') {
+      return; // Silent fail
+    }
+
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        invitationTokenHash: tokenHash,
+        invitationExpiresAt: expiresAt,
+        invitedAt: new Date(),
+      },
+    });
+
+    const appUrl = env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    await emailService.sendInvitation(user.email, rawToken, appUrl);
+
+    const { AuditService } = await import('@/services/audit/audit.service');
+    await AuditService.log({
+      entity: 'USER',
+      entityId: user.id,
+      action: 'INVITATION_RESENT',
+      actorId: actorId,
+    });
   }
 
   async resetPassword(rawToken: string, newPass: string) {
@@ -173,6 +271,14 @@ export class AuthService {
       }),
     ]);
 
+    const { AuditService } = await import('@/services/audit/audit.service');
+    await AuditService.log({
+      entity: 'USER',
+      entityId: resetToken.userId,
+      action: 'PASSWORD_RESET_COMPLETED',
+      actorId: resetToken.userId,
+    });
+
     await this.invalidateSessions(resetToken.userId);
   }
 
@@ -187,9 +293,21 @@ export class AuthService {
     const hashedNew = await passwordHash.hash(newPass);
     await prisma.user.update({
       where: { id: userId },
-      data: { password: hashedNew },
+      data: {
+        password: hashedNew,
+        mustChangePassword: false,
+      },
     });
 
+    const { AuditService } = await import('@/services/audit/audit.service');
+    await AuditService.log({
+      entity: 'USER',
+      entityId: userId,
+      action: 'CHANGE_PASSWORD',
+      actorId: userId,
+    });
+
+    await emailService.sendPasswordChanged(user.email);
     await this.invalidateSessions(userId);
   }
 

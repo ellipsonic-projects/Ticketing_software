@@ -2,6 +2,7 @@ import { Inter, Manrope } from 'next/font/google';
 
 import { AuthProvider } from '@/contexts/auth-context';
 import type { Metadata } from 'next';
+import { Toaster } from 'sonner';
 
 import { BackgroundGradient } from '@/components/ui/background-gradient';
 import { ThemeProvider } from '@/providers/theme-provider';
@@ -36,6 +37,7 @@ export default function RootLayout({
         <BackgroundGradient />
         <ThemeProvider>
           <AuthProvider>{children}</AuthProvider>
+          <Toaster position="top-right" richColors />
         </ThemeProvider>
       </body>
     </html>

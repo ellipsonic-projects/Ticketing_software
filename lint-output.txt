@@ -1,0 +1,145 @@
+
+> multi_tenant_ticketing_system@0.1.0 lint
+> eslint .
+
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/(protected)/profile/page.tsx
+  36:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  41:16  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  56:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/auth/invitations/[token]/route.ts
+  9:67  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/auth/login/route.ts
+  21:11  warning  'password' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/auth/me/route.ts
+  5:10  warning  'authRepository' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/profile/route.ts
+  10:23  warning  'req' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/users/[id]/route.ts
+  27:15  warning  'password' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  54:15  warning  'password' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/users/[id]/status/route.ts
+  31:15  warning  'password' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/users/route.ts
+  31:15  warning  'password' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  71:17  warning  'password' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/auth/accept-invitation/page.tsx
+   7:8   warning  'Link' is defined but never used          @typescript-eslint/no-unused-vars
+  11:10  warning  'authApi' is defined but never used       @typescript-eslint/no-unused-vars
+  65:16  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+  98:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/auth/change-password/page.tsx
+  48:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/auth/forgot-password/page.tsx
+  41:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  42:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  44:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/auth/layout.tsx
+  1:10  warning  'ReactNode' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/auth/reset-password/page.tsx
+   7:8   warning  'Link' is defined but never used          @typescript-eslint/no-unused-vars
+  57:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/auth/session-expired/page.tsx
+  3:8  warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/auth/reset-password-form.tsx
+  4:8   warning  'Link' is defined but never used       @typescript-eslint/no-unused-vars
+  5:10  warning  'useRouter' is defined but never used  @typescript-eslint/no-unused-vars
+  7:24  warning  'Loader2' is defined but never used    @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/tenants/create-tenant-dialog.tsx
+   7:25  warning  'RefreshCw' is defined but never used          @typescript-eslint/no-unused-vars
+  37:5   warning  'setValue' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/tenants/tenant-details.tsx
+  51:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  68:14  warning  '_err' is defined but never used          @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/tenants/tenant-list.tsx
+   86:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+  102:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/users/create-user-dialog.tsx
+  29:5   warning  'setValue' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  30:5   warning  'watch' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  34:48  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  39:27  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  50:21  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/users/user-details.tsx
+    7:16  warning  'UserStatus' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+    7:28  warning  'Role' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+   45:5   warning  'setValue' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   46:5   warning  'watch' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   50:48  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-explicit-any
+   62:14  warning  '_err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+   70:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/users/user-details.tsx:70:5
+  68 |
+  69 |   useEffect(() => {
+> 70 |     fetchUser();
+     |     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  71 |     // eslint-disable-next-line react-hooks/exhaustive-deps
+  72 |   }, [id]);
+  73 |  react-hooks/set-state-in-effect
+   79:19  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-explicit-any
+   92:14  warning  '_err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  105:14  warning  '_err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/users/user-list.tsx
+   4:8   warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
+  42:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+  63:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/contexts/auth-context.tsx
+   47:14  warning  'err' is defined but never used         @typescript-eslint/no-unused-vars
+  108:6   warning  'permission' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/emails/welcome.tsx
+  34:15  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/lib/auth/authorization.service.ts
+  4:10  warning  'Role' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/lib/auth/authorization.types.ts
+  1:10  warning  'Permission' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/lib/auth/jwt.ts
+  37:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  57:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/services/api/api-client.ts
+  37:13  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  40:12  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/services/api/user-api.ts
+  8:44  warning  '_' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/services/auth/session.service.ts
+  87:11  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/test-create-tenant.ts
+  19:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 63 problems (21 errors, 42 warnings)
+

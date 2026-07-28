@@ -17,7 +17,8 @@ async function main() {
     update: {},
     create: {
       email: 'admin@default.com',
-      name: 'Admin User',
+      firstName: 'Admin',
+      lastName: 'User',
       password: 'hashed_password_placeholder', // TODO: integrate bcrypt when auth is implemented
       role: Role.PLATFORM_ADMIN,
       tenantId: defaultTenant.id,

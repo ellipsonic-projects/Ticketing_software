@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Session } from '@prisma/client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -75,7 +73,7 @@ describe('Session Service', () => {
     vi.spyOn(clock, 'now').mockReturnValue(new Date('2026-07-26T12:00:00Z'));
 
     vi.mocked(authRepository.findSessionWithContext).mockImplementation(
-      async (id): Promise<any> => {
+      async (id): Promise<unknown> => {
         if (id === validSessionId) return mockValidSession;
         if (id === revokedSessionId) return mockRevokedSession;
         if (id === expiredSessionId) return mockExpiredSession;

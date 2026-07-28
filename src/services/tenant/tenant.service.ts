@@ -1,7 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { TenantStatus } from '@prisma/client';
+import crypto from 'crypto';
 
+import { env } from '@/config/env';
+import { Role, TenantStatus } from '@prisma/client';
+
+import { emailService } from '@/services/email/email.service';
 import { tenantRepository } from '@/repositories/tenant/tenant.repository';
+import { userRepository } from '@/repositories/user/user.repository';
+import { ConflictError } from '@/lib/errors/conflict-error';
+import { EmailDeliveryError } from '@/lib/errors/email-error';
+import { TenantNotFoundError } from '@/lib/errors/tenant-not-found-error';
+import prisma from '@/lib/prisma';
 import { CreateTenantInput, UpdateTenantInput } from '@/lib/tenant/tenant.schema';
 
 import { AuditService } from '../audit/audit.service';
@@ -42,39 +50,138 @@ export class TenantService {
 
     if (input.domain) {
       const isDomainValid = await this.validateDomain(input.domain);
-      if (!isDomainValid) throw new Error('Domain is already in use');
+      if (!isDomainValid) throw new ConflictError('Domain is already in use');
     }
 
-    const tenant = await tenantRepository.create({
-      name: input.name,
-      slug,
-      domain: input.domain,
-      contactEmail: input.contactEmail,
-      contactPhone: input.contactPhone,
-      timezone: input.timezone,
-      currency: input.currency,
-      createdBy: actorId,
-      updatedBy: actorId,
+    // Pre-check email for better UX
+    if (input.admin?.email) {
+      const existingUser = await userRepository.findByEmail(input.admin.email);
+      if (existingUser) {
+        throw new ConflictError('Email address is already in use');
+      }
+    }
+
+    let emailPayload: { email: string; rawToken: string } | null = null;
+
+    const createdTenant = await prisma.$transaction(async (tx) => {
+      // 1. Create the tenant
+      const tenant = await tenantRepository.create(
+        {
+          name: input.name,
+          slug,
+          domain: input.domain,
+          status: 'PENDING_ACTIVATION',
+          contactEmail: input.contactEmail,
+          contactPhone: input.contactPhone,
+          timezone: input.timezone,
+          currency: input.currency,
+          createdBy: actorId,
+          updatedBy: actorId,
+        },
+        tx,
+      );
+
+      // 2. Audit log for tenant creation
+      await AuditService.log(
+        {
+          entity: 'Tenant',
+          entityId: tenant.id,
+          action: 'Created',
+          actorId,
+          after: tenant,
+        },
+        tx,
+      );
+
+      // 3. Create the first TENANT_ADMIN user
+      if (input.admin) {
+        // Generate Invitation Token
+        const rawToken = crypto.randomBytes(32).toString('hex');
+        const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+        const placeholderPassword = crypto.randomBytes(16).toString('hex');
+
+        try {
+          const user = await userRepository.create(
+            tenant.id,
+            {
+              firstName: input.admin.firstName,
+              lastName: input.admin.lastName,
+              email: input.admin.email,
+              password: placeholderPassword,
+              role: Role.TENANT_ADMIN,
+              mustChangePassword: false,
+            },
+            actorId,
+            tx,
+          );
+
+          // Manually update status and token fields since repository might not have them yet
+          await tx.user.update({
+            where: { id: user.id },
+            data: {
+              status: 'INVITED',
+              invitationTokenHash: tokenHash,
+              invitationExpiresAt: expiresAt,
+              invitedAt: new Date(),
+            },
+          });
+
+          // Store email details to send AFTER transaction completes
+          emailPayload = { email: user.email, rawToken };
+
+          // 4. Audit log for user creation
+          await AuditService.log(
+            {
+              entity: 'User',
+              entityId: user.id,
+              action: 'Created',
+              actorId,
+              after: user,
+            },
+            tx,
+          );
+        } catch (error: unknown) {
+          // Catch Prisma unique constraint violation (P2002) just in case of race condition
+          if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+            throw new ConflictError('Email address is already in use');
+          }
+          throw error;
+        }
+      }
+
+      return tenant;
     });
 
-    await AuditService.log({
-      entity: 'Tenant',
-      entityId: tenant.id,
-      action: 'Created',
-      actorId,
-      after: tenant,
-    });
+    // Send Email safely outside the transaction to prevent timeout
+    if (emailPayload) {
+      const appUrl = env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      try {
+        await emailService.sendInvitation(emailPayload.email, emailPayload.rawToken, appUrl);
+      } catch (emailError) {
+        console.error(
+          `[TenantService] Failed to send invitation email to ${emailPayload.email}:`,
+          emailError,
+        );
 
-    return tenant;
+        // Compensating Transaction: Rollback the tenant creation
+        // We delete the tenant (which cascades to delete the user) because the email failed.
+        await prisma.tenant.delete({ where: { id: createdTenant.id } });
+
+        throw new EmailDeliveryError('Failed to send invitation email.', { cause: emailError });
+      }
+    }
+
+    return createdTenant;
   }
 
   static async updateTenant(id: string, input: UpdateTenantInput, actorId?: string) {
     const existing = await tenantRepository.findById(id);
-    if (!existing) throw new Error('Tenant not found');
+    if (!existing) throw new TenantNotFoundError();
 
     if (input.domain && input.domain !== existing.domain) {
       const isDomainValid = await this.validateDomain(input.domain, id);
-      if (!isDomainValid) throw new Error('Domain is already in use');
+      if (!isDomainValid) throw new ConflictError('Domain is already in use');
     }
 
     const tenant = await tenantRepository.update(id, {
@@ -96,7 +203,7 @@ export class TenantService {
 
   static async updateStatus(id: string, status: TenantStatus, actorId?: string) {
     const existing = await tenantRepository.findById(id);
-    if (!existing) throw new Error('Tenant not found');
+    if (!existing) throw new TenantNotFoundError();
 
     const tenant = await tenantRepository.updateStatus(id, status, actorId);
 
@@ -120,7 +227,7 @@ export class TenantService {
 
   static async softDeleteTenant(id: string, actorId?: string) {
     const existing = await tenantRepository.findById(id);
-    if (!existing) throw new Error('Tenant not found');
+    if (!existing) throw new TenantNotFoundError();
 
     const tenant = await tenantRepository.softDelete(id, actorId);
 
@@ -160,7 +267,7 @@ export class TenantService {
     const [data, total] = await tenantRepository.findMany({
       skip,
       take: pageSize,
-      where: where as any,
+      where: where as Record<string, unknown>,
       orderBy: sort ? { [sort]: sortOrder } : { createdAt: 'desc' },
     });
 
@@ -177,7 +284,7 @@ export class TenantService {
 
   static async getTenantById(id: string) {
     const tenant = await tenantRepository.findById(id);
-    if (!tenant || tenant.deletedAt) throw new Error('Tenant not found');
+    if (!tenant || tenant.deletedAt) throw new TenantNotFoundError();
     return tenant;
   }
 }

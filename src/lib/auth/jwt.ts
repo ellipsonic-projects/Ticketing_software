@@ -1,7 +1,7 @@
 import { authConfig } from '@/config';
 import jwt from 'jsonwebtoken';
 
-import { InvalidTokenError } from '../errors/auth-errors';
+import { InvalidTokenError, TokenExpiredError } from '../errors/auth-errors';
 import { JwtPayload } from './token-types';
 
 export class JwtService {
@@ -28,11 +28,19 @@ export class JwtService {
    * Throws an error if invalid or expired.
    */
   verifyAccessToken(token: string): JwtPayload {
-    const payload = jwt.verify(token, authConfig.jwt.accessSecret as string) as JwtPayload;
-    if (payload.tokenType !== 'access') {
-      throw new InvalidTokenError('Invalid token type for access token');
+    try {
+      const payload = jwt.verify(token, authConfig.jwt.accessSecret as string) as JwtPayload;
+      if (payload.tokenType !== 'access') {
+        throw new InvalidTokenError('Invalid token type for access token');
+      }
+      return payload;
+    } catch (error: unknown) {
+      if (error instanceof InvalidTokenError) throw error;
+      if ((error as Error).name === 'TokenExpiredError') {
+        throw new TokenExpiredError();
+      }
+      throw new InvalidTokenError('Invalid token');
     }
-    return payload;
   }
 
   /**
@@ -40,11 +48,19 @@ export class JwtService {
    * Throws an error if invalid or expired.
    */
   verifyRefreshToken(token: string): JwtPayload {
-    const payload = jwt.verify(token, authConfig.jwt.refreshSecret as string) as JwtPayload;
-    if (payload.tokenType !== 'refresh') {
-      throw new InvalidTokenError('Invalid token type for refresh token');
+    try {
+      const payload = jwt.verify(token, authConfig.jwt.refreshSecret as string) as JwtPayload;
+      if (payload.tokenType !== 'refresh') {
+        throw new InvalidTokenError('Invalid token type for refresh token');
+      }
+      return payload;
+    } catch (error: unknown) {
+      if (error instanceof InvalidTokenError) throw error;
+      if ((error as Error).name === 'TokenExpiredError') {
+        throw new TokenExpiredError();
+      }
+      throw new InvalidTokenError('Invalid refresh token');
     }
-    return payload;
   }
 
   /**

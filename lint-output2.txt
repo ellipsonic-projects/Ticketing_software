@@ -1,0 +1,82 @@
+
+> multi_tenant_ticketing_system@0.1.0 lint
+> eslint .
+
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/scratch/fix-lint.js
+  1:12  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  2:14  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/auth/invitations/[token]/route.ts
+  2:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/auth/login/route.ts
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/auth/me/route.ts
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/profile/route.ts
+   1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  24:5  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars')
+  47:5  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/users/[id]/route.ts
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/users/[id]/status/route.ts
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/users/route.ts
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/auth/change-password/page.tsx
+  2:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/auth/forgot-password/page.tsx
+  2:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/auth/layout.tsx
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/auth/session-expired/page.tsx
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/auth/reset-password-form.tsx
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/tenants/create-tenant-dialog.tsx
+   7:25  warning  'RefreshCw' is defined but never used          @typescript-eslint/no-unused-vars
+  37:5   warning  'setValue' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/tenants/tenant-list.tsx
+   86:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+  102:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/users/user-list.tsx
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/contexts/auth-context.tsx
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/lib/auth/authorization.service.ts
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/lib/auth/authorization.types.ts
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/lib/auth/jwt.ts
+  2:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/services/api/user-api.ts
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/services/auth/session.service.ts
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/test-create-tenant.ts
+  2:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars')
+
+✖ 28 problems (2 errors, 26 warnings)
+  0 errors and 22 warnings potentially fixable with the `--fix` option.
+

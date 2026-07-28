@@ -4,7 +4,15 @@ import type { NextRequest } from 'next/server';
 import { REFRESH_TOKEN_COOKIE } from '@/lib/auth/cookies';
 
 // Add paths that require authentication here
-const protectedPaths = ['/account', '/admin', '/tenant', '/engineer', '/tickets', '/platform'];
+const protectedPaths = [
+  '/account',
+  '/admin',
+  '/tenant',
+  '/engineer',
+  '/tickets',
+  '/platform',
+  '/users',
+];
 
 // Add paths that are only for guests (unauthenticated users)
 const guestPaths = [
