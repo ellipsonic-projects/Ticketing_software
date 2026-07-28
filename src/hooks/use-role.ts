@@ -1,5 +1,4 @@
-import { useAuth } from '@/contexts/auth-context';
-
+import { useAuth } from '@/hooks/use-auth';
 import { Role } from '@/lib/auth';
 
 /**

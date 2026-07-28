@@ -1,5 +1,5 @@
 /**
- * Base fetch client wrapper
+ * Base fetch client wrapper for API communication.
  */
 export class ApiError extends Error {
   constructor(
@@ -8,7 +8,16 @@ export class ApiError extends Error {
     public code?: string,
   ) {
     super(message);
+    this.name = 'ApiError';
   }
+}
+
+/** Shape of error JSON responses from the API. */
+interface ApiErrorResponse {
+  message?: string;
+  error?: string;
+  errors?: { message: string }[];
+  meta?: { errorCode?: string };
 }
 
 let globalToken: string | null = null;
@@ -34,10 +43,10 @@ export async function apiClient<T>(endpoint: string, options: FetchOptions = {})
   };
 
   const response = await fetch(`/api/v1${endpoint}`, config);
-  let data: unknown;
+  let data: ApiErrorResponse | T;
   try {
     data = await response.json();
-  } catch (err) {
+  } catch {
     if (!response.ok) {
       throw new ApiError(
         response.status,
@@ -49,17 +58,17 @@ export async function apiClient<T>(endpoint: string, options: FetchOptions = {})
 
   if (!response.ok) {
     if (response.status === 401 && endpoint !== '/auth/login' && typeof window !== 'undefined') {
-      // Global DRY/KISS handling for unauthorized requests
       if (window.location.pathname !== '/auth/login') {
         window.location.href = '/auth/login';
       }
     }
 
+    const errData = data as ApiErrorResponse;
     const errorMessage =
-      data?.message ||
-      data?.error ||
-      (data?.errors ? JSON.stringify(data.errors) : 'An error occurred');
-    throw new ApiError(response.status, errorMessage, data?.meta?.errorCode);
+      errData.message ??
+      errData.error ??
+      (errData.errors ? JSON.stringify(errData.errors) : 'An error occurred');
+    throw new ApiError(response.status, errorMessage, errData.meta?.errorCode);
   }
 
   return data as T;

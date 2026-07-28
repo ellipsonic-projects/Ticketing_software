@@ -3,13 +3,14 @@
 import React, { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
 
 import { setGlobalToken } from '@/services/api/api-client';
-import { authApi } from '@/services/api/auth-api';
+import { authApi, LoginCredentials } from '@/services/api/auth-api';
 import { Role } from '@/lib/auth';
 
 export interface User {
   id: string;
   email: string;
-  name: string | null;
+  firstName: string;
+  lastName: string;
   role: Role;
   tenantId: string;
   mustChangePassword?: boolean;
@@ -21,7 +22,7 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  login: (credentials: Record<string, unknown>) => Promise<User>;
+  login: (credentials: LoginCredentials) => Promise<User>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
   hasRole: (role: string) => boolean;
@@ -44,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const { user: refreshedUser } = await authApi.me(newAccessToken);
       setUser(refreshedUser as User);
-    } catch (err) {
+    } catch {
       setUser(null);
       setAccessToken(null);
       setGlobalToken(null);
@@ -64,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
-  const login = useCallback(async (credentials: Record<string, unknown>) => {
+  const login = useCallback(async (credentials: LoginCredentials) => {
     setError(null);
     try {
       setIsLoading(true);
@@ -102,8 +103,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const hasPermission = useCallback(
-    (permission: string) => {
-      // Stub for Sprint 1.3
+    (_permission: string) => {
+      // Full permission checks use useCan() hook from @/hooks/use-can
       return !!user;
     },
     [user],
@@ -125,6 +126,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+/**
+ * Returns the AuthContext. Must be used within an AuthProvider.
+ * Prefer importing from '@/hooks/use-auth' instead of using this directly.
+ */
 export function useAuth(): AuthContextType {
   const context = React.useContext(AuthContext);
   if (context === undefined) {

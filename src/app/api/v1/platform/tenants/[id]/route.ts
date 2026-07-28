@@ -1,85 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { authenticate } from '@/middleware/authenticate';
+import { authenticate, RouteContext } from '@/middleware/authenticate';
 import { Role } from '@prisma/client';
 
 import { TenantService } from '@/services/tenant/tenant.service';
+import { ForbiddenError } from '@/lib/errors/forbidden-error';
 import { withErrorHandler } from '@/lib/errors/global-handler';
+import { TenantNotFoundError } from '@/lib/errors/tenant-not-found-error';
 import { getRequestContext } from '@/lib/request-context';
 import { UpdateTenantSchema } from '@/lib/tenant/tenant.schema';
 
 export const GET = withErrorHandler(
-  authenticate(async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
-    try {
-      const ctx = getRequestContext();
-      const role = ctx?.identity?.role;
+  authenticate(async (req: NextRequest, ctx?: RouteContext) => {
+    const { id } = await ctx!.params;
+    const reqCtx = getRequestContext();
+    const role = reqCtx?.identity?.role;
 
-      if (role !== Role.PLATFORM_ADMIN) {
-        throw new Error('Unauthorized');
-      }
-      const { id } = await params;
-      const tenant = await TenantService.getTenantById(id);
-      return NextResponse.json({ data: tenant });
-    } catch (error: unknown) {
-      if (error instanceof Error && error.message === 'Tenant not found') {
-        return NextResponse.json({ error: error.message }, { status: 404 });
-      }
-      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-    }
+    if (role !== Role.PLATFORM_ADMIN) throw new ForbiddenError();
+
+    const tenant = await TenantService.getTenantById(id);
+    return NextResponse.json({ data: tenant });
   }),
 );
 
 export const PATCH = withErrorHandler(
-  authenticate(async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
-    try {
-      const { id } = await params;
-      const body = await req.json();
-      const result = UpdateTenantSchema.safeParse(body);
+  authenticate(async (req: NextRequest, ctx?: RouteContext) => {
+    const { id } = await ctx!.params;
+    const reqCtx = getRequestContext();
+    const actorId = reqCtx?.identity?.id;
+    const role = reqCtx?.identity?.role;
 
-      if (!result.success) {
-        return NextResponse.json({ error: result.error.issues }, { status: 400 });
-      }
+    if (!actorId || role !== Role.PLATFORM_ADMIN) throw new ForbiddenError();
 
-      const ctx = getRequestContext();
-      const actorId = ctx?.identity?.id;
-      const role = ctx?.identity?.role;
-
-      if (!actorId || role !== Role.PLATFORM_ADMIN) {
-        throw new Error('Unauthorized');
-      }
-
-      const tenant = await TenantService.updateTenant(id, result.data, actorId);
-      return NextResponse.json({ data: tenant });
-    } catch (error: unknown) {
-      if (error instanceof Error && error.message === 'Tenant not found') {
-        return NextResponse.json({ error: error.message }, { status: 404 });
-      }
-      if (error instanceof Error && error.message === 'Domain is already in use') {
-        return NextResponse.json({ error: error.message }, { status: 409 });
-      }
-      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    const body = await req.json();
+    const result = UpdateTenantSchema.safeParse(body);
+    if (!result.success) {
+      return NextResponse.json({ error: result.error.issues }, { status: 400 });
     }
+
+    const tenant = await TenantService.updateTenant(id, result.data, actorId);
+    return NextResponse.json({ data: tenant });
   }),
 );
 
 export const DELETE = withErrorHandler(
-  authenticate(async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
-    try {
-      const { id } = await params;
-      const ctx = getRequestContext();
-      const actorId = ctx?.identity?.id;
-      const role = ctx?.identity?.role;
+  authenticate(async (req: NextRequest, ctx?: RouteContext) => {
+    const { id } = await ctx!.params;
+    const reqCtx = getRequestContext();
+    const actorId = reqCtx?.identity?.id;
+    const role = reqCtx?.identity?.role;
 
-      if (!actorId || role !== Role.PLATFORM_ADMIN) {
-        throw new Error('Unauthorized');
-      }
-      const tenant = await TenantService.softDeleteTenant(id, actorId);
-      return NextResponse.json({ data: tenant });
-    } catch (error: unknown) {
-      if (error instanceof Error && error.message === 'Tenant not found') {
-        return NextResponse.json({ error: error.message }, { status: 404 });
-      }
-      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-    }
+    if (!actorId || role !== Role.PLATFORM_ADMIN) throw new ForbiddenError();
+
+    const tenant = await TenantService.softDeleteTenant(id, actorId);
+    return NextResponse.json({ data: tenant });
   }),
 );

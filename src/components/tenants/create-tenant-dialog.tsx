@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Plus, RefreshCw } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -31,14 +31,13 @@ export function CreateTenantDialog() {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-    setValue,
   } = useForm<CreateTenantInput>({
     resolver: zodResolver(CreateTenantSchema),
     defaultValues: {
       name: '',
-      domain: '',
-      contactEmail: '',
-      contactPhone: '',
+      domain: null,
+      contactEmail: null,
+      contactPhone: null,
       timezone: 'UTC',
       currency: 'USD',
       admin: {
@@ -50,18 +49,15 @@ export function CreateTenantDialog() {
   });
 
   useEffect(() => {
-    if (!open) {
-      reset();
-    }
+    if (!open) reset();
   }, [open, reset]);
 
   const onSubmit = async (data: CreateTenantInput) => {
     try {
       await tenantApi.createTenant(data, accessToken!);
-      toast.success(
-        `Tenant created successfully. An invitation email has been sent to ${data.admin?.email}.`,
-        { duration: 5000 },
-      );
+      toast.success(`Tenant created. An invitation email has been sent to ${data.admin?.email}.`, {
+        duration: 5000,
+      });
       setOpen(false);
       reset();
       window.location.reload();

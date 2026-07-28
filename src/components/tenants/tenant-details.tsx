@@ -100,7 +100,6 @@ export function TenantDetails({ id }: { id: string }) {
     try {
       await tenantApi.updateTenant(id, data, accessToken!);
       toast.success('Tenant updated successfully');
-      // Update tenant state with new data so the form stays clean
       setTenant((prev) => (prev ? { ...prev, ...data } : prev));
       reset(data);
     } catch (error: unknown) {

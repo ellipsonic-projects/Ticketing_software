@@ -44,6 +44,8 @@ describe('TenantService', () => {
         domain: 'acme.com',
         timezone: 'UTC',
         currency: 'USD',
+        contactEmail: null,
+        contactPhone: null,
         admin: {
           firstName: 'Test',
           lastName: 'Admin',

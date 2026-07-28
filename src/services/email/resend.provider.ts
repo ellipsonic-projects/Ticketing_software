@@ -26,7 +26,6 @@ export class ResendProvider implements EmailProvider {
       logger.info('Mock Email Sent:', {
         to: options.to,
         subject: options.subject,
-        props: options.react?.props || {},
         contentPreview: 'Check your terminal console or use a real API key to send emails.',
       });
       return;

@@ -1,8 +1,14 @@
-import { DbClient } from '@/repositories/base.repository';
-import { prisma } from '@/lib/db';
+import { Prisma } from '@prisma/client';
+
+import prisma from '@/lib/prisma';
+
+/** Type alias for a Prisma transaction client or the standard client. */
+export type DbClient = Prisma.TransactionClient | typeof prisma;
 
 /**
- * Utility for running operations within a transaction.
+ * Utility for running operations within a Prisma transaction.
+ * If an existing transaction is provided, operations run within it;
+ * otherwise a new transaction is started.
  */
 export async function runInTransaction<T>(
   callback: (tx: DbClient) => Promise<T>,

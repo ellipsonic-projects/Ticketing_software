@@ -14,6 +14,32 @@ import { CreateTenantInput, UpdateTenantInput } from '@/lib/tenant/tenant.schema
 
 import { AuditService } from '../audit/audit.service';
 
+/** SHA-256 hash of a raw token string (deterministic, suitable for DB lookup). */
+function hashToken(rawToken: string): string {
+  return crypto.createHash('sha256').update(rawToken).digest('hex');
+}
+
+/** Resolved application base URL. */
+const APP_URL = env.NEXT_PUBLIC_APP_URL;
+
+/** Invitation token TTL in milliseconds (24 hours). */
+const INVITATION_TTL_MS = 24 * 60 * 60 * 1000;
+
+/** Narrowing guard for Prisma unique constraint errors. */
+interface PrismaConstraintError {
+  code: string;
+  meta?: { target?: string[] };
+}
+
+function isPrismaUniqueConstraintError(err: unknown): err is PrismaConstraintError {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    'code' in err &&
+    (err as PrismaConstraintError).code === 'P2002'
+  );
+}
+
 export class TenantService {
   static generateSlug(name: string): string {
     return name
@@ -95,10 +121,10 @@ export class TenantService {
 
       // 3. Create the first TENANT_ADMIN user
       if (input.admin) {
-        // Generate Invitation Token
+        // Generate invitation token
         const rawToken = crypto.randomBytes(32).toString('hex');
-        const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
-        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+        const tokenHash = hashToken(rawToken);
+        const expiresAt = new Date(Date.now() + INVITATION_TTL_MS);
         const placeholderPassword = crypto.randomBytes(16).toString('hex');
 
         try {
@@ -142,8 +168,8 @@ export class TenantService {
             tx,
           );
         } catch (error: unknown) {
-          // Catch Prisma unique constraint violation (P2002) just in case of race condition
-          if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+          // Catch Prisma unique constraint violation (P2002) on race conditions
+          if (isPrismaUniqueConstraintError(error) && error.meta?.target?.includes('email')) {
             throw new ConflictError('Email address is already in use');
           }
           throw error;
@@ -153,19 +179,18 @@ export class TenantService {
       return tenant;
     });
 
-    // Send Email safely outside the transaction to prevent timeout
-    if (emailPayload) {
-      const appUrl = env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    // Send email safely outside the transaction to prevent timeout
+    if (emailPayload !== null) {
+      const { email: recipientEmail, rawToken: inviteToken } = emailPayload;
       try {
-        await emailService.sendInvitation(emailPayload.email, emailPayload.rawToken, appUrl);
+        await emailService.sendInvitation(recipientEmail, inviteToken, APP_URL);
       } catch (emailError) {
         console.error(
-          `[TenantService] Failed to send invitation email to ${emailPayload.email}:`,
+          `[TenantService] Failed to send invitation email to ${recipientEmail}:`,
           emailError,
         );
 
-        // Compensating Transaction: Rollback the tenant creation
-        // We delete the tenant (which cascades to delete the user) because the email failed.
+        // Compensating transaction: delete the tenant (cascades to user) since email failed
         await prisma.tenant.delete({ where: { id: createdTenant.id } });
 
         throw new EmailDeliveryError('Failed to send invitation email.', { cause: emailError });
@@ -207,10 +232,11 @@ export class TenantService {
 
     const tenant = await tenantRepository.updateStatus(id, status, actorId);
 
-    const actionMap = {
+    const actionMap: Record<TenantStatus, string> = {
       ACTIVE: 'Activated',
       SUSPENDED: 'Suspended',
       INACTIVE: 'Deactivated',
+      PENDING_ACTIVATION: 'PendingActivation',
     };
 
     await AuditService.log({

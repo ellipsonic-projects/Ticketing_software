@@ -2,6 +2,7 @@ import crypto from 'crypto';
 
 import { env } from '@/config/env';
 
+import { AuditService } from '@/services/audit/audit.service';
 import { emailService } from '@/services/email/email.service';
 import { authRepository } from '@/repositories/auth/auth.repository';
 import { jwtService } from '@/lib/auth/jwt';
@@ -12,9 +13,25 @@ import {
   InvalidTokenError,
   MissingTokenError,
 } from '@/lib/errors/auth-errors';
+import prisma from '@/lib/prisma';
 import { clock } from '@/lib/time';
 
 import { sessionService } from './session.service';
+
+// ---------------------------------------------------------------------------
+// Module-level helpers
+// ---------------------------------------------------------------------------
+
+/** SHA-256 hash of a raw token string (deterministic, suitable for DB lookup). */
+function hashToken(rawToken: string): string {
+  return crypto.createHash('sha256').update(rawToken).digest('hex');
+}
+
+/** Resolved application base URL. */
+const APP_URL = env.NEXT_PUBLIC_APP_URL;
+
+/** Session TTL: 7 days in milliseconds. */
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 /**
  * Interface for rate limiting, implementation deferred to Sprint 1.3
@@ -45,8 +62,8 @@ export class AuthService {
     // 2. Hash it
     const refreshTokenHash = await passwordHash.hash(rawRefreshToken);
 
-    // 3. Create Session with hash
-    const expiresAt = new Date(clock.now().getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days (matching config)
+    // 3. Create session with hash
+    const expiresAt = new Date(clock.now().getTime() + SESSION_TTL_MS);
     const session = await authRepository.createSession({
       userId: user.id,
       tenantId: user.tenantId,
@@ -84,7 +101,7 @@ export class AuthService {
   async refresh(sessionId: string, rawRefreshToken: string) {
     // Session validation and rotation
     const newRawRefreshToken = crypto.randomBytes(64).toString('hex');
-    const newExpiresAt = new Date(clock.now().getTime() + 7 * 24 * 60 * 60 * 1000);
+    const newExpiresAt = new Date(clock.now().getTime() + SESSION_TTL_MS);
 
     const session = await sessionService.rotateRefreshToken(
       sessionId,
@@ -97,8 +114,7 @@ export class AuthService {
       throw new InvalidTokenError('Could not rotate session');
     }
 
-    const { prisma } = await import('@/lib/db');
-    const user = await prisma.user.findUnique({ where: { id: session.userId } }); // Need role etc
+    const user = await prisma.user.findUnique({ where: { id: session.userId } });
 
     if (!user) throw new InvalidCredentialsError();
 
@@ -132,11 +148,10 @@ export class AuthService {
     if (!user) return; // Silent fail for security
 
     const rawToken = crypto.randomBytes(32).toString('hex');
-    // We use SHA-256 here instead of Argon2 because we need a deterministic hash for DB lookup.
+    // SHA-256 is used here (not Argon2) because we need a deterministic hash for DB lookup.
     // This is secure because the raw token has 256 bits of entropy.
-    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const tokenHash = hashToken(rawToken);
 
-    const { prisma } = await import('@/lib/db');
     await prisma.passwordResetToken.create({
       data: {
         userId: user.id,
@@ -145,11 +160,8 @@ export class AuthService {
       },
     });
 
-    // Use env NEXT_PUBLIC_APP_URL
-    const appUrl = env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    await emailService.sendPasswordReset(user.email, rawToken, appUrl);
+    await emailService.sendPasswordReset(user.email, rawToken, APP_URL);
 
-    const { AuditService } = await import('@/services/audit/audit.service');
     await AuditService.log({
       entity: 'USER',
       entityId: user.id,
@@ -158,14 +170,12 @@ export class AuthService {
     });
 
     if (process.env.NODE_ENV !== 'production') {
-      const resetLink = `${appUrl}/auth/reset-password?token=${rawToken}`;
-      return resetLink;
+      return `${APP_URL}/auth/reset-password?token=${rawToken}`;
     }
   }
 
   async acceptInvitation(rawToken: string, newPass: string) {
-    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
-    const { prisma } = await import('@/lib/db');
+    const tokenHash = hashToken(rawToken);
 
     const user = await prisma.user.findUnique({
       where: { invitationTokenHash: tokenHash },
@@ -195,13 +205,10 @@ export class AuthService {
       }),
       prisma.tenant.update({
         where: { id: user.tenantId },
-        data: {
-          status: 'ACTIVE',
-        },
+        data: { status: 'ACTIVE' },
       }),
     ]);
 
-    const { AuditService } = await import('@/services/audit/audit.service');
     await AuditService.log({
       entity: 'USER',
       entityId: user.id,
@@ -209,20 +216,18 @@ export class AuthService {
       actorId: user.id,
     });
 
-    const appUrl = env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    await emailService.sendWelcome(user.email, appUrl);
+    await emailService.sendWelcome(user.email, APP_URL);
   }
 
   async resendInvitation(email: string, actorId: string) {
-    const { prisma } = await import('@/lib/db');
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user || user.status !== 'INVITED') {
-      return; // Silent fail
+      return; // Silent fail — don't leak user existence
     }
 
     const rawToken = crypto.randomBytes(32).toString('hex');
-    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const tokenHash = hashToken(rawToken);
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
     await prisma.user.update({
@@ -234,21 +239,18 @@ export class AuthService {
       },
     });
 
-    const appUrl = env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    await emailService.sendInvitation(user.email, rawToken, appUrl);
+    await emailService.sendInvitation(user.email, rawToken, APP_URL);
 
-    const { AuditService } = await import('@/services/audit/audit.service');
     await AuditService.log({
       entity: 'USER',
       entityId: user.id,
       action: 'INVITATION_RESENT',
-      actorId: actorId,
+      actorId,
     });
   }
 
   async resetPassword(rawToken: string, newPass: string) {
-    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
-    const { prisma } = await import('@/lib/db');
+    const tokenHash = hashToken(rawToken);
 
     const resetToken = await prisma.passwordResetToken.findUnique({
       where: { tokenHash },
@@ -260,7 +262,7 @@ export class AuthService {
 
     const hashedNew = await passwordHash.hash(newPass);
 
-    // Transaction to update password and delete token
+    // Transaction: update password and delete the used token atomically
     await prisma.$transaction([
       prisma.user.update({
         where: { id: resetToken.userId },
@@ -271,7 +273,6 @@ export class AuthService {
       }),
     ]);
 
-    const { AuditService } = await import('@/services/audit/audit.service');
     await AuditService.log({
       entity: 'USER',
       entityId: resetToken.userId,
@@ -283,7 +284,6 @@ export class AuthService {
   }
 
   async changePassword(userId: string, oldPass: string, newPass: string) {
-    const { prisma } = await import('@/lib/db');
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new InvalidCredentialsError();
 
@@ -299,7 +299,6 @@ export class AuthService {
       },
     });
 
-    const { AuditService } = await import('@/services/audit/audit.service');
     await AuditService.log({
       entity: 'USER',
       entityId: userId,

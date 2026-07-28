@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { useAuth } from '@/contexts/auth-context';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -11,6 +10,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAuth } from '@/hooks/use-auth';
 import { profileApi } from '@/services/api/profile-api';
 import { UpdateProfileInput, UpdateProfileSchema } from '@/lib/user/user.schema';
 
@@ -33,10 +33,10 @@ export default function ProfilePage() {
       if (!accessToken) return;
       try {
         const response = await profileApi.getProfile(accessToken);
-        const profile = response.data as Record<string, unknown>;
+        const profile = response.data;
         reset({
-          firstName: profile.firstName || '',
-          lastName: profile.lastName || '',
+          firstName: profile.firstName ?? '',
+          lastName: profile.lastName ?? '',
         });
       } catch {
         toast.error('Failed to load profile data');
@@ -68,9 +68,7 @@ export default function ProfilePage() {
     );
   }
 
-  const initials = `${user?.name?.split(' ')[0]?.[0] || ''}${
-    user?.name?.split(' ')[1]?.[0] || ''
-  }`.toUpperCase();
+  const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase();
 
   return (
     <div className="mx-auto max-w-2xl p-6">
@@ -85,7 +83,9 @@ export default function ProfilePage() {
             {initials}
           </div>
           <div>
-            <h2 className="text-xl font-semibold">{user?.name}</h2>
+            <h2 className="text-xl font-semibold">
+              {user?.firstName} {user?.lastName}
+            </h2>
             <p className="text-muted-foreground text-sm">{user?.email}</p>
           </div>
         </div>

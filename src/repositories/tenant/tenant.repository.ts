@@ -1,4 +1,4 @@
-import { Prisma, Tenant } from '@prisma/client';
+import { Prisma, Tenant, TenantStatus } from '@prisma/client';
 
 import prisma from '@/lib/prisma';
 
@@ -59,7 +59,7 @@ export class TenantRepository {
 
   async updateStatus(
     id: string,
-    status: 'ACTIVE' | 'SUSPENDED' | 'INACTIVE',
+    status: TenantStatus,
     updatedBy?: string,
     tx?: Prisma.TransactionClient,
   ): Promise<Tenant> {

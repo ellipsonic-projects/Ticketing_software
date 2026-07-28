@@ -20,10 +20,24 @@ function extractBearerToken(req: NextRequest): string | undefined {
 }
 
 /**
- * HOC that enforces authentication on API routes.
+ * Type for Next.js App Router dynamic segment context.
+ * Route handlers should use this type for their second parameter when they need typed params.
+ *
+ * @example
+ * authenticate(async (req, ctx) => {
+ *   const { id } = await ctx!.params;
+ * })
  */
-export function authenticate(handler: (req: NextRequest, ...args: unknown[]) => Promise<Response>) {
-  return async (req: NextRequest, ...args: unknown[]): Promise<Response> => {
+export type RouteContext<P extends Record<string, string> = Record<string, string>> = {
+  params: Promise<P>;
+};
+
+/**
+ * HOC that enforces authentication on API routes.
+ * Populates RequestContext with the verified user identity.
+ */
+export function authenticate(handler: (req: NextRequest, ctx?: RouteContext) => Promise<Response>) {
+  return async (req: NextRequest, ctx?: RouteContext): Promise<Response> => {
     const token = extractBearerToken(req);
     if (!token) {
       throw new MissingTokenError();
@@ -63,23 +77,22 @@ export function authenticate(handler: (req: NextRequest, ...args: unknown[]) => 
       },
     });
 
-    return requestContextStore.run(newContext, async () => {
-      return handler(req, ...args);
-    });
+    return requestContextStore.run(newContext, () => handler(req, ctx));
   };
 }
 
 /**
- * HOC that optionally authenticates the user, populating the context if a token exists.
+ * HOC that optionally authenticates the user.
+ * Populates RequestContext if a valid token is present; proceeds unauthenticated if not.
  */
 export function optionalAuthenticate(
-  handler: (req: NextRequest, ...args: unknown[]) => Promise<Response>,
+  handler: (req: NextRequest, ctx?: RouteContext) => Promise<Response>,
 ) {
-  return async (req: NextRequest, ...args: unknown[]): Promise<Response> => {
+  return async (req: NextRequest, ctx?: RouteContext): Promise<Response> => {
     const token = extractBearerToken(req);
 
     if (!token) {
-      return handler(req, ...args);
+      return handler(req, ctx);
     }
 
     try {
@@ -90,6 +103,7 @@ export function optionalAuthenticate(
         if (currentContext.tenantId && currentContext.tenantId !== payload.tenantId) {
           throw new InvalidTenantContextError();
         }
+
         const newContext = new RequestContext({
           tenantId: currentContext.tenantId || payload.tenantId || undefined,
           userId: payload.sub,
@@ -103,14 +117,12 @@ export function optionalAuthenticate(
           },
         });
 
-        return requestContextStore.run(newContext, async () => {
-          return handler(req, ...args);
-        });
+        return requestContextStore.run(newContext, () => handler(req, ctx));
       }
     } catch {
-      // Ignore errors for optional authentication
+      // Ignore errors — optional authentication degrades gracefully
     }
 
-    return handler(req, ...args);
+    return handler(req, ctx);
   };
 }

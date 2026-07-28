@@ -54,7 +54,7 @@ export function TenantList() {
     try {
       setLoading(true);
       const res = await tenantApi.getTenants(
-        { page, pageSize: 10, search } as Record<string, unknown>,
+        { page, pageSize: 10, search, sort: 'createdAt', sortOrder: 'desc' },
         accessToken,
       );
       setTenants(res.data);

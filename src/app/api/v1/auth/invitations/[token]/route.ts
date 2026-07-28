@@ -1,13 +1,15 @@
 import crypto from 'crypto';
 import { NextRequest } from 'next/server';
 
+import { RouteContext } from '@/middleware/authenticate';
+
 import { withErrorHandler } from '@/lib/errors/global-handler';
 import prisma from '@/lib/prisma';
 import { successResponse } from '@/lib/response';
 import { clock } from '@/lib/time';
 
-async function getInvitationHandler(req: NextRequest, { params }: { params: { token: string } }) {
-  const { token } = await params;
+async function getInvitationHandler(req: NextRequest, ctx?: RouteContext) {
+  const { token } = await ctx!.params;
   if (!token) {
     return new Response('Token is required', { status: 400 });
   }

@@ -9,6 +9,7 @@ import {
   SessionExpiredError,
   SessionRevokedError,
 } from '@/lib/errors/auth-errors';
+import prisma from '@/lib/prisma';
 import { clock } from '@/lib/time';
 
 export class SessionService {
@@ -85,11 +86,6 @@ export class SessionService {
     newExpiresAt: Date,
   ): Promise<Session | null> {
     const session = await this.validateRefreshToken(sessionId, oldRefreshToken);
-
-    // Technically rotate should be handled via a transaction or specific repository method,
-    // but we can just use Prisma client directly for the update if needed,
-    // or delegate to authRepository. For simplicity we update it.
-    const { prisma } = await import('@/lib/db');
 
     const hashed = await passwordHash.hash(newRefreshToken);
 

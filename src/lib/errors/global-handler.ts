@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 
+import { RouteContext } from '@/middleware/authenticate';
 import { Prisma } from '@prisma/client';
 
 import { ErrorCodes } from '@/constants/error-codes';
@@ -13,14 +14,14 @@ import { AppError } from './app-error';
 import { DatabaseError } from './database-error';
 
 export function withErrorHandler(
-  handler: (req: NextRequest, ...args: unknown[]) => Promise<Response>,
+  handler: (req: NextRequest, ctx?: RouteContext) => Promise<Response>,
 ) {
-  return async (req: NextRequest, ...args: unknown[]): Promise<Response> => {
+  return async (req: NextRequest, ctx?: RouteContext): Promise<Response> => {
     const context = new RequestContext();
 
     return requestContextStore.run(context, async () => {
       try {
-        return await handler(req, ...args);
+        return await handler(req, ctx);
       } catch (error) {
         const requestId = getRequestContext()?.requestId;
 

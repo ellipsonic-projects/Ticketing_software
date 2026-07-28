@@ -4,16 +4,25 @@ import { CreateTenantInput, ListTenantQuery, UpdateTenantInput } from '@/lib/ten
 
 import { apiClient } from './api-client';
 
+/** Pagination shape returned by the tenants list endpoint. */
+export interface TenantPagination {
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
 export const tenantApi = {
   getTenants: async (params: ListTenantQuery, token: string) => {
-    // filter out undefined values
+    // Filter out undefined values before building query string
     const cleanParams = Object.fromEntries(
-      Object.entries(params).filter(([_, v]) => v !== undefined),
+      Object.entries(params).filter(([, v]) => v !== undefined),
     );
     const query = new URLSearchParams(cleanParams as Record<string, string>).toString();
-    return apiClient<{ data: Tenant[]; pagination: unknown }>(`/platform/tenants?${query}`, {
-      token,
-    });
+    return apiClient<{ data: Tenant[]; pagination: TenantPagination }>(
+      `/platform/tenants?${query}`,
+      { token },
+    );
   },
 
   getTenant: async (id: string, token: string) => {
