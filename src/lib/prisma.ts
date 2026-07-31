@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import '@/lib/events/registry';
 
 const prismaClientSingleton = () => {
   return new PrismaClient();

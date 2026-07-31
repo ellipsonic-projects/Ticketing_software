@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { Prisma } from '@prisma/client';
 
 import { env } from '@/config/env';
 
@@ -42,7 +43,8 @@ export interface RateLimiter {
 
 export class AuthService {
   async login(email: string, pass: string, ipAddress?: string, userAgent?: string) {
-    const user = await authRepository.findInternalUserByEmail(email);
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await authRepository.findInternalUserByEmail(normalizedEmail);
     if (!user) {
       throw new InvalidCredentialsError();
     }
@@ -80,6 +82,7 @@ export class AuthService {
       sessionId: session.id,
       role: user.role,
       mustChangePassword: user.mustChangePassword,
+      clientId: user.clientId || undefined,
     };
 
     // 4. Generate Access Token JWT
@@ -120,10 +123,11 @@ export class AuthService {
 
     const jwtPayload = {
       sub: session.userId,
-      tenantId: session.tenantId,
+      tenantId: user.tenantId,
       sessionId: session.id,
       role: user.role,
       mustChangePassword: user.mustChangePassword,
+      clientId: user.clientId || undefined,
     };
 
     const accessToken = jwtService.generateAccessToken(jwtPayload);
@@ -192,7 +196,7 @@ export class AuthService {
 
     const hashedNew = await passwordHash.hash(newPass);
 
-    await prisma.$transaction([
+    const updates: Prisma.PrismaPromise<unknown>[] = [
       prisma.user.update({
         where: { id: user.id },
         data: {
@@ -203,11 +207,31 @@ export class AuthService {
           activatedAt: clock.now(),
         },
       }),
-      prisma.tenant.update({
-        where: { id: user.tenantId },
-        data: { status: 'ACTIVE' },
-      }),
-    ]);
+    ];
+
+    if (user.role === 'TENANT_ADMIN') {
+      updates.push(
+        prisma.tenant.update({
+          where: { id: user.tenantId },
+          data: { status: 'ACTIVE' },
+        })
+      );
+    } else if (user.role === 'CLIENT') {
+      // Find the client associated with this email and activate it
+      const client = await prisma.client.findFirst({
+        where: { tenantId: user.tenantId, email: user.email },
+      });
+      if (client) {
+        updates.push(
+          prisma.client.update({
+            where: { id: client.id },
+            data: { status: 'ACTIVE' },
+          })
+        );
+      }
+    }
+
+    await prisma.$transaction(updates);
 
     await AuditService.log({
       entity: 'USER',

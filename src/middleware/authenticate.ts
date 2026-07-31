@@ -74,6 +74,7 @@ export function authenticate(handler: (req: NextRequest, ctx?: RouteContext) => 
         tenantId: payload.tenantId,
         role: payload.role,
         sessionId: payload.sessionId,
+        clientId: payload.clientId,
       },
     });
 
@@ -114,6 +115,7 @@ export function optionalAuthenticate(
             tenantId: payload.tenantId,
             role: payload.role,
             sessionId: payload.sessionId,
+            clientId: payload.clientId,
           },
         });
 

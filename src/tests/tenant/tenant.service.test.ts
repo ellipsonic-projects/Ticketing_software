@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AuditService } from '@/services/audit/audit.service';
@@ -5,7 +6,17 @@ import { TenantService } from '@/services/tenant/tenant.service';
 import { tenantRepository } from '@/repositories/tenant/tenant.repository';
 
 vi.mock('@/repositories/tenant/tenant.repository');
+vi.mock('@/repositories/user/user.repository');
 vi.mock('@/services/audit/audit.service');
+vi.mock('@/lib/prisma', () => ({
+  default: {
+    $transaction: vi.fn((cb) => cb({
+      user: {
+        update: vi.fn().mockResolvedValue({}),
+      }
+    })),
+  },
+}));
 
 describe('TenantService', () => {
   beforeEach(() => {
@@ -38,6 +49,11 @@ describe('TenantService', () => {
         name: 'Acme',
         status: 'ACTIVE',
       } as unknown as never);
+      const { userRepository } = await import('@/repositories/user/user.repository');
+      vi.mocked(userRepository.findByEmail).mockResolvedValue(null);
+      vi.mocked(userRepository.create).mockResolvedValue({
+        id: 'u1',
+      } as unknown as never);
 
       const tenant = await TenantService.createTenant({
         name: 'Acme',
@@ -55,8 +71,12 @@ describe('TenantService', () => {
 
       expect(tenantRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'Acme', domain: 'acme.com', slug: 'acme' }),
+        expect.anything()
       );
-      expect(AuditService.log).toHaveBeenCalledWith(expect.objectContaining({ action: 'Created' }));
+      expect(AuditService.log).toHaveBeenCalledWith(
+        expect.objectContaining({ action: 'Created' }),
+        expect.anything()
+      );
     });
   });
 

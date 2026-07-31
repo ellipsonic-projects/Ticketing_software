@@ -1,0 +1,51 @@
+import { z } from 'zod';
+
+const optionalString = z.string().trim().min(1).nullable().optional().or(z.literal(''));
+const optionalEmail = z
+  .string()
+  .trim()
+  .email('Invalid email format')
+  .nullable()
+  .optional()
+  .or(z.literal(''));
+
+export const CreateClientSchema = z.object({
+  name: z.string().trim().min(1, 'Client name is required'),
+  code: optionalString,
+  email: optionalEmail,
+  phone: optionalString,
+  website: optionalString,
+  contactName: optionalString,
+  address: optionalString,
+  notes: optionalString,
+});
+
+export type CreateClientInput = z.infer<typeof CreateClientSchema>;
+
+export const UpdateClientSchema = CreateClientSchema.partial().extend({
+  status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
+});
+
+export type UpdateClientInput = z.infer<typeof UpdateClientSchema>;
+
+export const ClientQuerySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(10),
+  search: z.string().optional(),
+  status: z.enum(['ACTIVE', 'INACTIVE', 'ARCHIVED']).optional(),
+  sort: z.enum(['createdAt', 'updatedAt', 'name']).default('createdAt'),
+  order: z.enum(['asc', 'desc']).default('desc'),
+});
+
+export type ClientQuery = z.infer<typeof ClientQuerySchema>;
+
+export const OnboardClientSchema = CreateClientSchema.extend({
+  project: z.object({
+    name: z.string().trim().min(1, 'Project name is required'),
+    code: optionalString,
+    description: optionalString,
+    status: z.enum(['ACTIVE', 'INACTIVE']).optional().default('ACTIVE'),
+  }),
+});
+
+export type OnboardClientInput = z.infer<typeof OnboardClientSchema>;

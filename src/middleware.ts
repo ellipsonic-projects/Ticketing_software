@@ -12,6 +12,9 @@ const protectedPaths = [
   '/tickets',
   '/platform',
   '/users',
+  '/client',
+  '/projects',
+  '/clients',
 ];
 
 // Add paths that are only for guests (unauthenticated users)
@@ -19,7 +22,6 @@ const guestPaths = [
   '/auth/login',
   '/auth/register',
   '/auth/forgot-password',
-  '/auth/reset-password',
 ];
 
 export function middleware(request: NextRequest) {

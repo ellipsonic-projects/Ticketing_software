@@ -59,4 +59,9 @@ export const PERMISSION_MATRIX: Record<Role, Permission[]> = {
     Permission.TICKET_UPDATE,
     Permission.TICKET_VIEW,
   ],
+  [ROLES.CLIENT]: [
+    Permission.PROJECT_VIEW,
+    Permission.TICKET_CREATE,
+    Permission.TICKET_VIEW,
+  ],
 };

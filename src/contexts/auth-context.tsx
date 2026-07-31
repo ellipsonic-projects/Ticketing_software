@@ -14,6 +14,7 @@ export interface User {
   role: Role;
   tenantId: string;
   mustChangePassword?: boolean;
+  clientId?: string;
 }
 
 export interface AuthContextType {

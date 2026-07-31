@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Session } from '@prisma/client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

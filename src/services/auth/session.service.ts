@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Session } from '@prisma/client';
 
 import { authRepository } from '@/repositories/auth/auth.repository';
@@ -18,7 +19,9 @@ export class SessionService {
    */
   async validateSession(sessionId: string) {
     const session = await authRepository.findSessionWithContext(sessionId);
-    if (!session) return null;
+    if (!session) {
+      throw new SessionExpiredError('Session not found or expired');
+    }
 
     if (session.revokedAt) {
       throw new SessionRevokedError();

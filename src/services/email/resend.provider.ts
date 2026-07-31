@@ -1,3 +1,4 @@
+import React from 'react';
 import { Resend } from 'resend';
 
 import { logger } from '@/lib/logger';
@@ -23,10 +24,12 @@ export class ResendProvider implements EmailProvider {
   async send(options: SendEmailOptions): Promise<void> {
     if (!this.resend) {
       // Mock mode for local development without an API key
+      // Extract props safely using a type guard instead of 'any' to adhere to strict TS
+      const props = React.isValidElement(options.react) ? (options.react.props as Record<string, unknown>) : {};
       logger.info('Mock Email Sent:', {
         to: options.to,
         subject: options.subject,
-        contentPreview: 'Check your terminal console or use a real API key to send emails.',
+        ...props,
       });
       return;
     }

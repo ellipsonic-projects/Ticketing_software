@@ -57,8 +57,12 @@ export async function apiClient<T>(endpoint: string, options: FetchOptions = {})
   }
 
   if (!response.ok) {
-    if (response.status === 401 && endpoint !== '/auth/login' && typeof window !== 'undefined') {
-      if (window.location.pathname !== '/auth/login') {
+    if (
+      response.status === 401 &&
+      !['/auth/login', '/auth/refresh'].includes(endpoint) &&
+      typeof window !== 'undefined'
+    ) {
+      if (!window.location.pathname.startsWith('/auth/')) {
         window.location.href = '/auth/login';
       }
     }

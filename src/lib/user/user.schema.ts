@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const RoleEnum = z.enum(['PLATFORM_ADMIN', 'TENANT_ADMIN', 'ENGINEER']);
+const RoleEnum = z.enum(['PLATFORM_ADMIN', 'TENANT_ADMIN', 'ENGINEER', 'CLIENT']);
 const UserStatusEnum = z.enum(['INVITED', 'ACTIVE', 'INACTIVE', 'SUSPENDED']);
 
 export const CreateUserSchema = z.object({
@@ -8,6 +8,7 @@ export const CreateUserSchema = z.object({
   lastName: z.string().min(1, 'Last name is required').max(100),
   email: z.string().email('Invalid email address'),
   role: RoleEnum,
+  clientId: z.string().optional(),
 });
 
 export type CreateUserInput = z.infer<typeof CreateUserSchema>;

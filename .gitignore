@@ -41,3 +41,27 @@ yarn-error.log*
 next-env.d.ts
 
 /generated/prisma
+
+# scratch / debug files at repo root
+test-*.ts
+test-*.js
+check-*.ts
+check-*.js
+fix-routes*.js
+seed-test.ts
+skeleton.txt
+recover.py
+error.log
+eslint.json
+test.log
+test_output.txt
+ts-errors.log
+tsc_output.txt
+structure.txt
+uploadthing-error.log
+
+# scratch directory
+/scratch/
+
+# local upload artifacts
+/uploads/

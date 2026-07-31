@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { Toaster } from 'sonner';
 
 import { BackgroundGradient } from '@/components/ui/background-gradient';
+import { QueryProvider } from '@/providers/query-provider';
 import { ThemeProvider } from '@/providers/theme-provider';
 
 import './globals.css';
@@ -36,7 +37,9 @@ export default function RootLayout({
       <body className="relative flex min-h-full flex-col">
         <BackgroundGradient />
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <QueryProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </QueryProvider>
           <Toaster position="top-right" richColors />
         </ThemeProvider>
       </body>

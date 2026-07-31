@@ -20,6 +20,7 @@ export class UserRepository {
         password: data.password || '', // This should ideally be a placeholder or required, but we'll supply it from service
         role: data.role,
         mustChangePassword: data.mustChangePassword || false,
+        clientId: data.clientId || null,
         createdBy,
         updatedBy: createdBy,
       },

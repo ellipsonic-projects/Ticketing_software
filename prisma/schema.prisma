@@ -9,21 +9,32 @@ datasource db {
 }
 
 model Tenant {
-  id           String       @id @default(cuid())
-  name         String
-  slug         String       @unique
-  status       TenantStatus @default(ACTIVE)
-  createdAt    DateTime     @default(now())
-  createdBy    String?
-  updatedAt    DateTime     @updatedAt
-  updatedBy    String?
-  contactEmail String?
-  contactPhone String?
-  currency     String       @default("USD")
-  deletedAt    DateTime?
-  domain       String?      @unique
-  timezone     String       @default("UTC")
-  users        User[]
+  id            String          @id @default(cuid())
+  name          String
+  slug          String          @unique
+  status        TenantStatus    @default(ACTIVE)
+  createdAt     DateTime        @default(now())
+  createdBy     String?
+  updatedAt     DateTime        @updatedAt
+  updatedBy     String?
+  contactEmail  String?
+  contactPhone  String?
+  currency      String          @default("USD")
+  deletedAt     DateTime?
+  domain        String?         @unique
+  timezone      String          @default("UTC")
+  users         User[]
+  clients       Client[]
+  projects      Project[]
+  slapolicies   SLAPolicy[]
+  businessHours BusinessHours[]
+  holidays      Holiday[]
+
+  tickets              Ticket[]
+  ticketCategories     TicketCategory[]
+  ticketTags           TicketTag[]
+  ticketHistories      TicketHistory[]
+  notifications        Notification[]
 
   @@index([status])
   @@index([name])
@@ -44,6 +55,7 @@ model User {
   deletedAt           DateTime?
   firstName           String
   lastName            String
+  avatarUrl           String?
   mustChangePassword  Boolean              @default(false)
   invitationTokenHash String?              @unique
   invitationExpiresAt DateTime?
@@ -51,10 +63,21 @@ model User {
   activatedAt         DateTime?
   passwordResetTokens PasswordResetToken[]
   sessions            Session[]
-  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  clientId            String?
+
+  assignedTickets   Ticket[]        @relation("AssignedTickets")
+  reportedTickets   Ticket[]        @relation("ReportedTickets")
+  ticketComments    TicketComment[]
+  ticketAttachments TicketAttachment[]
+  ticketHistories   TicketHistory[]
+  notifications     Notification[]
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  client Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
 
   @@index([deletedAt])
   @@index([tenantId])
+  @@index([clientId])
 }
 
 model Session {
@@ -120,4 +143,358 @@ enum Role {
   PLATFORM_ADMIN
   TENANT_ADMIN
   ENGINEER
+  CLIENT
+}
+
+enum ClientStatus {
+  PENDING_ACTIVATION
+  ACTIVE
+  INACTIVE
+}
+
+model Client {
+  id       String @id @default(cuid())
+  tenantId String
+
+  name String
+  code String?
+
+  email String?
+  phone String?
+
+  website String?
+
+  contactName String?
+  address     String?
+  notes       String?
+
+  status ClientStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdById String?
+  updatedById String?
+
+  deletedAt DateTime?
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  projects Project[]
+  tickets  Ticket[]
+  users    User[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([status])
+  @@index([name])
+}
+
+// ---------------------------------------------------------------------------
+// Project
+// ---------------------------------------------------------------------------
+
+enum ProjectStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum SupportStatus {
+  ENABLED
+  PAUSED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Project {
+  id       String @id @default(cuid())
+  tenantId String
+  clientId String
+
+  name        String
+  code        String?
+  description String?
+  color       String?
+
+  status ProjectStatus @default(ACTIVE)
+
+  supportStatus    SupportStatus  @default(ENABLED)
+  defaultPriority  TicketPriority @default(MEDIUM)
+  supportEmail     String?
+  supportPhone     String?
+  supportNotes     String?
+  supportStartDate DateTime?
+  supportEndDate   DateTime?
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  archivedAt DateTime?
+
+  createdById String?
+  updatedById String?
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  slaPolicy     SLAPolicy?
+  businessHours BusinessHours[]
+  holidays      Holiday[]
+  tickets       Ticket[]
+
+  @@unique([tenantId, clientId, name])
+  @@index([tenantId])
+  @@index([clientId])
+  @@index([status])
+}
+
+model SLAPolicy {
+  id        String @id @default(cuid())
+  projectId String @unique
+  tenantId  String
+
+  responseTimeMinutes   Int
+  resolutionTimeMinutes Int
+  businessHoursEnabled  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model BusinessHours {
+  id        String @id @default(cuid())
+  projectId String
+  tenantId  String
+
+  dayOfWeek Int // 0 = Sunday, 1 = Monday, etc.
+  isOpen    Boolean   @default(true)
+  startTime DateTime? @db.Time(0)
+  endTime   DateTime? @db.Time(0)
+  timezone  String?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, dayOfWeek])
+  @@index([tenantId])
+}
+
+model Holiday {
+  id        String @id @default(cuid())
+  projectId String
+  tenantId  String
+
+  name        String
+  holidayDate DateTime @db.Date
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, holidayDate])
+  @@index([tenantId])
+}
+
+model TicketCategory {
+  id       String @id @default(cuid())
+  tenantId String
+  name     String
+  color    String?
+
+  tickets Ticket[]
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model TicketTag {
+  id       String @id @default(cuid())
+  tenantId String
+  name     String
+  color    String?
+
+  tickets Ticket[]
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model Ticket {
+  id        String @id @default(cuid())
+  tenantId  String
+  projectId String
+  clientId  String
+  number    Int // Sequential within the tenant
+
+  title       String
+  description String
+
+  status   TicketStatus   @default(OPEN)
+  priority TicketPriority @default(MEDIUM)
+
+  categoryId   String?
+  assignedToId String?
+  reportedById String
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  resolvedAt DateTime?
+  closedAt   DateTime?
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  client  Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  category   TicketCategory? @relation(fields: [categoryId], references: [id])
+  assignedTo User?           @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  reportedBy User            @relation("ReportedTickets", fields: [reportedById], references: [id])
+
+  tags        TicketTag[]
+  comments    TicketComment[]
+  attachments TicketAttachment[]
+  sla         TicketSLA?
+  history     TicketHistory[]
+  notifications Notification[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId])
+  @@index([projectId])
+  @@index([clientId])
+  @@index([assignedToId])
+  @@index([status])
+  @@index([resolvedAt])
+  @@index([closedAt])
+}
+
+model TicketSLA {
+  id                    String    @id @default(cuid())
+  ticketId              String    @unique
+  firstResponseTimeMins Int
+  resolutionTimeMins    Int
+  businessHoursEnabled  Boolean
+
+  firstResponseBreachAt DateTime?
+  resolutionBreachAt    DateTime?
+  firstRespondedAt      DateTime?
+  resolvedAt            DateTime?
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+}
+
+model TicketComment {
+  id         String   @id @default(cuid())
+  ticketId   String
+  authorId   String
+  body       String
+  isInternal Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  author User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([createdAt])
+}
+
+model TicketAttachment {
+  id         String @id @default(cuid())
+  ticketId   String
+  uploaderId String
+
+  filename String
+  size     Int
+  mimeType String
+  url      String
+
+  createdAt DateTime @default(now())
+
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  uploader User   @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
+// ---------------------------------------------------------------------------
+// TicketHistory — immutable ticket lifecycle audit trail
+// ---------------------------------------------------------------------------
+
+enum TicketHistoryAction {
+  CREATED
+  STATUS_CHANGED
+  PRIORITY_CHANGED
+  ASSIGNED
+  REASSIGNED
+  UNASSIGNED
+  COMMENT_ADDED
+  ATTACHMENT_ADDED
+  RESOLVED
+  CLOSED
+  REOPENED
+}
+
+model TicketHistory {
+  id          String              @id @default(cuid())
+  tenantId    String
+  ticketId    String
+  action      TicketHistoryAction
+  oldValue    String?
+  newValue    String?
+  changedById String?
+
+  createdAt DateTime @default(now())
+
+  tenant    Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  ticket    Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  changedBy User?  @relation(fields: [changedById], references: [id], onDelete: SetNull)
+
+  @@index([ticketId])
+  @@index([tenantId])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Notification — in-app notifications
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id        String    @id @default(cuid())
+  tenantId  String
+  userId    String
+  ticketId  String?
+  title     String
+  message   String
+  isRead    Boolean   @default(false)
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ticket  Ticket? @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
 }

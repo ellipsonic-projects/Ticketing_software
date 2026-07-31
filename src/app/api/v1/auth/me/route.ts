@@ -28,6 +28,7 @@ export const GET = withErrorHandler(
         status: true,
         role: true,
         tenantId: true,
+        clientId: true,
         tenant: {
           select: {
             id: true,

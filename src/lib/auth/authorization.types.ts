@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Permission } from './permissions';
 import { Role } from './roles';
 

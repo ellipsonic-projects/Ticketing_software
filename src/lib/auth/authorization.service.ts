@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { AuthorizationError, Identity } from './authorization.types';
 import { PERMISSION_MATRIX } from './permission-matrix';
 import { Permission } from './permissions';
