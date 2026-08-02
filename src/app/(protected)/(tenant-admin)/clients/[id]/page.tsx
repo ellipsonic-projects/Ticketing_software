@@ -8,13 +8,9 @@ export const metadata: Metadata = {
 };
 
 // Use an async layout wrapper to properly unwrap params in Next.js 15
-export default async function ClientDetailsPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function ClientDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  
+
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <ClientDetails id={id} />

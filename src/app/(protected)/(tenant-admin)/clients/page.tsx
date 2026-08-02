@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-import { ClientList } from '@/components/clients/client-list';
+import { ClientManager } from '@/components/clients/client-manager';
 
 export const metadata: Metadata = {
   title: 'Clients | Multi-Tenant Ticketing System',
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function ClientsPage() {
-  return <ClientList />;
+  return <ClientManager />;
 }
