@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { ArrowRight, Loader2 } from 'lucide-react';
 
-import { ActivityIcon } from '@/components/dashboard/activity-timeline'; // Assuming we can reuse this, or I'll implement a local version
 import { useActivity } from '@/hooks/use-activity';
 import { TimelineEvent } from '@/lib/activity/activity.schema';
 
