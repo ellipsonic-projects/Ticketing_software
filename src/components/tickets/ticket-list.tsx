@@ -411,7 +411,7 @@ export function TicketList() {
           <div className="flex items-center gap-2">
             <select
               className="h-8 rounded border border-slate-200 bg-white px-2 text-sm text-slate-700 shadow-sm outline-none"
-              // @ts-expect-error
+              // @ts-ignore
               value={(data as any)?.pageSize || 10}
               onChange={(e) => updateQuery('limit', e.target.value)}
             >
