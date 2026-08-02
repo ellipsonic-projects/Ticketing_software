@@ -1,12 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
 import { useAuth } from '@/hooks/use-auth';
 import { projectApi } from '@/services/api/project-api';
-import { ProjectQuery, CreateProjectInput, UpdateProjectInput } from '@/lib/project/project.schema';
+import { CreateProjectInput, ProjectQuery, UpdateProjectInput } from '@/lib/project/project.schema';
 
 export const projectKeys = {
   all: ['projects'] as const,
   lists: () => [...projectKeys.all, 'list'] as const,
-  list: (filters: ProjectQuery & { withStats?: boolean }) => [...projectKeys.lists(), filters] as const,
+  list: (filters: ProjectQuery & { withStats?: boolean }) =>
+    [...projectKeys.lists(), filters] as const,
   details: () => [...projectKeys.all, 'detail'] as const,
   detail: (id: string) => [...projectKeys.details(), id] as const,
   stats: () => [...projectKeys.all, 'stats'] as const,

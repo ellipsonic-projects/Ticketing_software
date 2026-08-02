@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma, Holiday } from '@prisma/client';
+import { Holiday, Prisma, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -32,7 +32,7 @@ export class HolidayRepository {
    */
   static async create(
     data: Prisma.HolidayUncheckedCreateInput,
-    db: Prisma.TransactionClient | PrismaClient = prisma
+    db: Prisma.TransactionClient | PrismaClient = prisma,
   ): Promise<Holiday> {
     return db.holiday.create({
       data,
@@ -45,7 +45,7 @@ export class HolidayRepository {
   static async update(
     id: string,
     data: Prisma.HolidayUncheckedUpdateInput,
-    db: Prisma.TransactionClient | PrismaClient = prisma
+    db: Prisma.TransactionClient | PrismaClient = prisma,
   ): Promise<Holiday> {
     return db.holiday.update({
       where: { id },
@@ -58,7 +58,7 @@ export class HolidayRepository {
    */
   static async delete(
     id: string,
-    db: Prisma.TransactionClient | PrismaClient = prisma
+    db: Prisma.TransactionClient | PrismaClient = prisma,
   ): Promise<void> {
     await db.holiday.delete({
       where: { id },

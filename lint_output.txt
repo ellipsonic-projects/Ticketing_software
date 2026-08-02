@@ -1,0 +1,307 @@
+
+> multi_tenant_ticketing_system@0.1.0 lint
+> eslint .
+
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/fix-routes.js
+  1:12  error    A `require()` style import is forbidden                                          @typescript-eslint/no-require-imports
+  2:7   warning  'path' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  2:14  error    A `require()` style import is forbidden                                          @typescript-eslint/no-require-imports
+  3:14  error    A `require()` style import is forbidden                                          @typescript-eslint/no-require-imports
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/fix-routes2.js
+  1:12  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  2:14  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/prisma/seed.ts
+   37:10  warning  'platformAdmin' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  190:9   warning  'slaPolicy' is assigned a value but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/scratch/create-platform-admin.ts
+  31:9  warning  'admin' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/(protected)/(tenant-admin)/dashboard/page.tsx
+  11:3  warning  'CheckCircle2' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  12:3  warning  'ChevronLeft' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  13:3  warning  'ChevronRight' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  14:3  warning  'Clock' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+  17:3  warning  'MoreHorizontal' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/(protected)/(tenant-admin)/sla/page.tsx
+   11:24  warning  'useUpdateTenantSLASettings' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   63:42  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+   65:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/(protected)/(tenant-admin)/sla/page.tsx:65:9
+  63 |       const tier = policy.tiers.find((t: any) => t.priority === selectedPriority);
+  64 |       if (tier) {
+> 65 |         setTierForm({
+     |         ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  66 |           responseVal:
+  67 |             tier.responseTimeMinutes >= 60 && tier.responseTimeMinutes % 60 === 0
+  68 |               ? tier.responseTimeMinutes / 60  react-hooks/set-state-in-effect
+  100:19  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/auth/me/route.ts
+  5:10  warning  'authRepository' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/client-onboarding/route.ts
+  13:55  warning  'ctx' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/clients/route.ts
+  13:52  warning  'ctx' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  41:54  warning  'ctx' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/platform/tenants/[id]/route.ts
+  9:10  warning  'TenantNotFoundError' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/profile/route.ts
+  11:23  warning  'req' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/projects/route.ts
+  13:53  warning  'ctx' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  58:21  warning  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  58:54  warning  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  72:55  warning  'ctx' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/projects/stats/route.ts
+  10:39  warning  'req' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  10:57  warning  'ctx' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/sla/route.ts
+  14:30  warning  'req' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/tenant/dashboard/stats/route.ts
+  11:40  warning  'req' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  11:58  warning  'ctx' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/tickets/[id]/attachments/route.ts
+  7:10  warning  'AppError' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  9:10  warning  'ValidationError' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/tickets/route.ts
+   8:10  warning  'AppError' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  14:52  warning  'ctx' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars
+  48:54  warning  'ctx' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/tickets/stats/route.ts
+  11:56  warning  'ctx' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/api/v1/users/me/activity/route.ts
+  11:55  warning  'ctx' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/auth/accept-invitation/page.tsx
+   4:8   warning  'Link' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  16:10  warning  'authApi' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  67:16  warning  'err' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/auth/layout.tsx
+  1:10  warning  'ReactNode' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/auth/reset-password/page.tsx
+  4:8  warning  'Link' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/app/auth/session-expired/page.tsx
+  3:8  warning  'Link' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/auth/reset-password-form.tsx
+  4:8   warning  'Link' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  5:10  warning  'useRouter' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  7:24  warning  'Loader2' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/clients/client-details.tsx
+   3:21  warning  'useState' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+   9:3   warning  'ArrowLeft' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  10:3   warning  'Building2' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/clients/client-list.tsx
+    4:8   warning  'Link' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+    8:3   warning  'ChevronLeft' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+    9:3   warning  'ChevronRight' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+   14:3   warning  'Search' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+   35:10  warning  'Button' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+   45:10  warning  'Input' is defined but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+   63:49  warning  Unexpected any. Specify a different type                                                 @typescript-eslint/no-explicit-any
+   64:45  warning  Unexpected any. Specify a different type                                                 @typescript-eslint/no-explicit-any
+   65:47  warning  Unexpected any. Specify a different type                                                 @typescript-eslint/no-explicit-any
+   69:24  warning  'updateClient' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   69:49  warning  'isUpdating' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  192:35  warning  Unexpected any. Specify a different type                                                 @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/clients/client-side-panel.tsx
+  3:10  warning  'format' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/clients/onboard-client-wizard.tsx
+  79:22  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/clients/onboard-client-wizard.tsx:79:22
+  77 |   });
+  78 |
+> 79 |   const formValues = watch();
+     |                      ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  80 |
+  81 |   const handleNext = async (e?: React.MouseEvent) => {
+  82 |     if (e) e.preventDefault();  react-hooks/incompatible-library
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/engineer/dashboard/engineer-dashboard-tickets.tsx
+  11:10  warning  'Button' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/engineer/dashboard/engineer-recent-activity.tsx
+   8:10  warning  'ActivityIcon' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  10:10  warning  'TimelineEvent' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/engineer/dashboard/engineer-upcoming-deadlines.tsx
+  30:17  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/engineer/dashboard/engineer-upcoming-deadlines.tsx:30:17
+  28 |     if (!breachAt) return 'No SLA';
+  29 |     const breachTime = new Date(breachAt).getTime();
+> 30 |     const now = Date.now();
+     |                 ^^^^^^^^^^ Cannot call impure function
+  31 |     const diff = breachTime - now;
+  32 |
+  33 |     if (diff < 0) return 'Breached';                                                                                                                                                                                                                                                        react-hooks/purity
+  47:49  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/engineer/dashboard/engineer-upcoming-deadlines.tsx:47:49
+  45 |   const getUrgencyColor = (breachAt: Date | string | null) => {
+  46 |     if (!breachAt) return 'text-slate-500';
+> 47 |     const diff = new Date(breachAt).getTime() - Date.now();
+     |                                                 ^^^^^^^^^^ Cannot call impure function
+  48 |     if (diff < 0) return 'text-red-600 font-bold'; // Breached
+  49 |     if (diff < 4 * 60 * 60 * 1000) return 'text-red-500 font-semibold'; // < 4 hours
+  50 |     if (diff < 12 * 60 * 60 * 1000) return 'text-amber-500 font-medium'; // < 12 hours  react-hooks/purity
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/projects/create-project-dialog.tsx
+  57:26  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/projects/create-project-dialog.tsx:57:26
+  55 |   });
+  56 |
+> 57 |   const selectedClient = watch('clientId');
+     |                          ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  58 |
+  59 |   const onSubmit = async (data: CreateProjectInput) => {
+  60 |     try {  react-hooks/incompatible-library
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/projects/edit-project.tsx
+  39:26  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/projects/edit-project.tsx:39:26
+  37 |   });
+  38 |
+> 39 |   const selectedStatus = watch('status');
+     |                          ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  40 |
+  41 |   useEffect(() => {
+  42 |     if (project) {  react-hooks/incompatible-library
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/projects/project-details.tsx
+   3:8   warning  'Link' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+   6:71  warning  'Users' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  21:10  warning  'SLAPolicyCard' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/projects/project-list.tsx
+   4:8   warning  'Link' is defined but never used. Allowed unused vars must match /^_/u                       @typescript-eslint/no-unused-vars
+   9:3   warning  'ChevronLeft' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+  10:3   warning  'ChevronRight' is defined but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+  15:3   warning  'Search' is defined but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+  46:10  warning  'Input' is defined but never used. Allowed unused vars must match /^_/u                      @typescript-eslint/no-unused-vars
+  51:10  warning  'CreateProjectDialog' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  52:10  warning  'ProjectDashboardStats' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  69:49  warning  Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  70:63  warning  Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  71:45  warning  Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  72:47  warning  Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  86:9   warning  'canCreateProject' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/projects/project-side-panel.tsx
+  3:62  warning  'User' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/projects/project-support-config.tsx
+  35:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  55:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/projects/sla/business-hours-card.tsx
+  169:42  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/projects/sla/business-hours-card.tsx:169:42
+  167 |                             <Input
+  168 |                               type="time"
+> 169 |                               disabled={!form.watch(`schedule.${index}.isOpen`) || !canUpdate}
+      |                                          ^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  170 |                               value={field.value || ''}
+  171 |                               onChange={field.onChange}
+  172 |                             />  react-hooks/incompatible-library
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/shared/activity-timeline.tsx
+  6:10  warning  'Card' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  6:16  warning  'CardContent' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/tenant-admin/tenant-sidebar.tsx
+  7:3  warning  'Bell' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/tickets/assign-engineer-sidebar.tsx
+  41:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/tickets/export-tickets-button.tsx
+  23:57  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/tickets/ticket-details.tsx
+   13:3   warning  'CheckCircle2' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   27:3   warning  'XCircle' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+   69:20  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+   69:48  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  360:43  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  508:50  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/components/tickets/ticket-list.tsx
+    7:10  warning  'TicketPriority' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   15:3   warning  'Filter' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+   24:10  warning  'Input' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+   78:31  warning  Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  106:72  warning  Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  291:39  warning  Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/hooks/use-ticket-attachments.ts
+   6:54  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:61  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/hooks/use-ticket-comments.ts
+   7:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:54  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/hooks/use-ticket-timeline.ts
+  6:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/repositories/project/project.repository.ts
+    1:18  warning  'PrismaClient' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   25:14  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+   26:20  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+   97:27  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  111:32  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  160:54  warning  'actorId' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars
+
+/home/shreyas/Documents/Elipsonics/multi_tenant_ticketing_system/src/services/tenant/tenant.service.ts
+  181:85  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 121 problems (8 errors, 113 warnings)
+

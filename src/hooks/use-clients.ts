@@ -1,12 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { ClientQuery, CreateClientInput, UpdateClientInput, OnboardClientInput } from '@/lib/client/client.schema';
-import { clientApi } from '@/services/api/client-api';
 import { useAuth } from '@/hooks/use-auth';
+import { clientApi } from '@/services/api/client-api';
+import {
+  ClientQuery,
+  CreateClientInput,
+  OnboardClientInput,
+  UpdateClientInput,
+} from '@/lib/client/client.schema';
 
 export function useClients(query: ClientQuery) {
   const { accessToken } = useAuth();
-  
+
   return useQuery({
     queryKey: ['clients', query],
     queryFn: () => {
@@ -18,13 +23,14 @@ export function useClients(query: ClientQuery) {
   });
 }
 
-export function useClientActivity(id: string, page = 1, pageSize = 20) {
+export function useClientActivity(id: string | null, page = 1, pageSize = 20) {
   const { accessToken } = useAuth();
-  
+
   return useQuery({
     queryKey: ['clients', id, 'activity', page, pageSize],
     queryFn: () => {
       if (!accessToken) throw new Error('No access token');
+      if (!id) throw new Error('No client id');
       return clientApi.getClientActivity(id, page, pageSize, accessToken);
     },
     enabled: !!accessToken && !!id,
@@ -34,7 +40,7 @@ export function useClientActivity(id: string, page = 1, pageSize = 20) {
 
 export function useClient(id: string) {
   const { accessToken } = useAuth();
-  
+
   return useQuery({
     queryKey: ['clients', id],
     queryFn: () => {
@@ -42,6 +48,21 @@ export function useClient(id: string) {
       return clientApi.getClient(id, accessToken);
     },
     enabled: !!accessToken && !!id,
+  });
+}
+
+export function useClientStats(id: string | null) {
+  const { accessToken } = useAuth();
+
+  return useQuery({
+    queryKey: ['clients', id, 'stats'],
+    queryFn: () => {
+      if (!accessToken) throw new Error('No access token');
+      if (!id) throw new Error('No client id');
+      return clientApi.getClientStats(id, accessToken);
+    },
+    enabled: !!accessToken && !!id,
+    staleTime: 60_000,
   });
 }
 

@@ -3,19 +3,14 @@
 import { useState } from 'react';
 
 import { useClientDashboard } from '@/hooks/use-client-dashboard';
+import { mapDashboardSla, mapProjectHealth, mapTimeline } from '@/lib/client-dashboard/mappers';
 
-import { SummaryCards } from './summary-cards';
-import { RecentTicketsTable } from './recent-tickets-table';
-import { SlaPerformanceCard } from './sla-performance-card';
 import { ProjectHealthCard } from './project-health-card';
-import { SupportTimelineCard } from './support-timeline-card';
+import { RecentTicketsTable } from './recent-tickets-table';
 import { DashboardSkeleton } from './skeletons';
-
-import {
-  mapDashboardSla,
-  mapProjectHealth,
-  mapTimeline,
-} from '@/lib/client-dashboard/mappers';
+import { SlaPerformanceCard } from './sla-performance-card';
+import { SummaryCards } from './summary-cards';
+import { SupportTimelineCard } from './support-timeline-card';
 
 const TICKETS_PER_PAGE = 6;
 

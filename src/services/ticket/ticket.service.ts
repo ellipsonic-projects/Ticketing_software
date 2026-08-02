@@ -1,23 +1,28 @@
 /* eslint-disable */
 import { Prisma, Ticket, TicketStatus } from '@prisma/client';
-import prisma from '@/lib/prisma';
-import { ticketRepository } from '@/repositories/ticket/ticket.repository';
-import { CreateTicketInput, UpdateTicketInput, AssignTicketInput } from '@/lib/ticket/ticket.schema';
+
 import { AuditService } from '@/services/audit/audit.service';
-import { ValidationError } from '@/lib/errors/validation-error';
-import { NotFoundError } from '@/lib/errors/not-found-error';
-import { TicketQueryBuilder, TicketQuerySchema } from '@/lib/db/ticket-query-builder';
+import { ticketRepository } from '@/repositories/ticket/ticket.repository';
 import { ServerAuthIdentity as Identity } from '@/lib/auth/auth-context';
+import { TicketQueryBuilder, TicketQuerySchema } from '@/lib/db/ticket-query-builder';
+import { NotFoundError } from '@/lib/errors/not-found-error';
+import { ValidationError } from '@/lib/errors/validation-error';
 import { eventDispatcher } from '@/lib/events/dispatcher';
 import {
-  TicketCreatedEvent,
   TicketAssignedEvent,
-  TicketStatusChangedEvent,
-  TicketPriorityChangedEvent,
-  TicketResolvedEvent,
   TicketClosedEvent,
+  TicketCreatedEvent,
+  TicketPriorityChangedEvent,
   TicketReassignedEvent,
+  TicketResolvedEvent,
+  TicketStatusChangedEvent,
 } from '@/lib/events/types';
+import prisma from '@/lib/prisma';
+import {
+  AssignTicketInput,
+  CreateTicketInput,
+  UpdateTicketInput,
+} from '@/lib/ticket/ticket.schema';
 
 export class TicketService {
   /**
@@ -25,12 +30,12 @@ export class TicketService {
    */
   static async getTickets(tenantId: string, user: Identity, query: TicketQuerySchema) {
     const builderArgs = TicketQueryBuilder.build(tenantId, user, query);
-    
+
     const [tickets, total] = await ticketRepository.findMany(builderArgs);
-    
+
     const limit = builderArgs.take || 25;
     const page = query.page || 1;
-    
+
     return {
       items: tickets,
       page,
@@ -59,18 +64,27 @@ export class TicketService {
   /**
    * Retrieves dashboard statistics for tickets
    */
-  static async getTicketStats(tenantId: string, user: Identity, clientId?: string) {
+  static async getTicketStats(
+    tenantId: string,
+    user: Identity,
+    clientId?: string,
+    assignedToId?: string,
+  ) {
     // If the user is a client, enforce their own clientId
     const targetClientId = user.role === 'CLIENT' ? user.clientId : clientId;
 
-    if (!targetClientId) {
-      // For now, if no clientId is provided and user is not a client, 
-      // we could return tenant-wide stats, but the UI requests stats per client.
-      // We will throw an error if this endpoint is called without a target client.
-      throw new ValidationError([{ message: 'Client ID is required for ticket stats', field: 'clientId' }]);
+    // If the user is an engineer querying their own stats, they might not provide a clientId
+    // If neither is provided, and the user is a client, we should throw an error.
+    if (user.role === 'CLIENT' && !targetClientId) {
+      throw new ValidationError([
+        { message: 'Client ID is required for ticket stats', field: 'clientId' },
+      ]);
     }
 
-    const stats = await ticketRepository.getDashboardSummaryCounts(targetClientId, tenantId);
+    const stats = await ticketRepository.getDashboardSummaryCounts(
+      { clientId: targetClientId, assignedToId },
+      tenantId,
+    );
     return stats;
   }
 
@@ -81,7 +95,6 @@ export class TicketService {
     // We need the client ID. The project has a clientId, so we fetch it.
     const project = await prisma.project.findFirst({
       where: { id: data.projectId, tenantId },
-      include: { slaPolicy: true }
     });
 
     if (!project) {
@@ -92,52 +105,69 @@ export class TicketService {
     const createdTicket = await prisma.$transaction(async (tx) => {
       const nextNumber = await ticketRepository.getNextTicketNumber(tenantId, tx);
 
-      const ticket = await ticketRepository.create({
-        tenantId,
-        projectId: data.projectId,
-        clientId: project.clientId,
-        number: nextNumber,
-        title: data.title,
-        description: data.description,
-        priority: data.priority,
-        categoryId: data.categoryId,
-        reportedById,
-      }, tx);
+      const ticket = await ticketRepository.create(
+        {
+          tenantId,
+          projectId: data.projectId,
+          clientId: project.clientId,
+          number: nextNumber,
+          title: data.title,
+          description: data.description,
+          priority: data.priority,
+          categoryId: data.categoryId,
+          reportedById,
+        },
+        tx,
+      );
 
-      // Snapshot SLA Policy if project has one
-      if (project.slaPolicy) {
-        await tx.ticketSLA.create({
-          data: {
-            ticketId: ticket.id,
-            firstResponseTimeMins: project.slaPolicy.responseTimeMinutes,
-            resolutionTimeMins: project.slaPolicy.resolutionTimeMinutes,
-            businessHoursEnabled: project.slaPolicy.businessHoursEnabled,
-          }
-        });
+      // Snapshot SLA Policy
+      const tenantPolicy = await prisma.sLAPolicy.findUnique({
+        where: { tenantId },
+        include: { tiers: true },
+      });
+
+      if (tenantPolicy) {
+        const tier =
+          tenantPolicy.tiers.find((t) => t.priority === ticket.priority) || tenantPolicy.tiers[0];
+        if (tier) {
+          await tx.ticketSLA.create({
+            data: {
+              ticketId: ticket.id,
+              firstResponseTimeMins: tier.responseTimeMinutes,
+              resolutionTimeMins: tier.resolutionTimeMinutes,
+              businessHoursEnabled: tenantPolicy.businessHoursEnabled,
+            },
+          });
+        }
       }
 
-      await AuditService.log({
-        entity: 'Ticket',
-        entityId: ticket.id,
-        action: 'TICKET_CREATED',
-        actorId: reportedById,
-        after: ticket as unknown as Record<string, unknown>,
-      }, tx);
+      await AuditService.log(
+        {
+          entity: 'Ticket',
+          entityId: ticket.id,
+          action: 'TICKET_CREATED',
+          actorId: reportedById,
+          after: ticket as unknown as Record<string, unknown>,
+        },
+        tx,
+      );
 
       return ticket;
     });
 
     // Dispatch event after successful commit
-    eventDispatcher.publish(new TicketCreatedEvent(
-      createdTicket.id,
-      createdTicket.number,
-      createdTicket.title,
-      createdTicket.tenantId,
-      createdTicket.projectId,
-      createdTicket.clientId,
-      createdTicket.reportedById,
-      createdTicket.priority
-    ));
+    eventDispatcher.publish(
+      new TicketCreatedEvent(
+        createdTicket.id,
+        createdTicket.number,
+        createdTicket.title,
+        createdTicket.tenantId,
+        createdTicket.projectId,
+        createdTicket.clientId,
+        createdTicket.reportedById,
+        createdTicket.priority,
+      ),
+    );
 
     return createdTicket;
   }
@@ -145,61 +175,97 @@ export class TicketService {
   /**
    * Assigns a ticket to an engineer
    */
-  static async assignTicket(id: string, tenantId: string, actor: Identity, data: AssignTicketInput) {
+  static async assignTicket(
+    id: string,
+    tenantId: string,
+    actor: Identity,
+    data: AssignTicketInput,
+  ) {
     const ticket = await this.getTicketById(id, tenantId, actor);
 
     if (actor.role === 'CLIENT') {
-      throw new ValidationError([{ message: 'Clients cannot assign tickets', field: 'assignedToId' }]);
+      throw new ValidationError([
+        { message: 'Clients cannot assign tickets', field: 'assignedToId' },
+      ]);
     }
 
     if (data.assignedToId) {
       const user = await prisma.user.findFirst({
-        where: { id: data.assignedToId, tenantId }
+        where: { id: data.assignedToId, tenantId },
       });
       if (!user) {
         throw new NotFoundError('Engineer not found');
       }
       if (user.role === 'CLIENT') {
-        throw new ValidationError([{ message: 'Cannot assign ticket to a client', field: 'assignedToId' }]);
+        throw new ValidationError([
+          { message: 'Cannot assign ticket to a client', field: 'assignedToId' },
+        ]);
       }
     }
 
     const updatedTicket = await prisma.$transaction(async (tx) => {
-      const updatedTicket = await ticketRepository.update(id, tenantId, {
-        assignedTo: data.assignedToId ? { connect: { id: data.assignedToId } } : { disconnect: true },
-      }, tx);
+      const updatedTicket = await ticketRepository.update(
+        id,
+        tenantId,
+        {
+          assignedTo: data.assignedToId
+            ? { connect: { id: data.assignedToId } }
+            : { disconnect: true },
+        },
+        tx,
+      );
 
-      await AuditService.log({
-        entity: 'Ticket',
-        entityId: ticket.id,
-        action: data.assignedToId ? 'TICKET_ASSIGNED' : 'TICKET_UNASSIGNED',
-        actorId: actor.id,
-        before: { assignedToId: ticket.assignedToId },
-        after: { assignedToId: data.assignedToId },
-      }, tx);
+      await AuditService.log(
+        {
+          entity: 'Ticket',
+          entityId: ticket.id,
+          action: data.assignedToId ? 'TICKET_ASSIGNED' : 'TICKET_UNASSIGNED',
+          actorId: actor.id,
+          before: { assignedToId: ticket.assignedToId },
+          after: { assignedToId: data.assignedToId },
+        },
+        tx,
+      );
 
       return updatedTicket;
     });
 
     if (data.assignedToId) {
       if (ticket.assignedToId && ticket.assignedToId !== data.assignedToId) {
-        eventDispatcher.publish(new TicketReassignedEvent(
-          updatedTicket.id, updatedTicket.number, updatedTicket.tenantId,
-          ticket.assignedToId, data.assignedToId, actor.id
-        ));
+        eventDispatcher.publish(
+          new TicketReassignedEvent(
+            updatedTicket.id,
+            updatedTicket.number,
+            updatedTicket.tenantId,
+            ticket.assignedToId,
+            data.assignedToId,
+            actor.id,
+          ),
+        );
       } else {
-        eventDispatcher.publish(new TicketAssignedEvent(
-          updatedTicket.id, updatedTicket.number, updatedTicket.tenantId,
-          data.assignedToId, actor.id
-        ));
+        eventDispatcher.publish(
+          new TicketAssignedEvent(
+            updatedTicket.id,
+            updatedTicket.number,
+            updatedTicket.tenantId,
+            data.assignedToId,
+            actor.id,
+          ),
+        );
       }
     }
-    
+
     if (updatedTicket.status !== ticket.status) {
-      eventDispatcher.publish(new TicketStatusChangedEvent(
-        updatedTicket.id, updatedTicket.number, updatedTicket.tenantId,
-        ticket.status, updatedTicket.status, actor.id
-      ));
+      eventDispatcher.publish(
+        new TicketStatusChangedEvent(
+          updatedTicket.id,
+          updatedTicket.number,
+          updatedTicket.tenantId,
+          ticket.status,
+          updatedTicket.status,
+          actor.id,
+        ),
+      );
     }
 
     return updatedTicket;
@@ -208,17 +274,26 @@ export class TicketService {
   /**
    * Updates ticket details
    */
-  static async updateTicket(id: string, tenantId: string, actor: Identity, data: UpdateTicketInput) {
+  static async updateTicket(
+    id: string,
+    tenantId: string,
+    actor: Identity,
+    data: UpdateTicketInput,
+  ) {
     const ticket = await this.getTicketById(id, tenantId, actor);
 
     if (actor.role === 'CLIENT') {
       // Clients can only update if it's explicitly allowed, e.g., closing their own ticket.
       // But for now, we'll restrict clients from direct PATCH updates.
-      throw new ValidationError([{ message: 'Clients cannot update ticket properties directly', field: 'status' }]);
+      throw new ValidationError([
+        { message: 'Clients cannot update ticket properties directly', field: 'status' },
+      ]);
     }
 
     if (ticket.status === 'CLOSED' && data.status !== 'CLOSED') {
-      throw new ValidationError([{ message: 'Cannot edit a closed ticket unless reopening it (if workflow allows).' }]);
+      throw new ValidationError([
+        { message: 'Cannot edit a closed ticket unless reopening it (if workflow allows).' },
+      ]);
     }
 
     const updatedTicket = await prisma.$transaction(async (tx) => {
@@ -232,35 +307,64 @@ export class TicketService {
 
       const updatedTicket = await ticketRepository.update(id, tenantId, updatedData, tx);
 
-      await AuditService.log({
-        entity: 'Ticket',
-        entityId: ticket.id,
-        action: 'TICKET_UPDATED',
-        actorId: actor.id,
-        before: data as unknown as Record<string, unknown>,
-        after: updatedTicket as unknown as Record<string, unknown>,
-      }, tx);
+      await AuditService.log(
+        {
+          entity: 'Ticket',
+          entityId: ticket.id,
+          action: 'TICKET_UPDATED',
+          actorId: actor.id,
+          before: data as unknown as Record<string, unknown>,
+          after: updatedTicket as unknown as Record<string, unknown>,
+        },
+        tx,
+      );
 
       return updatedTicket;
     });
 
     if (data.status && data.status !== ticket.status) {
-      eventDispatcher.publish(new TicketStatusChangedEvent(
-        updatedTicket.id, updatedTicket.number, updatedTicket.tenantId,
-        ticket.status, updatedTicket.status, actor.id
-      ));
+      eventDispatcher.publish(
+        new TicketStatusChangedEvent(
+          updatedTicket.id,
+          updatedTicket.number,
+          updatedTicket.tenantId,
+          ticket.status,
+          updatedTicket.status,
+          actor.id,
+        ),
+      );
       if (updatedTicket.status === 'RESOLVED') {
-        eventDispatcher.publish(new TicketResolvedEvent(updatedTicket.id, updatedTicket.number, updatedTicket.tenantId, actor.id));
+        eventDispatcher.publish(
+          new TicketResolvedEvent(
+            updatedTicket.id,
+            updatedTicket.number,
+            updatedTicket.tenantId,
+            actor.id,
+          ),
+        );
       } else if (updatedTicket.status === 'CLOSED') {
-        eventDispatcher.publish(new TicketClosedEvent(updatedTicket.id, updatedTicket.number, updatedTicket.tenantId, actor.id));
+        eventDispatcher.publish(
+          new TicketClosedEvent(
+            updatedTicket.id,
+            updatedTicket.number,
+            updatedTicket.tenantId,
+            actor.id,
+          ),
+        );
       }
     }
 
     if (data.priority && data.priority !== ticket.priority) {
-      eventDispatcher.publish(new TicketPriorityChangedEvent(
-        updatedTicket.id, updatedTicket.number, updatedTicket.tenantId,
-        ticket.priority, updatedTicket.priority, actor.id
-      ));
+      eventDispatcher.publish(
+        new TicketPriorityChangedEvent(
+          updatedTicket.id,
+          updatedTicket.number,
+          updatedTicket.tenantId,
+          ticket.priority,
+          updatedTicket.priority,
+          actor.id,
+        ),
+      );
     }
 
     return updatedTicket;

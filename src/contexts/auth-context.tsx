@@ -15,6 +15,11 @@ export interface User {
   tenantId: string;
   mustChangePassword?: boolean;
   clientId?: string;
+  tenant?: {
+    id: string;
+    name: string;
+    status: string;
+  };
 }
 
 export interface AuthContextType {

@@ -2,7 +2,7 @@ import { ROLES } from './roles';
 
 export const ROLE_DEFAULT_ROUTE = {
   [ROLES.PLATFORM_ADMIN]: '/platform/tenants',
-  [ROLES.TENANT_ADMIN]: '/users',
-  [ROLES.ENGINEER]: '/users',
+  [ROLES.TENANT_ADMIN]: '/dashboard',
+  [ROLES.ENGINEER]: '/engineer',
   [ROLES.CLIENT]: '/client/dashboard',
 } as const;

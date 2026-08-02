@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+
 import { ProjectQuery } from '@/lib/project/project.schema';
 
 export class ProjectQueryBuilder {

@@ -4,15 +4,22 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { useCreateTicket } from '@/hooks/use-tickets';
-import { useProjects } from '@/hooks/use-projects';
+import { TicketPriority } from '@prisma/client';
+import { Loader2 } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TicketPriority } from '@prisma/client';
-import { Loader2 } from 'lucide-react';
+import { useProjects } from '@/hooks/use-projects';
+import { useCreateTicket } from '@/hooks/use-tickets';
 import { CreateTicketInput, CreateTicketSchema } from '@/lib/ticket/ticket.schema';
 
 export function CreateTicketForm() {
@@ -49,14 +56,17 @@ export function CreateTicketForm() {
       },
       onError: (error) => {
         setErrors({ root: (error as Error).message });
-      }
+      },
     });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl bg-white p-6 rounded-lg border shadow-sm">
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-2xl space-y-6 rounded-lg border bg-white p-6 shadow-sm"
+    >
       {errors.root && (
-        <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">
           {errors.root}
         </div>
       )}
@@ -85,11 +95,13 @@ export function CreateTicketForm() {
           <SelectContent>
             {isLoadingProjects ? (
               <div className="p-2 text-sm text-slate-500">Loading projects...</div>
-            ) : projectsData?.items.map((project: any) => (
-              <SelectItem key={project.id} value={project.id}>
-                {project.name}
-              </SelectItem>
-            ))}
+            ) : (
+              projectsData?.items.map((project: any) => (
+                <SelectItem key={project.id} value={project.id}>
+                  {project.name}
+                </SelectItem>
+              ))
+            )}
           </SelectContent>
         </Select>
         {errors.projectId && <p className="text-sm text-red-600">{errors.projectId}</p>}
@@ -106,7 +118,9 @@ export function CreateTicketForm() {
           </SelectTrigger>
           <SelectContent>
             {Object.keys(TicketPriority).map((p) => (
-              <SelectItem key={p} value={p}>{p}</SelectItem>
+              <SelectItem key={p} value={p}>
+                {p}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -125,18 +139,13 @@ export function CreateTicketForm() {
         {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
       </div>
 
-      <div className="flex justify-end gap-3 pt-4 border-t">
-        <Button 
-          type="button" 
-          variant="outline" 
-          onClick={() => router.back()}
-          disabled={isCreating}
-        >
+      <div className="flex justify-end gap-3 border-t pt-4">
+        <Button type="button" variant="outline" onClick={() => router.back()} disabled={isCreating}>
           Cancel
         </Button>
-        <Button 
-          type="submit" 
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+        <Button
+          type="submit"
+          className="bg-blue-600 text-white hover:bg-blue-700"
           disabled={isCreating}
         >
           {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

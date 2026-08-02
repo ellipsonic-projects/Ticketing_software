@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { authenticate, RouteContext } from '@/middleware/authenticate';
+
+import { clientService } from '@/services/client/client.service';
 import { ROLES } from '@/lib/auth';
 import { UpdateClientSchema } from '@/lib/client/client.schema';
-
 import { ForbiddenError } from '@/lib/errors/forbidden-error';
 import { withErrorHandler } from '@/lib/errors/global-handler';
 import { ValidationError } from '@/lib/errors/validation-error';
-import { authenticate, RouteContext } from '@/middleware/authenticate';
-import { clientService } from '@/services/client/client.service';
 import { getRequestContext } from '@/lib/request-context';
 
 async function getClientHandler(req: NextRequest, ctx?: RouteContext) {
@@ -40,8 +40,8 @@ async function updateClientHandler(req: NextRequest, ctx?: RouteContext) {
 
   if (!parseResult.success) {
     throw new ValidationError(
-      parseResult.error.issues.map(i => ({ field: i.path.join('.'), message: i.message })),
-      'Invalid client data'
+      parseResult.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      'Invalid client data',
     );
   }
 
@@ -67,7 +67,7 @@ async function deleteClientHandler(req: NextRequest, ctx?: RouteContext) {
   }
 
   const { id } = await ctx!.params;
-  
+
   await clientService.archiveClient(identity.tenantId, id, identity.id);
 
   return NextResponse.json({ message: 'Client deleted successfully' });

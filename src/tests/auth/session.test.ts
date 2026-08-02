@@ -74,7 +74,6 @@ describe('Session Service', () => {
     vi.spyOn(clock, 'now').mockReturnValue(new Date('2026-07-26T12:00:00Z'));
 
     vi.mocked(authRepository.findSessionWithContext).mockImplementation(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       async (id: string): Promise<any> => {
         if (id === validSessionId) return mockValidSession;
         if (id === revokedSessionId) return mockRevokedSession;

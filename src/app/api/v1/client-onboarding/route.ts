@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { authenticate, RouteContext } from '@/middleware/authenticate';
+
+import { clientService } from '@/services/client/client.service';
 import { ROLES } from '@/lib/auth';
 import { OnboardClientSchema } from '@/lib/client/client.schema';
-
 import { ForbiddenError } from '@/lib/errors/forbidden-error';
 import { withErrorHandler } from '@/lib/errors/global-handler';
 import { ValidationError } from '@/lib/errors/validation-error';
-import { authenticate, RouteContext } from '@/middleware/authenticate';
-import { clientService } from '@/services/client/client.service';
 import { getRequestContext } from '@/lib/request-context';
 
 async function onboardClientHandler(req: NextRequest, ctx?: RouteContext) {
@@ -26,8 +26,8 @@ async function onboardClientHandler(req: NextRequest, ctx?: RouteContext) {
 
   if (!parseResult.success) {
     throw new ValidationError(
-      parseResult.error.issues.map(i => ({ field: i.path.join('.'), message: i.message })),
-      'Invalid onboarding data'
+      parseResult.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      'Invalid onboarding data',
     );
   }
 

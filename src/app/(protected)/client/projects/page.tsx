@@ -1,8 +1,8 @@
 'use client';
 
-import { useAuth } from '@/hooks/use-auth';
 import { ClientHero } from '@/components/client/client-hero';
 import { ProjectGrid } from '@/components/projects/project-grid';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function ClientProjectsPage() {
   const { user } = useAuth();

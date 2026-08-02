@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { ROLES } from '@/lib/auth';
-import { UpdateProjectSchema } from '@/lib/project/project.schema';
+import { authenticate, RouteContext } from '@/middleware/authenticate';
 
+import { projectService } from '@/services/project/project.service';
+import { ROLES } from '@/lib/auth';
 import { ForbiddenError } from '@/lib/errors/forbidden-error';
 import { withErrorHandler } from '@/lib/errors/global-handler';
 import { ValidationError } from '@/lib/errors/validation-error';
-import { authenticate, RouteContext } from '@/middleware/authenticate';
-import { projectService } from '@/services/project/project.service';
+import { UpdateProjectSchema } from '@/lib/project/project.schema';
 import { getRequestContext } from '@/lib/request-context';
 
 async function getProjectHandler(req: NextRequest, ctx?: RouteContext) {
@@ -18,11 +18,7 @@ async function getProjectHandler(req: NextRequest, ctx?: RouteContext) {
   }
 
   const { id } = await ctx!.params;
-  const project = await projectService.getProjectById(
-    identity.tenantId,
-    id,
-    identity.id
-  );
+  const project = await projectService.getProjectById(identity.tenantId, id, identity.id);
 
   return NextResponse.json({ project });
 }
@@ -44,8 +40,8 @@ async function updateProjectHandler(req: NextRequest, ctx?: RouteContext) {
 
   if (!parseResult.success) {
     throw new ValidationError(
-      parseResult.error.issues.map(i => ({ field: i.path.join('.'), message: i.message })),
-      'Invalid project data'
+      parseResult.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      'Invalid project data',
     );
   }
 
@@ -53,7 +49,7 @@ async function updateProjectHandler(req: NextRequest, ctx?: RouteContext) {
     identity.tenantId,
     id,
     parseResult.data,
-    identity.id
+    identity.id,
   );
 
   return NextResponse.json({ project });
@@ -71,11 +67,7 @@ async function archiveProjectHandler(req: NextRequest, ctx?: RouteContext) {
   }
 
   const { id } = await ctx!.params;
-  const project = await projectService.archiveProject(
-    identity.tenantId,
-    id,
-    identity.id
-  );
+  const project = await projectService.archiveProject(identity.tenantId, id, identity.id);
 
   return NextResponse.json({ project });
 }

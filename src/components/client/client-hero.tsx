@@ -1,18 +1,10 @@
 'use client';
 
-import {
-  Building2,
-  Calendar,
-  FolderKanban,
-  Mail,
-  Phone,
-  ShieldCheck,
-  Ticket,
-} from 'lucide-react';
+import { Building2, Calendar, FolderKanban, Mail, Phone, ShieldCheck, Ticket } from 'lucide-react';
 
-import { useProjects } from '@/hooks/use-projects';
-import { useClient } from '@/hooks/use-clients';
 import { StatCard } from '@/components/ui/stat-card';
+import { useClient } from '@/hooks/use-clients';
+import { useProjects } from '@/hooks/use-projects';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -99,10 +91,8 @@ export function ClientHero({ clientId }: ClientHeroProps) {
     projects.length === 0
       ? 100
       : Math.round(
-          projects.reduce(
-            (sum, project) => sum + (project.stats?.slaHealthPercent ?? 100),
-            0,
-          ) / projects.length,
+          projects.reduce((sum, project) => sum + (project.stats?.slaHealthPercent ?? 100), 0) /
+            projects.length,
         );
 
   if (isProjectsLoading || isClientLoading) {
@@ -148,10 +138,7 @@ export function ClientHero({ clientId }: ClientHeroProps) {
               {clientInfo?.createdAt && (
                 <div className="flex items-center gap-3">
                   <Calendar className="h-4 w-4 text-slate-400" />
-                  <span>
-                    Client since{' '}
-                    {new Date(clientInfo.createdAt).toLocaleDateString()}
-                  </span>
+                  <span>Client since {new Date(clientInfo.createdAt).toLocaleDateString()}</span>
                 </div>
               )}
             </div>
@@ -160,9 +147,9 @@ export function ClientHero({ clientId }: ClientHeroProps) {
 
         {/* Right — Stat cards */}
         <div className="grid w-full grid-cols-2 gap-4 sm:grid-cols-3 xl:w-[500px] xl:shrink-0">
-          <StatCard icon={FolderKanban} label="Projects" value={totalProjects} color="blue"    />
-          <StatCard icon={Ticket}       label="Tickets"  value={totalTickets}  color="indigo"  />
-          <StatCard icon={ShieldCheck}  label="SLA"      value={`${avgSla}%`}  color="emerald" />
+          <StatCard icon={FolderKanban} label="Projects" value={totalProjects} color="blue" />
+          <StatCard icon={Ticket} label="Tickets" value={totalTickets} color="indigo" />
+          <StatCard icon={ShieldCheck} label="SLA" value={`${avgSla}%`} color="emerald" />
         </div>
       </div>
 

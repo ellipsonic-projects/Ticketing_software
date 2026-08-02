@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ROLES } from '@/lib/auth';
-import { HolidayCreateSchema } from '@/lib/project/sla.schema';
-import { ForbiddenError } from '@/lib/errors/forbidden-error';
-import { ValidationError } from '@/lib/errors/validation-error';
-import { withErrorHandler } from '@/lib/errors/global-handler';
+
 import { authenticate, RouteContext } from '@/middleware/authenticate';
+
 import { holidayService } from '@/services/project/holiday.service';
+import { ROLES } from '@/lib/auth';
+import { ForbiddenError } from '@/lib/errors/forbidden-error';
+import { withErrorHandler } from '@/lib/errors/global-handler';
+import { ValidationError } from '@/lib/errors/validation-error';
+import { HolidayCreateSchema } from '@/lib/project/sla.schema';
 import { getRequestContext } from '@/lib/request-context';
 
 async function listHolidaysHandler(req: NextRequest, ctx?: RouteContext) {
@@ -39,17 +41,12 @@ async function createHolidayHandler(req: NextRequest, ctx?: RouteContext) {
 
   if (!parseResult.success) {
     throw new ValidationError(
-      parseResult.error.issues.map(i => ({ field: i.path.join('.'), message: i.message })),
-      'Invalid Holiday data'
+      parseResult.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      'Invalid Holiday data',
     );
   }
 
-  const holiday = await holidayService.create(
-    identity.tenantId,
-    id,
-    parseResult.data,
-    identity.id
-  );
+  const holiday = await holidayService.create(identity.tenantId, id, parseResult.data, identity.id);
 
   return NextResponse.json({ holiday }, { status: 201 });
 }

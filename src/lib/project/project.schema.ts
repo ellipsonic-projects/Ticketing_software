@@ -36,5 +36,3 @@ export const ProjectQuerySchema = z.object({
 });
 
 export type ProjectQuery = z.infer<typeof ProjectQuerySchema>;
-
-

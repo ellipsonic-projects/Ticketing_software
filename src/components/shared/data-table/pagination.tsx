@@ -1,6 +1,9 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -9,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
 interface PaginationProps {
   totalPages: number;
@@ -45,10 +47,7 @@ export function Pagination({ totalPages, totalItems }: PaginationProps) {
       <div className="flex items-center space-x-6">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium text-gray-500">Rows per page</p>
-          <Select
-            value={currentLimit.toString()}
-            onValueChange={setLimit}
-          >
+          <Select value={currentLimit.toString()} onValueChange={setLimit}>
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue placeholder={currentLimit} />
             </SelectTrigger>

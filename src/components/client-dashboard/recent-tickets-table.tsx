@@ -1,18 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  FolderOpen,
-} from 'lucide-react';
 
-import {
-  PaginatedTickets,
-  TicketListItem,
-} from '@/lib/client-dashboard/client-dashboard.types';
+import { ArrowRight, ChevronLeft, ChevronRight, FolderOpen } from 'lucide-react';
 
+import { PaginatedTickets, TicketListItem } from '@/lib/client-dashboard/client-dashboard.types';
 import { cn } from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
@@ -20,24 +12,24 @@ import { cn } from '@/lib/utils';
 // ---------------------------------------------------------------------------
 
 const STATUS_STYLES: Record<TicketListItem['status'], string> = {
-  OPEN:        'bg-blue-50 text-blue-700 border border-blue-200',
+  OPEN: 'bg-blue-50 text-blue-700 border border-blue-200',
   IN_PROGRESS: 'bg-amber-50 text-amber-700 border border-amber-200',
-  RESOLVED:    'bg-emerald-50 text-emerald-700 border border-emerald-200',
-  CLOSED:      'bg-slate-100 text-slate-600 border border-slate-200',
+  RESOLVED: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  CLOSED: 'bg-slate-100 text-slate-600 border border-slate-200',
 };
 
 const PRIORITY_STYLES: Record<TicketListItem['priority'], string> = {
-  LOW:    'bg-slate-100 text-slate-600',
+  LOW: 'bg-slate-100 text-slate-600',
   MEDIUM: 'bg-blue-50 text-blue-600',
-  HIGH:   'bg-orange-50 text-orange-600',
+  HIGH: 'bg-orange-50 text-orange-600',
   URGENT: 'bg-red-50 text-red-600',
 };
 
 const STATUS_LABELS: Record<TicketListItem['status'], string> = {
-  OPEN:        'Open',
+  OPEN: 'Open',
   IN_PROGRESS: 'In Progress',
-  RESOLVED:    'Resolved',
-  CLOSED:      'Closed',
+  RESOLVED: 'Resolved',
+  CLOSED: 'Closed',
 };
 
 // ---------------------------------------------------------------------------
@@ -55,13 +47,9 @@ interface RecentTicketsTableProps {
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function AssigneeCell({
-  name,
-}: {
-  name: string | null;
-}) {
+function AssigneeCell({ name }: { name: string | null }) {
   if (!name) {
-    return <span className="text-xs italic text-slate-400">Unassigned</span>;
+    return <span className="text-xs text-slate-400 italic">Unassigned</span>;
   }
 
   const initials = name
@@ -89,7 +77,7 @@ function TableHeader() {
           <th
             key={col}
             className={cn(
-              'py-4 text-xs font-semibold uppercase tracking-wide text-slate-500',
+              'py-4 text-xs font-semibold tracking-wide text-slate-500 uppercase',
               i === 0 ? 'px-8' : 'px-4',
             )}
           >
@@ -159,9 +147,7 @@ export function RecentTicketsTable({
                   </td>
 
                   <td className="px-4 py-5">
-                    <span className="text-sm font-medium text-slate-700">
-                      {ticket.projectName}
-                    </span>
+                    <span className="text-sm font-medium text-slate-700">{ticket.projectName}</span>
                   </td>
 
                   <td className="px-4 py-5">
@@ -203,11 +189,8 @@ export function RecentTicketsTable({
       {/* Footer */}
       <div className="flex items-center justify-between border-t border-slate-100 px-8 py-5">
         <p className="text-sm text-slate-500">
-          Showing{' '}
-          <span className="font-semibold text-slate-700">{data.items.length}</span>{' '}
-          of{' '}
-          <span className="font-semibold text-slate-700">{data.total}</span>{' '}
-          tickets
+          Showing <span className="font-semibold text-slate-700">{data.items.length}</span> of{' '}
+          <span className="font-semibold text-slate-700">{data.total}</span> tickets
         </p>
 
         <div className="flex items-center gap-2">

@@ -1,62 +1,78 @@
-import { PrismaClient, Prisma, SLAPolicy } from '@prisma/client';
+import { Prisma, PrismaClient, SLAPolicy, SLATier } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+export type SLAPolicyWithTiers = SLAPolicy & { tiers: SLATier[] };
+
 export class SLARepository {
   /**
-   * Get SLA Policy by Project ID
+   * Get SLA Policy by Tenant ID (with tiers)
    */
-  static async getByProject(projectId: string): Promise<SLAPolicy | null> {
+  static async getByTenant(tenantId: string): Promise<SLAPolicyWithTiers | null> {
     return prisma.sLAPolicy.findUnique({
-      where: { projectId },
+      where: { tenantId },
+      include: {
+        tiers: {
+          orderBy: { priority: 'asc' },
+        },
+      },
     });
   }
 
   /**
-   * Create SLA Policy
+   * Create SLA Policy with Tiers
    */
   static async create(
     data: Prisma.SLAPolicyUncheckedCreateInput,
-    db: Prisma.TransactionClient | PrismaClient = prisma
-  ): Promise<SLAPolicy> {
+    db: Prisma.TransactionClient | PrismaClient = prisma,
+  ): Promise<SLAPolicyWithTiers> {
     return db.sLAPolicy.create({
       data,
+      include: {
+        tiers: {
+          orderBy: { priority: 'asc' },
+        },
+      },
     });
   }
 
   /**
    * Update SLA Policy
    */
-  static async update(
-    projectId: string,
+  static async updatePolicy(
+    tenantId: string,
     data: Prisma.SLAPolicyUncheckedUpdateInput,
-    db: Prisma.TransactionClient | PrismaClient = prisma
+    db: Prisma.TransactionClient | PrismaClient = prisma,
   ): Promise<SLAPolicy> {
     return db.sLAPolicy.update({
-      where: { projectId },
+      where: { tenantId },
       data,
     });
   }
 
   /**
-   * Check if an SLA Policy exists for a project
+   * Update SLA Tier
    */
-  static async exists(projectId: string): Promise<boolean> {
-    const count = await prisma.sLAPolicy.count({
-      where: { projectId },
+  static async updateTier(
+    tierId: string,
+    data: Prisma.SLATierUncheckedUpdateInput,
+    db: Prisma.TransactionClient | PrismaClient = prisma,
+  ): Promise<SLATier> {
+    return db.sLATier.update({
+      where: { id: tierId },
+      data,
     });
-    return count > 0;
   }
 
   /**
    * Delete SLA Policy
    */
   static async delete(
-    projectId: string,
-    db: Prisma.TransactionClient | PrismaClient = prisma
+    tenantId: string,
+    db: Prisma.TransactionClient | PrismaClient = prisma,
   ): Promise<void> {
     await db.sLAPolicy.delete({
-      where: { projectId },
+      where: { tenantId },
     });
   }
 }

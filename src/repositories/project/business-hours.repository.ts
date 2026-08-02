@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma, BusinessHours } from '@prisma/client';
+import { BusinessHours, Prisma, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -19,7 +19,7 @@ export class BusinessHoursRepository {
   static async replaceWeekSchedule(
     projectId: string,
     schedule: Prisma.BusinessHoursCreateManyInput[],
-    db: Prisma.TransactionClient | PrismaClient = prisma
+    db: Prisma.TransactionClient | PrismaClient = prisma,
   ): Promise<BusinessHours[]> {
     // 1. Delete all existing business hours for this project
     await db.businessHours.deleteMany({

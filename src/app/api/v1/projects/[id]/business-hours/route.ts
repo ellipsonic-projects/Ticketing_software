@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ROLES } from '@/lib/auth';
-import { BusinessHoursSchema } from '@/lib/project/sla.schema';
-import { ForbiddenError } from '@/lib/errors/forbidden-error';
-import { ValidationError } from '@/lib/errors/validation-error';
-import { withErrorHandler } from '@/lib/errors/global-handler';
+
 import { authenticate, RouteContext } from '@/middleware/authenticate';
+
 import { businessHoursService } from '@/services/project/business-hours.service';
+import { ROLES } from '@/lib/auth';
+import { ForbiddenError } from '@/lib/errors/forbidden-error';
+import { withErrorHandler } from '@/lib/errors/global-handler';
+import { ValidationError } from '@/lib/errors/validation-error';
+import { BusinessHoursSchema } from '@/lib/project/sla.schema';
 import { getRequestContext } from '@/lib/request-context';
 
 async function getBusinessHoursHandler(req: NextRequest, ctx?: RouteContext) {
@@ -39,8 +41,8 @@ async function updateBusinessHoursHandler(req: NextRequest, ctx?: RouteContext) 
 
   if (!parseResult.success) {
     throw new ValidationError(
-      parseResult.error.issues.map(i => ({ field: i.path.join('.'), message: i.message })),
-      'Invalid Business Hours data'
+      parseResult.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      'Invalid Business Hours data',
     );
   }
 
@@ -48,7 +50,7 @@ async function updateBusinessHoursHandler(req: NextRequest, ctx?: RouteContext) 
     identity.tenantId,
     id,
     parseResult.data,
-    identity.id
+    identity.id,
   );
 
   return NextResponse.json({ businessHours });

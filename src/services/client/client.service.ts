@@ -1,19 +1,25 @@
 /* eslint-disable */
 import crypto from 'crypto';
-import { env } from '@/config/env';
-import { Client, ClientStatus, Prisma, Role, Project } from '@prisma/client';
 
-import { ConflictError } from '@/lib/errors/conflict-error';
-import { NotFoundError } from '@/lib/errors/not-found-error';
-import { ClientQuery, CreateClientInput, UpdateClientInput, OnboardClientInput } from '@/lib/client/client.schema';
+import { env } from '@/config/env';
+import { Client, ClientStatus, Prisma, Project, Role } from '@prisma/client';
+
+import { AuditService } from '@/services/audit/audit.service';
+import { DbClient, runInTransaction } from '@/services/base/transaction';
+import { emailService } from '@/services/email/email.service';
 import { clientRepository } from '@/repositories/client/client.repository';
-import { userRepository } from '@/repositories/user/user.repository';
 import { ProjectRepository } from '@/repositories/project/project.repository';
 import { ticketRepository } from '@/repositories/ticket/ticket.repository';
-import { AuditService } from '@/services/audit/audit.service';
-import { emailService } from '@/services/email/email.service';
-import { runInTransaction, DbClient } from '@/services/base/transaction';
+import { userRepository } from '@/repositories/user/user.repository';
+import {
+  ClientQuery,
+  CreateClientInput,
+  OnboardClientInput,
+  UpdateClientInput,
+} from '@/lib/client/client.schema';
+import { ConflictError } from '@/lib/errors/conflict-error';
 import { EmailDeliveryError } from '@/lib/errors/email-error';
+import { NotFoundError } from '@/lib/errors/not-found-error';
 import prisma from '@/lib/prisma';
 
 const APP_URL = env.NEXT_PUBLIC_APP_URL;
@@ -56,6 +62,7 @@ export class ClientService {
           website: data.website || null,
           contactName: data.contactName || null,
           address: data.address || null,
+          industry: data.industry || null,
           notes: data.notes || null,
           status: data.email ? ClientStatus.PENDING_ACTIVATION : ClientStatus.ACTIVE,
           createdById: actorId,
@@ -168,10 +175,10 @@ export class ClientService {
           name: data.name,
           code: data.code || null,
           email: data.email || null,
-          phone: data.phone || null,
           website: data.website || null,
           contactName: data.contactName || null,
           address: data.address || null,
+          industry: data.industry || null,
           notes: data.notes || null,
           status: data.email ? ClientStatus.PENDING_ACTIVATION : ClientStatus.ACTIVE,
           createdById: actorId,
@@ -181,39 +188,53 @@ export class ClientService {
       );
 
       // Prevent Duplicate Project Name under the same client
-      const existingProject = await ProjectRepository.existsByName(tenantId, client.id, data.project.name, db as Prisma.TransactionClient);
+      const existingProject = await ProjectRepository.existsByName(
+        tenantId,
+        client.id,
+        data.project.name,
+        db as Prisma.TransactionClient,
+      );
       if (existingProject) {
         throw new ConflictError('A project with this name already exists.');
       }
 
       // Create Initial Project
-      const project = await ProjectRepository.create({
-        tenantId,
-        clientId: client.id,
-        name: data.project.name,
-        code: data.project.code || null,
-        description: data.project.description || null,
-        status: data.project.status as 'ACTIVE' | 'INACTIVE',
-        createdById: actorId,
-        updatedById: actorId,
-      }, db as Prisma.TransactionClient);
+      const project = await ProjectRepository.create(
+        {
+          tenantId,
+          clientId: client.id,
+          name: data.project.name,
+          code: data.project.code || null,
+          description: data.project.description || null,
+          status: data.project.status as 'ACTIVE' | 'INACTIVE',
+          createdById: actorId,
+          updatedById: actorId,
+        },
+        db as Prisma.TransactionClient,
+      );
 
       // Audit Logs
-      await AuditService.log({
-        entity: 'Client',
-        entityId: client.id,
-        action: 'CLIENT_ONBOARDED',
-        actorId,
-        after: client,
-      }, db as Prisma.TransactionClient);
+      await AuditService.log(
+        {
+          entity: 'Client',
+          entityId: client.id,
+          action: 'CLIENT_ONBOARDED',
+          actorId,
+          after: client,
+        },
+        db as Prisma.TransactionClient,
+      );
 
-      await AuditService.log({
-        entity: 'Project',
-        entityId: project.id,
-        action: 'PROJECT_CREATED',
-        actorId,
-        after: project,
-      }, db as Prisma.TransactionClient);
+      await AuditService.log(
+        {
+          entity: 'Project',
+          entityId: project.id,
+          action: 'PROJECT_CREATED',
+          actorId,
+          after: project,
+        },
+        db as Prisma.TransactionClient,
+      );
 
       // Create Client Portal Account if email is provided
       if (data.email) {
@@ -290,7 +311,7 @@ export class ClientService {
 
   async getClientById(tenantId: string, id: string): Promise<Client> {
     const client = await clientRepository.findById(id);
-    
+
     if (!client) {
       throw new NotFoundError('Client not found');
     }
@@ -320,10 +341,11 @@ export class ClientService {
     for (const t of tickets) {
       if (t.assignedToId) uniqueEngineers.add(t.assignedToId);
     }
-    
+
     let lastActivity = client.updatedAt;
     if (tickets.length > 0) {
-      lastActivity = tickets[0].updatedAt > client.updatedAt ? tickets[0].updatedAt : client.updatedAt;
+      lastActivity =
+        tickets[0].updatedAt > client.updatedAt ? tickets[0].updatedAt : client.updatedAt;
     }
 
     return {
@@ -331,18 +353,19 @@ export class ClientService {
       totalTickets,
       engineersCount: uniqueEngineers.size,
       slaHealthPercent: slaStats.withinSLAPercent,
+      avgResolutionTimeMinutes: slaStats.avgResolutionTimeMinutes,
       lastActivity: lastActivity.toISOString(),
     };
   }
 
-  async getClients(
-    tenantId: string,
-    query: ClientQuery,
-  ): Promise<{ data: Client[]; total: number; pages: number }> {
+  async getClients(tenantId: string, query: ClientQuery) {
     const { clients, total } = await clientRepository.findMany({ tenantId, query });
 
     return {
-      data: clients,
+      data: clients.map((c) => ({
+        ...c,
+        projectsCount: (c as any)._count?.projects || 0,
+      })),
       total,
       pages: Math.ceil(total / query.limit),
     };
@@ -373,8 +396,10 @@ export class ClientService {
           email: data.email !== undefined ? data.email || null : client.email,
           phone: data.phone !== undefined ? data.phone || null : client.phone,
           website: data.website !== undefined ? data.website || null : client.website,
-          contactName: data.contactName !== undefined ? data.contactName || null : client.contactName,
+          contactName:
+            data.contactName !== undefined ? data.contactName || null : client.contactName,
           address: data.address !== undefined ? data.address || null : client.address,
+          industry: data.industry !== undefined ? data.industry || null : client.industry,
           notes: data.notes !== undefined ? data.notes || null : client.notes,
           status: data.status ?? client.status,
           updatedById: actorId,
@@ -384,7 +409,12 @@ export class ClientService {
     }, tx);
   }
 
-  async archiveClient(tenantId: string, id: string, actorId: string, tx?: DbClient): Promise<Client> {
+  async archiveClient(
+    tenantId: string,
+    id: string,
+    actorId: string,
+    tx?: DbClient,
+  ): Promise<Client> {
     return runInTransaction(async (db) => {
       // Validate existence and ownership
       await this.getClientById(tenantId, id);

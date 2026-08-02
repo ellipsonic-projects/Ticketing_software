@@ -4,6 +4,7 @@ import { env } from '@/config/env';
 import { Role, TenantStatus } from '@prisma/client';
 
 import { emailService } from '@/services/email/email.service';
+import { slaService } from '@/services/project/sla.service';
 import { tenantRepository } from '@/repositories/tenant/tenant.repository';
 import { userRepository } from '@/repositories/user/user.repository';
 import { ConflictError } from '@/lib/errors/conflict-error';
@@ -175,6 +176,9 @@ export class TenantService {
           throw error;
         }
       }
+
+      // 5. Provision Default SLA Policy for the Tenant
+      await slaService.provisionDefaultPolicy(tenant.id, actorId || 'SYSTEM', tx as any);
 
       return tenant;
     });

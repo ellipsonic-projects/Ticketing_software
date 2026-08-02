@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  CheckCircle2,
-  AlertTriangle,
-  FolderKanban,
-} from 'lucide-react';
+import { AlertTriangle, CheckCircle2, FolderKanban } from 'lucide-react';
 
 import { ProjectHealth } from '@/lib/client-dashboard/client-dashboard.types';
 import { cn } from '@/lib/utils';
@@ -24,9 +20,7 @@ interface ProjectHealthCardProps {
 function HealthBar({ value }: { value: number }) {
   const percentage = Math.max(0, Math.min(100, value));
   const color =
-    percentage >= 90 ? 'bg-emerald-500' :
-    percentage >= 70 ? 'bg-amber-500' :
-    'bg-red-500';
+    percentage >= 90 ? 'bg-emerald-500' : percentage >= 70 ? 'bg-amber-500' : 'bg-red-500';
 
   return (
     <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
@@ -58,9 +52,11 @@ function HealthBadge({ score }: { score: number }) {
 
 function ProjectRow({ project }: { project: ProjectHealth }) {
   const scoreColor =
-    project.healthScore >= 90 ? 'text-emerald-600' :
-    project.healthScore >= 70 ? 'text-amber-600' :
-    'text-red-600';
+    project.healthScore >= 90
+      ? 'text-emerald-600'
+      : project.healthScore >= 70
+        ? 'text-amber-600'
+        : 'text-red-600';
 
   const slaOnTrack = project.slaStatus === 'ON_TRACK';
 
@@ -78,14 +74,17 @@ function ProjectRow({ project }: { project: ProjectHealth }) {
 
       <div className="mt-5 flex items-center justify-between">
         <div>
-          <p className="text-xs uppercase tracking-wide text-slate-500">Health Score</p>
-          <p className={cn('mt-1 text-xl font-bold', scoreColor)}>
-            {project.healthScore}%
-          </p>
+          <p className="text-xs tracking-wide text-slate-500 uppercase">Health Score</p>
+          <p className={cn('mt-1 text-xl font-bold', scoreColor)}>{project.healthScore}%</p>
         </div>
         <div className="text-right">
-          <p className="text-xs uppercase tracking-wide text-slate-500">SLA</p>
-          <p className={cn('mt-1 text-lg font-semibold', slaOnTrack ? 'text-emerald-600' : 'text-red-600')}>
+          <p className="text-xs tracking-wide text-slate-500 uppercase">SLA</p>
+          <p
+            className={cn(
+              'mt-1 text-lg font-semibold',
+              slaOnTrack ? 'text-emerald-600' : 'text-red-600',
+            )}
+          >
             {slaOnTrack ? 'On Track' : 'At Risk'}
           </p>
         </div>
@@ -105,9 +104,7 @@ export function ProjectHealthCard({ projects }: ProjectHealthCardProps) {
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-xl font-bold text-slate-900">Project Health</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Current health across active projects
-          </p>
+          <p className="mt-1 text-sm text-slate-500">Current health across active projects</p>
         </div>
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50">
           <FolderKanban className="h-7 w-7 text-blue-600" />
@@ -122,9 +119,7 @@ export function ProjectHealthCard({ projects }: ProjectHealthCardProps) {
             <p className="mt-4 font-medium text-slate-500">No active projects</p>
           </div>
         ) : (
-          projects.map((project) => (
-            <ProjectRow key={project.id} project={project} />
-          ))
+          projects.map((project) => <ProjectRow key={project.id} project={project} />)
         )}
       </div>
     </div>

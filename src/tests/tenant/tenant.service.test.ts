@@ -10,11 +10,13 @@ vi.mock('@/repositories/user/user.repository');
 vi.mock('@/services/audit/audit.service');
 vi.mock('@/lib/prisma', () => ({
   default: {
-    $transaction: vi.fn((cb) => cb({
-      user: {
-        update: vi.fn().mockResolvedValue({}),
-      }
-    })),
+    $transaction: vi.fn((cb) =>
+      cb({
+        user: {
+          update: vi.fn().mockResolvedValue({}),
+        },
+      }),
+    ),
   },
 }));
 
@@ -71,11 +73,11 @@ describe('TenantService', () => {
 
       expect(tenantRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'Acme', domain: 'acme.com', slug: 'acme' }),
-        expect.anything()
+        expect.anything(),
       );
       expect(AuditService.log).toHaveBeenCalledWith(
         expect.objectContaining({ action: 'Created' }),
-        expect.anything()
+        expect.anything(),
       );
     });
   });

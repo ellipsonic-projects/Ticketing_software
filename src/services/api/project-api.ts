@@ -1,7 +1,8 @@
-/* eslint-disable */
 import { Project } from '@prisma/client';
-import { ProjectQuery, CreateProjectInput, UpdateProjectInput } from '@/lib/project/project.schema';
-import { ProjectWithClient, ProjectStats } from '@/lib/project/project.types';
+
+import { CreateProjectInput, ProjectQuery, UpdateProjectInput } from '@/lib/project/project.schema';
+import { ProjectStats, ProjectWithClient } from '@/lib/project/project.types';
+
 import { apiClient } from './api-client';
 
 export const projectApi = {
@@ -18,7 +19,7 @@ export const projectApi = {
 
     const queryString = searchParams.toString();
     const url = `/projects${queryString ? `?${queryString}` : ''}`;
-    
+
     return apiClient<{ data: ProjectWithClient[]; total: number; pages: number }>(url, {
       method: 'GET',
     });

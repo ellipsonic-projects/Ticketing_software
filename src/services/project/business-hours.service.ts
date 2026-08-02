@@ -1,10 +1,11 @@
 import { Prisma } from '@prisma/client';
+
+import { AuditService } from '@/services/audit/audit.service';
+import { DbClient, runInTransaction } from '@/services/base/transaction';
 import { BusinessHoursRepository } from '@/repositories/project/business-hours.repository';
 import { ProjectRepository } from '@/repositories/project/project.repository';
-import { AuditService } from '@/services/audit/audit.service';
 import { ConflictError } from '@/lib/errors/conflict-error';
 import { NotFoundError } from '@/lib/errors/not-found-error';
-import { runInTransaction, DbClient } from '@/services/base/transaction';
 
 export interface BusinessHourInput {
   dayOfWeek: number;
@@ -35,7 +36,7 @@ export class BusinessHoursService {
     projectId: string,
     schedule: BusinessHourInput[],
     actorId: string,
-    tx?: DbClient
+    tx?: DbClient,
   ) {
     return runInTransaction(async (db) => {
       // 1. Validate project and tenant
@@ -64,7 +65,9 @@ export class BusinessHoursService {
 
         if (day.isOpen) {
           if (!day.startTime || !day.endTime) {
-            throw new ConflictError(`Start and end times are required when day ${day.dayOfWeek} is open`);
+            throw new ConflictError(
+              `Start and end times are required when day ${day.dayOfWeek} is open`,
+            );
           }
           // Validate time format and start < end
           // For simplicity in this implementation, assume startTime and endTime are valid DateTime objects mapped via string inputs
@@ -79,7 +82,7 @@ export class BusinessHoursService {
       }
 
       // 3. Format payload
-      const payload: Prisma.BusinessHoursCreateManyInput[] = schedule.map(day => {
+      const payload: Prisma.BusinessHoursCreateManyInput[] = schedule.map((day) => {
         let startTime = null;
         let endTime = null;
         if (day.isOpen && day.startTime && day.endTime) {
@@ -104,18 +107,21 @@ export class BusinessHoursService {
       const newSchedule = await BusinessHoursRepository.replaceWeekSchedule(
         projectId,
         payload,
-        db as Prisma.TransactionClient
+        db as Prisma.TransactionClient,
       );
 
       // 6. Audit Log
-      await AuditService.log({
-        entity: 'BusinessHours',
-        entityId: projectId, // Using projectId since it's a collection of records
-        action: 'BUSINESS_HOURS_UPDATED',
-        actorId,
-        before: existingSchedule,
-        after: newSchedule,
-      }, db as Prisma.TransactionClient);
+      await AuditService.log(
+        {
+          entity: 'BusinessHours',
+          entityId: projectId, // Using projectId since it's a collection of records
+          action: 'BUSINESS_HOURS_UPDATED',
+          actorId,
+          before: existingSchedule,
+          after: newSchedule,
+        },
+        db as Prisma.TransactionClient,
+      );
 
       return newSchedule;
     }, tx);

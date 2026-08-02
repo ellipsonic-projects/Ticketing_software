@@ -1,14 +1,15 @@
-import { useProjectStats } from '@/hooks/use-projects';
+import { Archive, CheckCircle2, Clock, FolderKanban } from 'lucide-react';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FolderKanban, CheckCircle2, Clock, Archive } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useProjectStats } from '@/hooks/use-projects';
 
 export function ProjectDashboardStats() {
   const { data: stats, isLoading } = useProjectStats();
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+      <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[...Array(4)].map((_, i) => (
           <Skeleton key={i} className="h-[120px] w-full rounded-xl" />
         ))}
@@ -44,7 +45,7 @@ export function ProjectDashboardStats() {
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+    <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {statItems.map((item, i) => (
         <Card key={i}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

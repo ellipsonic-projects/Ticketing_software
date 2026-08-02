@@ -1,10 +1,11 @@
 import { Prisma, PrismaClient } from '@prisma/client';
+
+import { AuditService } from '@/services/audit/audit.service';
+import { DbClient, runInTransaction } from '@/services/base/transaction';
 import { HolidayRepository } from '@/repositories/project/holiday.repository';
 import { ProjectRepository } from '@/repositories/project/project.repository';
-import { AuditService } from '@/services/audit/audit.service';
 import { ConflictError } from '@/lib/errors/conflict-error';
 import { NotFoundError } from '@/lib/errors/not-found-error';
-import { runInTransaction, DbClient } from '@/services/base/transaction';
 
 export class HolidayService {
   /**
@@ -27,7 +28,7 @@ export class HolidayService {
     projectId: string,
     data: { name: string; holidayDate: string | Date },
     actorId: string,
-    tx?: DbClient
+    tx?: DbClient,
   ) {
     return runInTransaction(async (db) => {
       // 1. Validate project and tenant
@@ -57,17 +58,20 @@ export class HolidayService {
           name: data.name,
           holidayDate: dateObj,
         },
-        db as Prisma.TransactionClient
+        db as Prisma.TransactionClient,
       );
 
       // 4. Audit Log
-      await AuditService.log({
-        entity: 'Holiday',
-        entityId: holiday.id,
-        action: 'HOLIDAY_CREATED',
-        actorId,
-        after: holiday,
-      }, db as Prisma.TransactionClient);
+      await AuditService.log(
+        {
+          entity: 'Holiday',
+          entityId: holiday.id,
+          action: 'HOLIDAY_CREATED',
+          actorId,
+          after: holiday,
+        },
+        db as Prisma.TransactionClient,
+      );
 
       return holiday;
     }, tx);
@@ -82,7 +86,7 @@ export class HolidayService {
     holidayId: string,
     data: { name?: string; holidayDate?: string | Date },
     actorId: string,
-    tx?: DbClient
+    tx?: DbClient,
   ) {
     return runInTransaction(async (db) => {
       // 1. Validate project
@@ -126,18 +130,21 @@ export class HolidayService {
           name: data.name ?? existingHoliday.name,
           holidayDate: newDateObj ?? existingHoliday.holidayDate,
         },
-        db as Prisma.TransactionClient
+        db as Prisma.TransactionClient,
       );
 
       // 5. Audit Log
-      await AuditService.log({
-        entity: 'Holiday',
-        entityId: holidayId,
-        action: 'HOLIDAY_UPDATED',
-        actorId,
-        before: existingHoliday,
-        after: updatedHoliday,
-      }, db as Prisma.TransactionClient);
+      await AuditService.log(
+        {
+          entity: 'Holiday',
+          entityId: holidayId,
+          action: 'HOLIDAY_UPDATED',
+          actorId,
+          before: existingHoliday,
+          after: updatedHoliday,
+        },
+        db as Prisma.TransactionClient,
+      );
 
       return updatedHoliday;
     }, tx);
@@ -151,7 +158,7 @@ export class HolidayService {
     projectId: string,
     holidayId: string,
     actorId: string,
-    tx?: DbClient
+    tx?: DbClient,
   ) {
     return runInTransaction(async (db) => {
       // 1. Validate project
@@ -176,13 +183,16 @@ export class HolidayService {
       await HolidayRepository.delete(holidayId, db as Prisma.TransactionClient);
 
       // 4. Audit Log
-      await AuditService.log({
-        entity: 'Holiday',
-        entityId: holidayId,
-        action: 'HOLIDAY_DELETED',
-        actorId,
-        before: existingHoliday,
-      }, db as Prisma.TransactionClient);
+      await AuditService.log(
+        {
+          entity: 'Holiday',
+          entityId: holidayId,
+          action: 'HOLIDAY_DELETED',
+          actorId,
+          before: existingHoliday,
+        },
+        db as Prisma.TransactionClient,
+      );
     }, tx);
   }
 }

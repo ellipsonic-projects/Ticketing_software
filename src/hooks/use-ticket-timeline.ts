@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { apiClient } from '@/services/api/api-client';
+
 const fetchTicketTimeline = async (ticketId: string) => {
-  const res = await fetch(`/api/v1/tickets/${ticketId}/timeline`);
-  if (!res.ok) throw new Error('Failed to fetch timeline');
-  const json = await res.json();
-  return json.data.events;
+  const res = await apiClient<{ data: { events: any[] } }>(`/tickets/${ticketId}/timeline`);
+  return res.data.events;
 };
 
 export function useTicketTimeline(ticketId: string) {

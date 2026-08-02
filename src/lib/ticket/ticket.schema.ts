@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { TicketPriority, TicketStatus } from '@prisma/client';
+import { z } from 'zod';
 
 export const CreateTicketSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters').max(100),

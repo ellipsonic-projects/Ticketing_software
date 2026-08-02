@@ -1,9 +1,11 @@
 'use client';
 
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ReactNode } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+
+import { X } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 
 interface DataTableToolbarProps {
   children: ReactNode;
@@ -14,7 +16,8 @@ export function DataTableToolbar({ children }: DataTableToolbarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const isFiltered = searchParams.size > 0 && 
+  const isFiltered =
+    searchParams.size > 0 &&
     (searchParams.has('search') || searchParams.has('status') || searchParams.has('supportStatus'));
 
   const resetFilters = () => {
@@ -30,14 +33,14 @@ export function DataTableToolbar({ children }: DataTableToolbarProps) {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-4">
+    <div className="flex flex-col items-start justify-between gap-4 py-4 sm:flex-row sm:items-center">
       <div className="flex flex-1 flex-wrap items-center gap-2">
         {children}
         {isFiltered && (
           <Button
             variant="ghost"
             onClick={resetFilters}
-            className="h-10 px-2 lg:px-3 text-sm font-medium"
+            className="h-10 px-2 text-sm font-medium lg:px-3"
           >
             Reset
             <X className="ml-2 h-4 w-4" />

@@ -1,8 +1,12 @@
-import prisma from '@/lib/prisma';
 import { Prisma, TicketComment } from '@prisma/client';
 
+import prisma from '@/lib/prisma';
+
 export class TicketCommentRepository {
-  async create(data: Prisma.TicketCommentUncheckedCreateInput, tx?: Prisma.TransactionClient): Promise<TicketComment> {
+  async create(
+    data: Prisma.TicketCommentUncheckedCreateInput,
+    tx?: Prisma.TransactionClient,
+  ): Promise<TicketComment> {
     const client = tx || prisma;
     return client.ticketComment.create({
       data,

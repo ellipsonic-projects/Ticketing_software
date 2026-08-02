@@ -1,11 +1,12 @@
 'use client';
 
-import { TimelineEvent, TimelineIcon } from '@/lib/activity/activity.schema';
 import { formatDistanceToNow } from 'date-fns';
-import { Plus, Edit2, Pause, Play, Trash2, Check, Calendar, Clock } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Calendar, Check, Clock, Edit2, Pause, Play, Plus, Trash2 } from 'lucide-react';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { TimelineEvent, TimelineIcon } from '@/lib/activity/activity.schema';
+import { cn } from '@/lib/utils';
 
 interface ActivityTimelineProps {
   events?: TimelineEvent[];
@@ -27,10 +28,10 @@ export function ActivityTimeline({ events, isLoading }: ActivityTimelineProps) {
   if (isLoading) {
     return (
       <div className="space-y-8">
-        {[1, 2, 3].map(i => (
+        {[1, 2, 3].map((i) => (
           <div key={i} className="flex gap-4">
             <Skeleton className="h-10 w-10 rounded-full" />
-            <div className="space-y-2 flex-1">
+            <div className="flex-1 space-y-2">
               <Skeleton className="h-4 w-1/4" />
               <Skeleton className="h-3 w-1/2" />
             </div>
@@ -42,9 +43,7 @@ export function ActivityTimeline({ events, isLoading }: ActivityTimelineProps) {
 
   if (!events || events.length === 0) {
     return (
-      <div className="text-center py-10 text-muted-foreground">
-        No activity history found.
-      </div>
+      <div className="text-muted-foreground py-10 text-center">No activity history found.</div>
     );
   }
 
@@ -60,13 +59,18 @@ export function ActivityTimeline({ events, isLoading }: ActivityTimelineProps) {
               <div className="relative pb-8">
                 {eventIdx !== events.length - 1 ? (
                   <span
-                    className="absolute left-5 top-5 -ml-px h-full w-0.5 bg-gray-200"
+                    className="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200"
                     aria-hidden="true"
                   />
                 ) : null}
                 <div className="relative flex items-start space-x-4">
                   <div className="relative">
-                    <span className={cn('flex h-10 w-10 items-center justify-center rounded-full ring-8 ring-white', config.bg)}>
+                    <span
+                      className={cn(
+                        'flex h-10 w-10 items-center justify-center rounded-full ring-8 ring-white',
+                        config.bg,
+                      )}
+                    >
                       <IconComponent className={cn('h-5 w-5', config.color)} aria-hidden="true" />
                     </span>
                   </div>
@@ -76,7 +80,8 @@ export function ActivityTimeline({ events, isLoading }: ActivityTimelineProps) {
                         <span className="font-medium text-gray-900">{event.title}</span>
                       </div>
                       <p className="mt-0.5 text-sm text-gray-500">
-                        {formatDistanceToNow(new Date(event.occurredAt), { addSuffix: true })} by {event.actor}
+                        {formatDistanceToNow(new Date(event.occurredAt), { addSuffix: true })} by{' '}
+                        {event.actor}
                       </p>
                     </div>
                     <div className="mt-2 text-sm text-gray-700">

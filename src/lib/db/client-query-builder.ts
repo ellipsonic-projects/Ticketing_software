@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+
 import { ClientQuery } from '@/lib/client/client.schema';
 
 export class ClientQueryBuilder {

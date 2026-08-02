@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+
 import { clientDashboardApi } from '@/services/api/client-dashboard-api';
 
 export function useClientDashboard(page = 1, limit = 6) {

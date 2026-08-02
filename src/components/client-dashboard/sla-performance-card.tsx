@@ -2,8 +2,8 @@
 
 import { ArrowUpRight, Clock3, ShieldCheck } from 'lucide-react';
 
-import { cn } from '@/lib/utils';
 import { SlaPerformance } from '@/lib/client-dashboard/client-dashboard.types';
+import { cn } from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -19,13 +19,13 @@ const SLA_TARGET = 95;
 
 function getSlaColor(value: number): string {
   if (value >= SLA_EXCELLENT) return 'text-emerald-600';
-  if (value >= SLA_GOOD)      return 'text-amber-600';
+  if (value >= SLA_GOOD) return 'text-amber-600';
   return 'text-red-600';
 }
 
 function getSlaStrokeColor(value: number): string {
   if (value >= SLA_EXCELLENT) return '#16a34a';
-  if (value >= SLA_GOOD)      return '#f59e0b';
+  if (value >= SLA_GOOD) return '#f59e0b';
   return '#ef4444';
 }
 
@@ -94,9 +94,7 @@ function CircularProgress({ value, size = 150, strokeWidth = 10 }: CircularProgr
         />
       </svg>
       <div className="absolute text-center">
-        <p className={cn('text-4xl font-bold', getSlaColor(percentage))}>
-          {percentage}%
-        </p>
+        <p className={cn('text-4xl font-bold', getSlaColor(percentage))}>{percentage}%</p>
         <p className="mt-1 text-xs font-medium text-slate-500">Compliance</p>
       </div>
     </div>
@@ -106,7 +104,7 @@ function CircularProgress({ value, size = 150, strokeWidth = 10 }: CircularProgr
 function MetricCard({ title, value, subtitle }: MetricCardProps) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 transition-all duration-300 hover:border-slate-300 hover:bg-white">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{title}</p>
+      <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">{title}</p>
       <h3 className="mt-2 text-2xl font-bold text-slate-900">{value}</h3>
       <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
     </div>
@@ -142,10 +140,18 @@ export function SlaPerformanceCard({ sla }: SlaPerformanceCardProps) {
 
       {/* Metric grid */}
       <div className="mt-10 grid grid-cols-2 gap-4">
-        <MetricCard title="Within SLA"    value={sla.withinSla}             subtitle="Tickets"         />
-        <MetricCard title="Breached"      value={sla.breached}              subtitle="Tickets"         />
-        <MetricCard title="Avg Response"  value={sla.averageResponseTime}   subtitle="First response"  />
-        <MetricCard title="Avg Resolution" value={sla.averageResolutionTime} subtitle="Resolution time" />
+        <MetricCard title="Within SLA" value={sla.withinSla} subtitle="Tickets" />
+        <MetricCard title="Breached" value={sla.breached} subtitle="Tickets" />
+        <MetricCard
+          title="Avg Response"
+          value={sla.averageResponseTime}
+          subtitle="First response"
+        />
+        <MetricCard
+          title="Avg Resolution"
+          value={sla.averageResolutionTime}
+          subtitle="Resolution time"
+        />
       </div>
 
       {/* Insight block */}
@@ -162,19 +168,17 @@ export function SlaPerformanceCard({ sla }: SlaPerformanceCardProps) {
           </div>
         </div>
 
-        <p className="mt-5 text-sm leading-7 text-slate-600">
-          {getSlaInsight(sla.complianceRate)}
-        </p>
+        <p className="mt-5 text-sm leading-7 text-slate-600">{getSlaInsight(sla.complianceRate)}</p>
 
         <div className="mt-6 grid grid-cols-2 gap-5">
           <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
               Target SLA
             </p>
             <h4 className="mt-2 text-3xl font-bold text-slate-900">{SLA_TARGET}%</h4>
           </div>
           <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
               Current SLA
             </p>
             <h4 className={cn('mt-2 text-3xl font-bold', getSlaColor(sla.complianceRate))}>

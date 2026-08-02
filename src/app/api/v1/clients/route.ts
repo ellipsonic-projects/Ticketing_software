@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { ROLES } from '@/lib/auth';
-import { CreateClientSchema, ClientQuerySchema } from '@/lib/client/client.schema';
+import { authenticate, RouteContext } from '@/middleware/authenticate';
 
+import { clientService } from '@/services/client/client.service';
+import { ROLES } from '@/lib/auth';
+import { ClientQuerySchema, CreateClientSchema } from '@/lib/client/client.schema';
 import { ForbiddenError } from '@/lib/errors/forbidden-error';
 import { withErrorHandler } from '@/lib/errors/global-handler';
 import { ValidationError } from '@/lib/errors/validation-error';
-import { authenticate, RouteContext } from '@/middleware/authenticate';
-import { clientService } from '@/services/client/client.service';
 import { getRequestContext } from '@/lib/request-context';
 
 async function getClientsHandler(req: NextRequest, ctx?: RouteContext) {
@@ -29,8 +29,8 @@ async function getClientsHandler(req: NextRequest, ctx?: RouteContext) {
 
   if (!queryResult.success) {
     throw new ValidationError(
-      queryResult.error.issues.map(i => ({ field: i.path.join('.'), message: i.message })),
-      'Invalid query parameters'
+      queryResult.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      'Invalid query parameters',
     );
   }
 
@@ -54,16 +54,12 @@ async function createClientHandler(req: NextRequest, ctx?: RouteContext) {
 
   if (!parseResult.success) {
     throw new ValidationError(
-      parseResult.error.issues.map(i => ({ field: i.path.join('.'), message: i.message })),
-      'Invalid client data'
+      parseResult.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      'Invalid client data',
     );
   }
 
-  const client = await clientService.createClient(
-    identity.tenantId,
-    parseResult.data,
-    identity.id,
-  );
+  const client = await clientService.createClient(identity.tenantId, parseResult.data, identity.id);
 
   return NextResponse.json({ client }, { status: 201 });
 }

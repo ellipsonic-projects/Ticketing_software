@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/services/api/api-client';
+
 import { useAuth } from '@/hooks/use-auth';
+import { apiClient } from '@/services/api/api-client';
 
 export interface ClientOverviewStats {
   totalProjects: number;
@@ -12,12 +13,12 @@ export interface ClientOverviewStats {
 
 export function useClientOverviewStats(clientId: string) {
   const { isAuthenticated } = useAuth();
-  
+
   return useQuery<ClientOverviewStats, Error>({
     queryKey: ['client-stats', clientId],
     queryFn: async () => {
       const data = await apiClient<ClientOverviewStats>(`/clients/${clientId}/stats`, {
-        method: 'GET'
+        method: 'GET',
       });
       return data;
     },

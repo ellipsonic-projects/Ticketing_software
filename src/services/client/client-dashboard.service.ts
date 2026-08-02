@@ -1,3 +1,7 @@
+import { TicketHistoryAction, TicketPriority, TicketStatus } from '@prisma/client';
+
+import { ticketHistoryRepository } from '@/repositories/ticket/ticket-history.repository';
+import { ticketRepository } from '@/repositories/ticket/ticket.repository';
 import {
   ClientDashboardResponse,
   DashboardSLA,
@@ -7,9 +11,6 @@ import {
   TicketListItem,
   TimelineItem,
 } from '@/lib/client-dashboard/client-dashboard.types';
-import { ticketRepository } from '@/repositories/ticket/ticket.repository';
-import { ticketHistoryRepository } from '@/repositories/ticket/ticket-history.repository';
-import { TicketHistoryAction, TicketStatus, TicketPriority } from '@prisma/client';
 import prisma from '@/lib/prisma';
 
 // ---------------------------------------------------------------------------
@@ -133,9 +134,7 @@ export class ClientDashboardService {
         h.newValue,
         h.ticket.title,
       ),
-      actor: h.changedBy
-        ? `${h.changedBy.firstName} ${h.changedBy.lastName}`
-        : 'System',
+      actor: h.changedBy ? `${h.changedBy.firstName} ${h.changedBy.lastName}` : 'System',
       occurredAt: h.createdAt.toISOString(),
     }));
 

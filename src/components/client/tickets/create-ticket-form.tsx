@@ -1,42 +1,30 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-
 import {
   ArrowLeft,
-  Ticket,
-  CloudUpload,
-  Loader2,
-  Clock3,
-  Info,
   Bold,
+  Clock3,
+  CloudUpload,
+  Info,
   Italic,
+  Link2,
   List,
   ListOrdered,
-  Link2,
+  Loader2,
   Send,
+  Ticket,
   X,
 } from 'lucide-react';
-
+import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
-
-import { useProjects } from '@/hooks/use-projects';
-import { useAuth } from '@/hooks/use-auth';
-import { useUploadThing } from '@/lib/uploadthing';
-import { apiClient } from '@/services/api/api-client';
-import { ProjectWithClient } from '@/lib/project/project.types';
-import { TicketWithDetails } from '@/lib/ticket/ticket.types';
+import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-
 import {
   Form,
   FormControl,
@@ -45,7 +33,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -53,6 +41,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from '@/hooks/use-auth';
+import { useProjects } from '@/hooks/use-projects';
+import { apiClient } from '@/services/api/api-client';
+import { ProjectWithClient } from '@/lib/project/project.types';
+import { TicketWithDetails } from '@/lib/ticket/ticket.types';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -102,7 +96,6 @@ function formatHours(minutes: number): string {
 export function CreateTicketForm() {
   const router = useRouter();
   const { accessToken } = useAuth();
-  const { startUpload } = useUploadThing('ticketAttachment');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
@@ -126,7 +119,8 @@ export function CreateTicketForm() {
   const description = useWatch({ control: form.control, name: 'description' }) ?? '';
   const selectedProjectId = useWatch({ control: form.control, name: 'projectId' }) ?? '';
 
-  const selectedProject = projects.find((p) => p.id === selectedProjectId) as ProjectWithSla | undefined;
+  const selectedProject = projects.find((p) => p.id === selectedProjectId) as
+    ProjectWithSla | undefined;
 
   const addFiles = useCallback((incoming: File[]) => {
     const valid = incoming.filter((file) => {
@@ -179,11 +173,43 @@ export function CreateTicketForm() {
           throw new Error('Access token is missing. Cannot upload files.');
         }
 
-        const uploadRes = await startUpload(files, { ticketId, accessToken });
+        for (const file of files) {
+          try {
+            // 1. Get presigned URL
+            const presignRes = await apiClient<{
+              data: { url: string; key: string; publicUrl: string };
+            }>(`/tickets/${ticketId}/attachments/presign`, {
+              method: 'POST',
+              body: JSON.stringify({
+                filename: file.name,
+                contentType: file.type || 'application/octet-stream',
+              }),
+            });
+            const { url, publicUrl } = presignRes.data;
 
-        if (!uploadRes) {
-          console.error('File upload failed or was aborted.');
-          toast.error('Ticket created, but some files failed to upload.');
+            // 2. Upload to S3
+            const uploadRes = await fetch(url, {
+              method: 'PUT',
+              body: file,
+              headers: { 'Content-Type': file.type || 'application/octet-stream' },
+            });
+
+            if (!uploadRes.ok) throw new Error(`Failed to upload ${file.name}`);
+
+            // 3. Save metadata
+            await apiClient(`/tickets/${ticketId}/attachments`, {
+              method: 'POST',
+              body: JSON.stringify({
+                filename: file.name,
+                size: file.size,
+                mimeType: file.type || 'application/octet-stream',
+                url: publicUrl,
+              }),
+            });
+          } catch (uploadError) {
+            console.error(uploadError);
+            toast.error(`Failed to upload ${file.name}`);
+          }
         }
       }
 
@@ -214,7 +240,7 @@ export function CreateTicketForm() {
           <Ticket className="h-8 w-8 text-blue-600" />
         </div>
         <div>
-          <h1 className="text-[38px] font-bold leading-tight tracking-tight text-slate-900">
+          <h1 className="text-[38px] leading-tight font-bold tracking-tight text-slate-900">
             Create Support Ticket
           </h1>
           <p className="mt-2 text-base text-slate-500">
@@ -338,8 +364,7 @@ export function CreateTicketForm() {
             {/* Attachments */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-slate-900">
-                Attachments{' '}
-                <span className="font-normal text-slate-500">(Optional)</span>
+                Attachments <span className="font-normal text-slate-500">(Optional)</span>
               </h3>
 
               <div
@@ -356,8 +381,7 @@ export function CreateTicketForm() {
                     Drag and drop your files here
                   </h4>
                   <p className="mt-2 text-sm text-slate-500">
-                    or{' '}
-                    <span className="font-medium text-blue-600">click to browse</span>
+                    or <span className="font-medium text-blue-600">click to browse</span>
                   </p>
                   <p className="mt-4 text-xs text-slate-500">
                     Supports: PDF, DOCX, PNG, JPG, ZIP, TXT
@@ -442,7 +466,8 @@ export function CreateTicketForm() {
                   </div>
 
                   <p className="mt-6 text-sm text-slate-500">
-                    These SLA timings are applicable once the ticket is assigned to our support team.
+                    These SLA timings are applicable once the ticket is assigned to our support
+                    team.
                   </p>
                 </div>
               )}
@@ -457,11 +482,7 @@ export function CreateTicketForm() {
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="h-12 rounded-xl px-8"
-                >
+                <Button type="submit" disabled={isSubmitting} className="h-12 rounded-xl px-8">
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

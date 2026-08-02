@@ -13,6 +13,8 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
+    'fix-routes.js',
+    'fix-routes2.js',
   ]),
   prettierConfig,
   {
@@ -26,6 +28,7 @@ const eslintConfig = defineConfig([
           ignoreRestSiblings: true,
         },
       ],
+      '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
 ]);

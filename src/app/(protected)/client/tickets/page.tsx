@@ -1,7 +1,7 @@
 'use client';
 
-import { TicketsHero } from '@/components/client/tickets/tickets-hero';
 import { TicketList } from '@/components/client/tickets/ticket-list';
+import { TicketsHero } from '@/components/client/tickets/tickets-hero';
 
 export default function ClientTicketsPage() {
   return (

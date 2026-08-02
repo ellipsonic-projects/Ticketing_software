@@ -1,12 +1,16 @@
-import { PrismaClient, Prisma, Project } from '@prisma/client';
+import { Prisma, PrismaClient, Project } from '@prisma/client';
+
 import { prisma } from '@/lib/prisma';
 
 export class ProjectRepository {
   /**
    * Create a new project
    */
-  static async create(data: Prisma.ProjectUncheckedCreateInput): Promise<Project> {
-    return prisma.project.create({
+  static async create(
+    data: Prisma.ProjectUncheckedCreateInput,
+    db: Prisma.TransactionClient = prisma,
+  ): Promise<Project> {
+    return db.project.create({
       data,
     });
   }
@@ -14,17 +18,20 @@ export class ProjectRepository {
   /**
    * Find a project by ID with tenant isolation
    */
-  static async findById(tenantId: string, id: string, withStats: boolean = false): Promise<any | null> {
+  static async findById(
+    tenantId: string,
+    id: string,
+    withStats: boolean = false,
+  ): Promise<any | null> {
     const include: any = {
       client: true,
-      slaPolicy: true,
       businessHours: true,
       holidays: true,
     };
-    
+
     if (withStats) {
       include._count = {
-        select: { tickets: true }
+        select: { tickets: true },
       };
     }
 
@@ -40,15 +47,19 @@ export class ProjectRepository {
   /**
    * Find project by name for a client
    */
-  static async findByName(tenantId: string, clientId: string, name: string): Promise<Project | null> {
+  static async findByName(
+    tenantId: string,
+    clientId: string,
+    name: string,
+  ): Promise<Project | null> {
     return prisma.project.findUnique({
       where: {
         tenantId_clientId_name: {
           tenantId,
           clientId,
-          name
-        }
-      }
+          name,
+        },
+      },
     });
   }
 
@@ -56,17 +67,17 @@ export class ProjectRepository {
    * Check if project exists by name
    */
   static async existsByName(
-    tenantId: string, 
-    clientId: string, 
+    tenantId: string,
+    clientId: string,
     name: string,
-    db: Prisma.TransactionClient = prisma
+    db: Prisma.TransactionClient = prisma,
   ): Promise<boolean> {
     const count = await db.project.count({
       where: {
         tenantId,
         clientId,
-        name
-      }
+        name,
+      },
     });
     return count > 0;
   }
@@ -86,10 +97,10 @@ export class ProjectRepository {
   }): Promise<{ projects: any[]; total: number }> {
     const { tenantId, query } = params;
     const { clientId, page, limit, search, status } = query;
-    
+
     const where: Prisma.ProjectWhereInput = {
       tenantId,
-      archivedAt: null
+      archivedAt: null,
     };
 
     if (clientId) {
@@ -103,7 +114,7 @@ export class ProjectRepository {
     if (search) {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } }
+        { description: { contains: search, mode: 'insensitive' } },
       ];
     }
 
@@ -115,11 +126,10 @@ export class ProjectRepository {
         orderBy: { createdAt: 'desc' },
         include: {
           client: { select: { id: true, name: true, code: true } },
-          slaPolicy: true,
-          _count: { select: { tickets: true } }
-        }
+          _count: { select: { tickets: true } },
+        },
       }),
-      prisma.project.count({ where })
+      prisma.project.count({ where }),
     ]);
 
     return { projects, total };
@@ -129,10 +139,10 @@ export class ProjectRepository {
    * Update a project
    */
   static async update(
-    tenantId: string, 
-    id: string, 
+    tenantId: string,
+    id: string,
     data: Prisma.ProjectUpdateInput,
-    db: Prisma.TransactionClient = prisma
+    db: Prisma.TransactionClient = prisma,
   ): Promise<Project> {
     // Note: Use findFirst to ensure tenant isolation, then update by id
     const project = await db.project.findFirst({ where: { id, tenantId } });
@@ -140,7 +150,7 @@ export class ProjectRepository {
 
     return db.project.update({
       where: { id },
-      data
+      data,
     });
   }
 
@@ -155,8 +165,8 @@ export class ProjectRepository {
       where: { id },
       data: {
         archivedAt: new Date(),
-        status: 'ARCHIVED'
-      }
+        status: 'INACTIVE',
+      },
     });
   }
 
@@ -166,7 +176,7 @@ export class ProjectRepository {
   static async getStats(tenantId: string): Promise<{ total: number; active: number }> {
     const [total, active] = await Promise.all([
       prisma.project.count({ where: { tenantId, archivedAt: null } }),
-      prisma.project.count({ where: { tenantId, status: 'ACTIVE', archivedAt: null } })
+      prisma.project.count({ where: { tenantId, status: 'ACTIVE', archivedAt: null } }),
     ]);
 
     return { total, active };

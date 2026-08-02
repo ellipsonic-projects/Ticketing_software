@@ -1,14 +1,16 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { FolderOpen } from 'lucide-react';
-import { ProjectStatus } from '@prisma/client';
 
+import { ProjectStatus } from '@prisma/client';
+import { FolderOpen } from 'lucide-react';
+
+import { Pagination } from '@/components/shared/data-table/pagination';
 import { useProjects } from '@/hooks/use-projects';
 import { ProjectWithClient } from '@/lib/project/project.types';
+
 import { ProjectCard } from './project-card';
 import { ProjectToolbar } from './project-toolbar';
-import { Pagination } from '@/components/shared/data-table/pagination';
 
 interface ProjectGridProps {
   clientId: string;
@@ -73,7 +75,9 @@ export function ProjectGrid({ clientId }: ProjectGridProps) {
             <FolderOpen className="h-10 w-10 text-slate-300" />
             <h3 className="mt-4 font-semibold text-slate-700">No Projects Found</h3>
             <p className="mt-2 text-sm text-slate-500">
-              {search ? 'Try searching with another keyword.' : 'There are currently no projects available.'}
+              {search
+                ? 'Try searching with another keyword.'
+                : 'There are currently no projects available.'}
             </p>
           </div>
         </div>
@@ -92,17 +96,12 @@ export function ProjectGrid({ clientId }: ProjectGridProps) {
           <div className="flex flex-col gap-5 rounded-3xl border border-slate-200 bg-white px-7 py-5 lg:flex-row lg:items-center lg:justify-between">
             <p className="text-sm text-slate-500">
               Showing
-              <span className="mx-1 font-semibold text-slate-900">
-                {(page - 1) * limit + 1}
-              </span>
-              –
+              <span className="mx-1 font-semibold text-slate-900">{(page - 1) * limit + 1}</span>–
               <span className="mx-1 font-semibold text-slate-900">
                 {Math.min(page * limit, totalProjects)}
               </span>
               of
-              <span className="mx-1 font-semibold text-slate-900">
-                {totalProjects}
-              </span>
+              <span className="mx-1 font-semibold text-slate-900">{totalProjects}</span>
               projects
             </p>
             <Pagination totalPages={totalPages} totalItems={totalProjects} />

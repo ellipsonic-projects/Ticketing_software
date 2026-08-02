@@ -1,7 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { CreateTicketInput, UpdateTicketInput, AssignTicketInput } from '@/lib/ticket/ticket.schema';
-import { TicketWithDetails } from '@/lib/ticket/ticket.types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
 import { apiClient } from '@/services/api/api-client';
+import {
+  AssignTicketInput,
+  CreateTicketInput,
+  UpdateTicketInput,
+} from '@/lib/ticket/ticket.schema';
+import { TicketWithDetails } from '@/lib/ticket/ticket.types';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -105,10 +110,13 @@ export function useAssignTicket(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: AssignTicketInput) => {
-      const res = await apiClient<{ data: { ticket: TicketWithDetails } }>(`/tickets/${id}/assign`, {
-        method: 'PATCH',
-        body: JSON.stringify(data),
-      });
+      const res = await apiClient<{ data: { ticket: TicketWithDetails } }>(
+        `/tickets/${id}/assign`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify(data),
+        },
+      );
       return res.data;
     },
     onSuccess: () => {

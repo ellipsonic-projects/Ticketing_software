@@ -1,10 +1,10 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { Loader2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import * as z from 'zod';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -17,7 +17,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -25,10 +24,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-
-import { UpdateProjectSchema } from '@/lib/project/project.schema';
-import { useUpdateProject } from '@/hooks/use-projects';
+import { Textarea } from '@/components/ui/textarea';
 import { useCan } from '@/hooks/use-can';
+import { useUpdateProject } from '@/hooks/use-projects';
+import { UpdateProjectSchema } from '@/lib/project/project.schema';
 
 type SupportConfigFormValues = z.input<typeof UpdateProjectSchema>;
 
@@ -71,7 +70,7 @@ export function ProjectSupportConfig({ project }: ProjectSupportConfigProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <FormField
             control={form.control}
             name="supportStatus"
@@ -116,9 +115,7 @@ export function ProjectSupportConfig({ project }: ProjectSupportConfigProps) {
                     <SelectItem value="URGENT">Urgent</SelectItem>
                   </SelectContent>
                 </Select>
-                <FormDescription>
-                  The default priority assigned to new tickets.
-                </FormDescription>
+                <FormDescription>The default priority assigned to new tickets.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -131,7 +128,12 @@ export function ProjectSupportConfig({ project }: ProjectSupportConfigProps) {
               <FormItem>
                 <FormLabel>Support Email</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="support@company.com" {...field} value={field.value || ''} />
+                  <Input
+                    type="email"
+                    placeholder="support@company.com"
+                    {...field}
+                    value={field.value || ''}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -160,10 +162,10 @@ export function ProjectSupportConfig({ project }: ProjectSupportConfigProps) {
             <FormItem>
               <FormLabel>Support Notes</FormLabel>
               <FormControl>
-                <Textarea 
-                  placeholder="e.g. Support available only during IST business hours. Escalate production issues immediately." 
+                <Textarea
+                  placeholder="e.g. Support available only during IST business hours. Escalate production issues immediately."
                   className="min-h-[100px]"
-                  {...field} 
+                  {...field}
                   value={field.value || ''}
                 />
               </FormControl>
@@ -176,7 +178,11 @@ export function ProjectSupportConfig({ project }: ProjectSupportConfigProps) {
         />
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={isPending || !form.formState.isDirty} className="bg-indigo-600 hover:bg-indigo-700">
+          <Button
+            type="submit"
+            disabled={isPending || !form.formState.isDirty}
+            className="bg-indigo-600 hover:bg-indigo-700"
+          >
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save Configuration
           </Button>

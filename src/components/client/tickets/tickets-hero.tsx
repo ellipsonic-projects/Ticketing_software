@@ -1,15 +1,9 @@
 'use client';
 
-import {
-  Ticket,
-  AlertCircle,
-  Clock,
-  CheckCircle2,
-  Archive,
-  LucideIcon,
-} from 'lucide-react';
-import { useTicketStats } from '@/hooks/use-tickets';
+import { AlertCircle, Archive, CheckCircle2, Clock, LucideIcon, Ticket } from 'lucide-react';
+
 import { useAuth } from '@/hooks/use-auth';
+import { useTicketStats } from '@/hooks/use-tickets';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -41,7 +35,9 @@ function StatPill({
   value,
 }: StatPillConfig) {
   return (
-    <div className={`flex flex-col items-center justify-center rounded-3xl ${cardBg} p-6 text-center shadow-sm`}>
+    <div
+      className={`flex flex-col items-center justify-center rounded-3xl ${cardBg} p-6 text-center shadow-sm`}
+    >
       <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-full ${iconBg}`}>
         <Icon className={`h-5 w-5 ${iconColor}`} />
       </div>

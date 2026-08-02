@@ -1,4 +1,5 @@
-import { Prisma, TicketStatus, TicketPriority } from '@prisma/client';
+import { Prisma, TicketPriority, TicketStatus } from '@prisma/client';
+
 import { ServerAuthIdentity as Identity } from '@/lib/auth/auth-context';
 
 export interface TicketQuerySchema {
@@ -13,6 +14,8 @@ export interface TicketQuerySchema {
   order?: 'asc' | 'desc';
   page?: number;
   limit?: number;
+  isOverdue?: boolean;
+  dueToday?: boolean;
 }
 
 export class TicketQueryBuilder {
@@ -20,8 +23,14 @@ export class TicketQueryBuilder {
     const where: Prisma.TicketWhereInput = { tenantId };
 
     // Role-based Isolation Enforcement
+    // CLIENT users see all tickets belonging to their company (clientId), not just ones they created.
     if (user.role === 'CLIENT') {
-      where.reportedById = user.id; // Fallback until User->Client mapping exists
+      if (user.clientId) {
+        where.clientId = user.clientId;
+      } else {
+        // Fallback: if clientId is not set, restrict to only their own tickets
+        where.reportedById = user.id;
+      }
     } else if (user.role === 'ENGINEER') {
       // Engineers can see all tickets in the project, but we might want them to see assigned + unassigned pool
       // For now, based on standard helpdesk norms, ENGINEERS can see all tickets for the tenant unless restricted.
@@ -30,7 +39,7 @@ export class TicketQueryBuilder {
 
     if (query.search) {
       const isNumber = !isNaN(Number(query.search));
-      
+
       where.OR = [
         { title: { contains: query.search, mode: 'insensitive' } },
         { description: { contains: query.search, mode: 'insensitive' } },
@@ -41,28 +50,64 @@ export class TicketQueryBuilder {
     }
 
     if (query.status && query.status !== 'all') {
-      where.status = query.status;
+      if (typeof query.status === 'string' && query.status.includes(',')) {
+        where.status = { in: query.status.split(',') as TicketStatus[] };
+      } else {
+        where.status = query.status as TicketStatus;
+      }
     }
 
     if (query.priority && query.priority !== 'all') {
-      where.priority = query.priority;
+      if (typeof query.priority === 'string' && query.priority.includes(',')) {
+        where.priority = { in: query.priority.split(',') as TicketPriority[] };
+      } else {
+        where.priority = query.priority as TicketPriority;
+      }
     }
 
     if (query.projectId) {
       where.projectId = query.projectId;
     }
-    
+
     // Allow query to filter by client if user is not a client
     if (query.clientId && user.role !== 'CLIENT') {
       where.clientId = query.clientId;
     }
 
     if (query.assignedToId) {
-      where.assignedToId = query.assignedToId;
+      if (query.assignedToId === 'unassigned') {
+        where.assignedToId = null;
+      } else {
+        where.assignedToId = query.assignedToId;
+      }
     }
 
     if (query.reportedById) {
       where.reportedById = query.reportedById;
+    }
+
+    if (query.isOverdue) {
+      where.sla = {
+        is: {
+          resolutionBreachAt: { lt: new Date() },
+          resolvedAt: null,
+        },
+      };
+    }
+
+    if (query.dueToday) {
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+
+      const endOfToday = new Date();
+      endOfToday.setHours(23, 59, 59, 999);
+
+      where.sla = {
+        is: {
+          resolutionBreachAt: { gte: startOfToday, lte: endOfToday },
+          resolvedAt: null,
+        },
+      };
     }
 
     // Default sorting: highest priority first, then newest
@@ -78,7 +123,14 @@ export class TicketQueryBuilder {
         case 'updatedAt':
         case 'priority':
         case 'status':
-          orderBy = { [query.sort]: query.order };
+        case 'resolutionBreachAt':
+        case 'responseBreachAt':
+          // responseBreachAt in query might map to firstResponseBreachAt in DB schema, but let's check schema.
+          // The schema has firstResponseBreachAt and resolutionBreachAt.
+          // Let's assume responseBreachAt means firstResponseBreachAt.
+          const dbField =
+            query.sort === 'responseBreachAt' ? 'firstResponseBreachAt' : 'resolutionBreachAt';
+          orderBy = { sla: { [dbField]: query.order } };
           break;
         case 'project':
           orderBy = { project: { name: query.order } };
@@ -104,9 +156,9 @@ export class TicketQueryBuilder {
         assignedTo: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
         reportedBy: { select: { id: true, firstName: true, lastName: true } },
         category: { select: { id: true, name: true } },
-        sla: { select: { resolutionBreachAt: true } },
+        sla: true,
         _count: { select: { comments: true, attachments: true } },
-      }
+      },
     };
   }
 }

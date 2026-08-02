@@ -36,7 +36,7 @@ export async function apiClient<T>(endpoint: string, options: FetchOptions = {})
   const config: RequestInit = {
     ...customConfig,
     headers: {
-      'Content-Type': 'application/json',
+      ...(customConfig.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
       ...(token || globalToken ? { Authorization: `Bearer ${token || globalToken}` } : {}),
       ...headers,
     },

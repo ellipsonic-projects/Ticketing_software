@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { authenticate, RouteContext } from '@/middleware/authenticate';
+
+import { projectService } from '@/services/project/project.service';
 import { ForbiddenError } from '@/lib/errors/forbidden-error';
 import { withErrorHandler } from '@/lib/errors/global-handler';
-import { authenticate, RouteContext } from '@/middleware/authenticate';
-import { projectService } from '@/services/project/project.service';
 import { getRequestContext } from '@/lib/request-context';
 
 async function getProjectStatsHandler(req: NextRequest, ctx?: RouteContext) {

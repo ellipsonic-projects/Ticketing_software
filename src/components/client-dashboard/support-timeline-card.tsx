@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  CheckCircle2,
-  Clock3,
-  MessageSquare,
-  CircleDot,
-} from 'lucide-react';
+import { CheckCircle2, CircleDot, Clock3, MessageSquare } from 'lucide-react';
 
 import { SupportTimelineEvent } from '@/lib/client-dashboard/client-dashboard.types';
 import { cn } from '@/lib/utils';
@@ -26,10 +21,10 @@ const TIMELINE_ICON_CONFIG: Record<
   SupportTimelineEvent['type'],
   { bg: string; icon: React.ComponentType<{ className?: string }>; color: string }
 > = {
-  COMMENT:        { bg: 'bg-blue-50',    icon: MessageSquare, color: 'text-blue-600'    },
-  STATUS_CHANGED: { bg: 'bg-amber-50',   icon: Clock3,        color: 'text-amber-600'   },
-  RESOLVED:       { bg: 'bg-emerald-50', icon: CheckCircle2,  color: 'text-emerald-600' },
-  OTHER:          { bg: 'bg-slate-100',  icon: CircleDot,     color: 'text-slate-500'   },
+  COMMENT: { bg: 'bg-blue-50', icon: MessageSquare, color: 'text-blue-600' },
+  STATUS_CHANGED: { bg: 'bg-amber-50', icon: Clock3, color: 'text-amber-600' },
+  RESOLVED: { bg: 'bg-emerald-50', icon: CheckCircle2, color: 'text-emerald-600' },
+  OTHER: { bg: 'bg-slate-100', icon: CircleDot, color: 'text-slate-500' },
 };
 
 function TimelineIcon({ type }: { type: SupportTimelineEvent['type'] }) {
@@ -41,18 +36,10 @@ function TimelineIcon({ type }: { type: SupportTimelineEvent['type'] }) {
   );
 }
 
-function TimelineItem({
-  event,
-  isLast,
-}: {
-  event: SupportTimelineEvent;
-  isLast: boolean;
-}) {
+function TimelineItem({ event, isLast }: { event: SupportTimelineEvent; isLast: boolean }) {
   return (
     <div className="relative flex gap-4">
-      {!isLast && (
-        <div className="absolute left-5 top-12 h-full w-px bg-slate-200" />
-      )}
+      {!isLast && <div className="absolute top-12 left-5 h-full w-px bg-slate-200" />}
       <TimelineIcon type={event.type} />
       <div className="flex-1 pb-8">
         <div className="flex items-start justify-between gap-3">
@@ -60,7 +47,7 @@ function TimelineItem({
             <h4 className="font-semibold text-slate-900">{event.title}</h4>
             <p className="mt-1 text-sm text-slate-500">{event.description}</p>
           </div>
-          <span className="whitespace-nowrap text-xs text-slate-400">{event.time}</span>
+          <span className="text-xs whitespace-nowrap text-slate-400">{event.time}</span>
         </div>
       </div>
     </div>
@@ -93,11 +80,7 @@ export function SupportTimelineCard({ events }: SupportTimelineCardProps) {
         ) : (
           <div>
             {events.map((event, index) => (
-              <TimelineItem
-                key={event.id}
-                event={event}
-                isLast={index === events.length - 1}
-              />
+              <TimelineItem key={event.id} event={event} isLast={index === events.length - 1} />
             ))}
           </div>
         )}

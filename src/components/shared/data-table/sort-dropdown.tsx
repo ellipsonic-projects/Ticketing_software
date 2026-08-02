@@ -1,6 +1,9 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+
+import { ArrowDownUp } from 'lucide-react';
+
 import {
   Select,
   SelectContent,
@@ -8,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowDownUp } from 'lucide-react';
 
 export interface SortOption {
   label: string;
@@ -21,7 +23,11 @@ interface SortDropdownProps {
   defaultOrder?: string;
 }
 
-export function SortDropdown({ options, defaultSort = 'createdAt', defaultOrder = 'desc' }: SortDropdownProps) {
+export function SortDropdown({
+  options,
+  defaultSort = 'createdAt',
+  defaultOrder = 'desc',
+}: SortDropdownProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -34,13 +40,13 @@ export function SortDropdown({ options, defaultSort = 'createdAt', defaultOrder 
     if (!val) return;
     const [sort, order] = val.split(':');
     const params = new URLSearchParams(searchParams.toString());
-    
+
     params.set('sort', sort);
     params.set('order', order);
-    
+
     // Changing sort should arguably keep you on the same page, but resetting to page 1 is often safer for data tables.
     params.set('page', '1');
-    
+
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 

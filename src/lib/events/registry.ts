@@ -8,12 +8,12 @@ let isRegistered = false;
  */
 export function registerEventHandlers() {
   if (isRegistered) return;
-  
+
   console.log('[EventRegistry] Registering domain event handlers...');
-  
+
   // Register all handlers
   TicketEmailHandler.register();
-  
+
   isRegistered = true;
 }
 

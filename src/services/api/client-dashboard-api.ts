@@ -1,4 +1,5 @@
 import { ClientDashboardResponse } from '@/lib/client-dashboard/client-dashboard.types';
+
 import { apiClient } from './api-client';
 
 export const clientDashboardApi = {

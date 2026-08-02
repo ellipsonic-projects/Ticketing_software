@@ -6,13 +6,13 @@ import PasswordResetEmail from '@/emails/password-reset';
 import WelcomeEmail from '@/emails/welcome';
 
 import { EmailProvider } from './email.provider';
-import { ResendProvider } from './resend.provider';
+import { SmtpProvider } from './smtp.provider';
 
 export class EmailService {
   private provider: EmailProvider;
 
   constructor(provider?: EmailProvider) {
-    this.provider = provider || new ResendProvider();
+    this.provider = provider || new SmtpProvider();
   }
 
   async sendInvitation(email: string, token: string, appUrl: string) {

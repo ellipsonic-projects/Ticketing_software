@@ -1,32 +1,28 @@
 'use client';
 
-import { TicketWithDetails } from '@/lib/ticket/ticket.types';
-import { formatDistanceToNow, format } from 'date-fns';
-import {
-  Folder,
-  Clock,
-  MessageSquare,
-  Paperclip,
-  ArrowRight,
-} from 'lucide-react';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
+
+import { format, formatDistanceToNow } from 'date-fns';
+import { ArrowRight, Clock, Folder, MessageSquare, Paperclip } from 'lucide-react';
+
+import { TicketWithDetails } from '@/lib/ticket/ticket.types';
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
 const BORDER_COLORS: Record<string, string> = {
-  LOW:    'border-l-emerald-500',
+  LOW: 'border-l-emerald-500',
   MEDIUM: 'border-l-amber-500',
-  HIGH:   'border-l-red-500',
+  HIGH: 'border-l-red-500',
   URGENT: 'border-l-purple-600',
 };
 
 const BADGE_COLORS: Record<string, string> = {
-  LOW:    'bg-emerald-100 text-emerald-700',
+  LOW: 'bg-emerald-100 text-emerald-700',
   MEDIUM: 'bg-amber-100 text-amber-700',
-  HIGH:   'bg-red-100 text-red-700',
+  HIGH: 'bg-red-100 text-red-700',
   URGENT: 'bg-purple-100 text-purple-700',
 };
 
@@ -48,7 +44,7 @@ function getSlaDisplay(ticket: TicketWithDetails): SlaDisplayInfo {
 
   if (isResolved) {
     return {
-      text:      'Resolved',
+      text: 'Resolved',
       textColor: 'text-emerald-600',
       iconColor: 'text-emerald-500',
     };
@@ -69,12 +65,20 @@ function getSlaDisplay(ticket: TicketWithDetails): SlaDisplayInfo {
   const timeText = `${formatDistanceToNow(breachDate)} remaining`;
 
   if (hoursRemaining < SLA_HOURS_URGENT) {
-    return { text: timeText, textColor: 'text-red-600 font-semibold',   iconColor: 'text-red-500'   };
+    return { text: timeText, textColor: 'text-red-600 font-semibold', iconColor: 'text-red-500' };
   }
   if (hoursRemaining < SLA_HOURS_WARNING) {
-    return { text: timeText, textColor: 'text-amber-600 font-semibold', iconColor: 'text-amber-500' };
+    return {
+      text: timeText,
+      textColor: 'text-amber-600 font-semibold',
+      iconColor: 'text-amber-500',
+    };
   }
-  return { text: timeText, textColor: 'text-emerald-600 font-semibold', iconColor: 'text-emerald-500' };
+  return {
+    text: timeText,
+    textColor: 'text-emerald-600 font-semibold',
+    iconColor: 'text-emerald-500',
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -107,7 +111,9 @@ export function TicketCard({ ticket }: TicketCardProps) {
           Created: {format(new Date(ticket.createdAt), 'MMM d, yyyy')}
         </span>
         <div className="mt-1">
-          <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${BADGE_COLORS[ticket.priority]}`}>
+          <span
+            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${BADGE_COLORS[ticket.priority]}`}
+          >
             {ticket.priority}
           </span>
         </div>

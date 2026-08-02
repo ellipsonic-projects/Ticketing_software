@@ -51,7 +51,6 @@ export function UserList() {
   useEffect(() => {
     const timer = setTimeout(() => fetchUsers(), 300);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, search]);
 
   const updateStatus = async (id: string, currentStatus: string) => {

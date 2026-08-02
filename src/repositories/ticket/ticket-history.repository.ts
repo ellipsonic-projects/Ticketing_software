@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { Prisma, TicketHistory, TicketHistoryAction } from '@prisma/client';
+
 import prisma from '@/lib/prisma';
 
 export type TicketHistoryWithRelations = TicketHistory & {

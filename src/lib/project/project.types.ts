@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { Project, Client, ProjectStatus } from '@prisma/client';
+import { Client, Project, ProjectStatus } from '@prisma/client';
 
 export type ProjectWithClient = Project & {
   client: Pick<Client, 'id' | 'name' | 'code'>;

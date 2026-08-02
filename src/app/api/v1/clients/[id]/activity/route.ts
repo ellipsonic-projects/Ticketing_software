@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+import { authenticate, RouteContext } from '@/middleware/authenticate';
+
+import { activityTimelineService } from '@/services/activity/activity-timeline.service';
 import { ForbiddenError } from '@/lib/errors/forbidden-error';
 import { withErrorHandler } from '@/lib/errors/global-handler';
-import { authenticate, RouteContext } from '@/middleware/authenticate';
-import { activityTimelineService } from '@/services/activity/activity-timeline.service';
 import { getRequestContext } from '@/lib/request-context';
 
 async function getClientActivityHandler(req: NextRequest, ctx?: RouteContext) {
@@ -22,7 +24,7 @@ async function getClientActivityHandler(req: NextRequest, ctx?: RouteContext) {
     'Client',
     id,
     page,
-    pageSize
+    pageSize,
   );
 
   return NextResponse.json(result);

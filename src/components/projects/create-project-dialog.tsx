@@ -19,18 +19,21 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useCreateProject } from '@/hooks/use-projects';
 import { useClients } from '@/hooks/use-clients';
+import { useCreateProject } from '@/hooks/use-projects';
 import { CreateProjectInput, CreateProjectSchema } from '@/lib/project/project.schema';
-
 
 export function CreateProjectDialog() {
   const [open, setOpen] = useState(false);
   const { mutateAsync: createProject, isPending } = useCreateProject();
-  
+
   // We only fetch active clients for project creation
-  const { data: clientsData, isLoading: isLoadingClients } = useClients({ 
-    page: 1, limit: 100, status: 'ACTIVE', sort: 'name', order: 'asc' 
+  const { data: clientsData, isLoading: isLoadingClients } = useClients({
+    page: 1,
+    limit: 100,
+    status: 'ACTIVE',
+    sort: 'name',
+    order: 'asc',
   });
   const clients = clientsData?.data || [];
 
@@ -83,20 +86,24 @@ export function CreateProjectDialog() {
               <Label htmlFor="clientId" className="text-xs font-semibold text-slate-700">
                 Client Organization *
               </Label>
-              <select 
-                disabled={isPending || isLoadingClients} 
-                value={selectedClient} 
+              <select
+                disabled={isPending || isLoadingClients}
+                value={selectedClient}
                 onChange={(e) => setValue('clientId', e.target.value, { shouldValidate: true })}
-                className={`h-10 w-full rounded-md border bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.clientId ? 'border-red-400' : 'border-slate-200'}`}
+                className={`h-10 w-full rounded-md border bg-slate-50 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none ${errors.clientId ? 'border-red-400' : 'border-slate-200'}`}
               >
-                <option value="" disabled>Select a client...</option>
-                {clients.map(client => (
+                <option value="" disabled>
+                  Select a client...
+                </option>
+                {clients.map((client) => (
                   <option key={client.id} value={client.id}>
                     {client.name}
                   </option>
                 ))}
               </select>
-              {errors.clientId && <span className="text-[11px] text-red-500">{errors.clientId.message}</span>}
+              {errors.clientId && (
+                <span className="text-[11px] text-red-500">{errors.clientId.message}</span>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -110,7 +117,9 @@ export function CreateProjectDialog() {
                 placeholder="Marketing Site"
                 disabled={isPending}
               />
-              {errors.name && <span className="text-[11px] text-red-500">{errors.name.message}</span>}
+              {errors.name && (
+                <span className="text-[11px] text-red-500">{errors.name.message}</span>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -120,20 +129,26 @@ export function CreateProjectDialog() {
               <Input
                 id="code"
                 {...register('code')}
-                className="h-10 bg-slate-50 border-slate-200"
+                className="h-10 border-slate-200 bg-slate-50"
                 placeholder="MKT"
                 disabled={isPending}
               />
-              {errors.code && <span className="text-[11px] text-red-500">{errors.code.message}</span>}
-              <p className="text-[11px] text-slate-400">Used as prefix for ticket IDs (e.g. MKT-101).</p>
+              {errors.code && (
+                <span className="text-[11px] text-red-500">{errors.code.message}</span>
+              )}
+              <p className="text-[11px] text-slate-400">
+                Used as prefix for ticket IDs (e.g. MKT-101).
+              </p>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="description" className="text-xs font-semibold text-slate-700">Description</Label>
+              <Label htmlFor="description" className="text-xs font-semibold text-slate-700">
+                Description
+              </Label>
               <Textarea
                 id="description"
                 {...register('description')}
-                className="bg-slate-50 border-slate-200"
+                className="border-slate-200 bg-slate-50"
                 placeholder="Project details..."
                 disabled={isPending}
               />

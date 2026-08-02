@@ -3,8 +3,11 @@ import type { NextRequest } from 'next/server';
 
 import { REFRESH_TOKEN_COOKIE } from '@/lib/auth/cookies';
 
-// Add paths that require authentication here
+// ---------------------------------------------------------------------------
+// Routes that require a valid session to access
+// ---------------------------------------------------------------------------
 const protectedPaths = [
+  '/dashboard',
   '/account',
   '/admin',
   '/tenant',
@@ -15,13 +18,25 @@ const protectedPaths = [
   '/client',
   '/projects',
   '/clients',
+  '/profile',
 ];
 
-// Add paths that are only for guests (unauthenticated users)
-const guestPaths = [
-  '/auth/login',
-  '/auth/register',
-  '/auth/forgot-password',
+// ---------------------------------------------------------------------------
+// Routes only for unauthenticated (guest) users.
+// Authenticated users visiting these are redirected away.
+// ---------------------------------------------------------------------------
+const guestOnlyPaths = ['/auth/login', '/auth/register', '/auth/forgot-password'];
+
+// ---------------------------------------------------------------------------
+// Auth-flow paths that must NEVER trigger a guest-redirect even when the
+// user has a refresh cookie (e.g., forced password-change after first login,
+// accepting an invitation, resetting a password, or an expired session page).
+// ---------------------------------------------------------------------------
+const authFlowPaths = [
+  '/auth/change-password',
+  '/auth/accept-invitation',
+  '/auth/reset-password',
+  '/auth/session-expired',
 ];
 
 export function middleware(request: NextRequest) {
@@ -34,7 +49,14 @@ export function middleware(request: NextRequest) {
 
   const hasRefreshToken = request.cookies.has(REFRESH_TOKEN_COOKIE);
 
-  // Protect authenticated routes
+  // Always allow auth-flow pages — these must never be blocked or redirect-looped.
+  // e.g. user is forced to /auth/change-password after first login: still has a cookie.
+  const isAuthFlowPath = authFlowPaths.some((path) => pathname.startsWith(path));
+  if (isAuthFlowPath) {
+    return NextResponse.next();
+  }
+
+  // Unauthenticated user hitting a protected route → send to login with ?redirect=
   const isProtectedPath = protectedPaths.some((path) => pathname.startsWith(path));
   if (isProtectedPath && !hasRefreshToken) {
     const url = new URL('/auth/login', request.url);
@@ -42,9 +64,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Redirect authenticated users away from guest routes
-  const isGuestPath = guestPaths.some((path) => pathname.startsWith(path));
-  if (isGuestPath && hasRefreshToken) {
+  // Authenticated user hitting a guest-only route → send to home
+  const isGuestOnlyPath = guestOnlyPaths.some((path) => pathname.startsWith(path));
+  if (isGuestOnlyPath && hasRefreshToken) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 

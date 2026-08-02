@@ -1,9 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Plus, ArrowRight, ArrowLeft, Building2, FolderKanban, CheckCircle2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Building2,
+  CheckCircle2,
+  FolderKanban,
+  Loader2,
+  Plus,
+} from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -55,6 +64,7 @@ export function OnboardClientWizard() {
       website: '',
       contactName: '',
       address: '',
+      industry: '',
       notes: '',
       project: {
         name: '',
@@ -72,9 +82,24 @@ export function OnboardClientWizard() {
     if (e) e.preventDefault();
     let isValid = false;
     if (step === 1) {
-      isValid = await trigger(['name', 'code', 'email', 'phone', 'website', 'contactName', 'address', 'notes']);
+      isValid = await trigger([
+        'name',
+        'code',
+        'email',
+        'phone',
+        'website',
+        'contactName',
+        'address',
+        'industry',
+        'notes',
+      ]);
     } else if (step === 2) {
-      isValid = await trigger(['project.name', 'project.code', 'project.description', 'project.status']);
+      isValid = await trigger([
+        'project.name',
+        'project.code',
+        'project.description',
+        'project.status',
+      ]);
     }
 
     if (isValid) {
@@ -95,17 +120,17 @@ export function OnboardClientWizard() {
 
     try {
       const result = await onboardClient(data);
-      
+
       if (data.email) {
         toast.success(`Client onboarded. An invitation email has been sent to ${data.email}.`);
       } else {
         toast.success('Client and project created successfully');
       }
-      
+
       setOpen(false);
       reset();
       setStep(1);
-      
+
       if (result && result.client && result.client.id) {
         router.push('/clients');
       }
@@ -120,15 +145,18 @@ export function OnboardClientWizard() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={(val) => {
-      if (isPending) return;
-      setOpen(val);
-      if (!val) resetDialog();
-    }}>
+    <Dialog
+      open={open}
+      onOpenChange={(val) => {
+        if (isPending) return;
+        setOpen(val);
+        if (!val) resetDialog();
+      }}
+    >
       <DialogTrigger className="flex h-10 items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-semibold text-white shadow-sm transition-all hover:bg-indigo-700">
         <Plus className="mr-2 h-4 w-4" /> Onboard Client
       </DialogTrigger>
-      
+
       <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl p-6 sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Onboard New Client</DialogTitle>
@@ -140,24 +168,46 @@ export function OnboardClientWizard() {
         {/* Stepper UI */}
         <div className="mt-4 flex items-center justify-between px-2">
           <div className="flex flex-col items-center gap-2">
-            <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-colors ${step >= 1 ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
+            <div
+              className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-colors ${step >= 1 ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}`}
+            >
               <Building2 className="h-4 w-4" />
             </div>
-            <span className={`text-[10px] font-semibold uppercase ${step >= 1 ? 'text-indigo-600' : 'text-slate-400'}`}>Client</span>
+            <span
+              className={`text-[10px] font-semibold uppercase ${step >= 1 ? 'text-indigo-600' : 'text-slate-400'}`}
+            >
+              Client
+            </span>
           </div>
-          <div className={`h-[2px] flex-1 mx-2 transition-colors ${step >= 2 ? 'bg-indigo-600' : 'bg-slate-100'}`} />
+          <div
+            className={`mx-2 h-[2px] flex-1 transition-colors ${step >= 2 ? 'bg-indigo-600' : 'bg-slate-100'}`}
+          />
           <div className="flex flex-col items-center gap-2">
-            <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-colors ${step >= 2 ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
+            <div
+              className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-colors ${step >= 2 ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}`}
+            >
               <FolderKanban className="h-4 w-4" />
             </div>
-            <span className={`text-[10px] font-semibold uppercase ${step >= 2 ? 'text-indigo-600' : 'text-slate-400'}`}>Project</span>
+            <span
+              className={`text-[10px] font-semibold uppercase ${step >= 2 ? 'text-indigo-600' : 'text-slate-400'}`}
+            >
+              Project
+            </span>
           </div>
-          <div className={`h-[2px] flex-1 mx-2 transition-colors ${step >= 3 ? 'bg-indigo-600' : 'bg-slate-100'}`} />
+          <div
+            className={`mx-2 h-[2px] flex-1 transition-colors ${step >= 3 ? 'bg-indigo-600' : 'bg-slate-100'}`}
+          />
           <div className="flex flex-col items-center gap-2">
-            <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-colors ${step >= 3 ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
+            <div
+              className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-colors ${step >= 3 ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}`}
+            >
               <CheckCircle2 className="h-4 w-4" />
             </div>
-            <span className={`text-[10px] font-semibold uppercase ${step >= 3 ? 'text-indigo-600' : 'text-slate-400'}`}>Review</span>
+            <span
+              className={`text-[10px] font-semibold uppercase ${step >= 3 ? 'text-indigo-600' : 'text-slate-400'}`}
+            >
+              Review
+            </span>
           </div>
         </div>
 
@@ -166,7 +216,9 @@ export function OnboardClientWizard() {
           <div className={step === 1 ? 'block' : 'hidden'}>
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="name" className="text-xs font-semibold text-slate-700">Company Name *</Label>
+                <Label htmlFor="name" className="text-xs font-semibold text-slate-700">
+                  Company Name *
+                </Label>
                 <Input
                   id="name"
                   {...register('name')}
@@ -174,37 +226,49 @@ export function OnboardClientWizard() {
                   placeholder="Acme Corp"
                   disabled={isPending}
                 />
-                {errors.name && <span className="text-[11px] text-red-500">{errors.name.message}</span>}
+                {errors.name && (
+                  <span className="text-[11px] text-red-500">{errors.name.message}</span>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="code" className="text-xs font-semibold text-slate-700">Company Code</Label>
+                  <Label htmlFor="code" className="text-xs font-semibold text-slate-700">
+                    Company Code
+                  </Label>
                   <Input
                     id="code"
                     {...register('code')}
-                    className="h-10 bg-slate-50 border-slate-200"
+                    className="h-10 border-slate-200 bg-slate-50"
                     placeholder="ACM"
                     disabled={isPending}
                   />
-                  {errors.code && <span className="text-[11px] text-red-500">{errors.code.message}</span>}
+                  {errors.code && (
+                    <span className="text-[11px] text-red-500">{errors.code.message}</span>
+                  )}
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="contactName" className="text-xs font-semibold text-slate-700">Primary Contact</Label>
+                  <Label htmlFor="contactName" className="text-xs font-semibold text-slate-700">
+                    Primary Contact *
+                  </Label>
                   <Input
                     id="contactName"
                     {...register('contactName')}
-                    className="h-10 bg-slate-50 border-slate-200"
+                    className={`h-10 bg-slate-50 ${errors.contactName ? 'border-red-400' : 'border-slate-200'}`}
                     placeholder="Jane Doe"
                     disabled={isPending}
                   />
-                  {errors.contactName && <span className="text-[11px] text-red-500">{errors.contactName.message}</span>}
+                  {errors.contactName && (
+                    <span className="text-[11px] text-red-500">{errors.contactName.message}</span>
+                  )}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="email" className="text-xs font-semibold text-slate-700">Email Address (Invites user)</Label>
+                  <Label htmlFor="email" className="text-xs font-semibold text-slate-700">
+                    Email Address (Invites user) *
+                  </Label>
                   <Input
                     id="email"
                     type="email"
@@ -213,18 +277,62 @@ export function OnboardClientWizard() {
                     placeholder="jane@acme.com"
                     disabled={isPending}
                   />
-                  {errors.email && <span className="text-[11px] text-red-500">{errors.email.message}</span>}
+                  {errors.email && (
+                    <span className="text-[11px] text-red-500">{errors.email.message}</span>
+                  )}
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="phone" className="text-xs font-semibold text-slate-700">Phone Number</Label>
+                  <Label htmlFor="phone" className="text-xs font-semibold text-slate-700">
+                    Phone Number
+                  </Label>
                   <Input
                     id="phone"
                     {...register('phone')}
-                    className="h-10 bg-slate-50 border-slate-200"
+                    className="h-10 border-slate-200 bg-slate-50"
                     placeholder="+1 (555) 000-0000"
                     disabled={isPending}
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="industry" className="text-xs font-semibold text-slate-700">
+                    Industry
+                  </Label>
+                  <Input
+                    id="industry"
+                    {...register('industry')}
+                    className="h-10 border-slate-200 bg-slate-50"
+                    placeholder="e.g. Technology, Healthcare"
+                    disabled={isPending}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="website" className="text-xs font-semibold text-slate-700">
+                    Website
+                  </Label>
+                  <Input
+                    id="website"
+                    {...register('website')}
+                    className="h-10 border-slate-200 bg-slate-50"
+                    placeholder="https://acme.com"
+                    disabled={isPending}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="address" className="text-xs font-semibold text-slate-700">
+                  Address
+                </Label>
+                <Textarea
+                  id="address"
+                  {...register('address')}
+                  className="min-h-[60px] border-slate-200 bg-slate-50"
+                  placeholder="123 Business St, Suite 100..."
+                  disabled={isPending}
+                />
               </div>
             </div>
           </div>
@@ -232,12 +340,14 @@ export function OnboardClientWizard() {
           {/* STEP 2: PROJECT INFO */}
           <div className={step === 2 ? 'block' : 'hidden'}>
             <div className="space-y-4">
-              <div className="rounded-md bg-indigo-50 p-3 text-sm text-indigo-700 mb-4">
+              <div className="mb-4 rounded-md bg-indigo-50 p-3 text-sm text-indigo-700">
                 A client must have at least one initial project.
               </div>
-              
+
               <div className="space-y-1.5">
-                <Label htmlFor="project.name" className="text-xs font-semibold text-slate-700">Project Name *</Label>
+                <Label htmlFor="project.name" className="text-xs font-semibold text-slate-700">
+                  Project Name *
+                </Label>
                 <Input
                   id="project.name"
                   {...register('project.name')}
@@ -245,25 +355,31 @@ export function OnboardClientWizard() {
                   placeholder="Website Redesign"
                   disabled={isPending}
                 />
-                {errors.project?.name && <span className="text-[11px] text-red-500">{errors.project.name.message}</span>}
+                {errors.project?.name && (
+                  <span className="text-[11px] text-red-500">{errors.project.name.message}</span>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="project.code" className="text-xs font-semibold text-slate-700">Project Code</Label>
+                  <Label htmlFor="project.code" className="text-xs font-semibold text-slate-700">
+                    Project Code
+                  </Label>
                   <Input
                     id="project.code"
                     {...register('project.code')}
-                    className="h-10 bg-slate-50 border-slate-200"
+                    className="h-10 border-slate-200 bg-slate-50"
                     placeholder="WEB"
                     disabled={isPending}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="project.status" className="text-xs font-semibold text-slate-700">Status</Label>
+                  <Label htmlFor="project.status" className="text-xs font-semibold text-slate-700">
+                    Status
+                  </Label>
                   <select
                     {...register('project.status')}
-                    className="h-10 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="h-10 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                     disabled={isPending}
                   >
                     <option value="ACTIVE">Active</option>
@@ -273,11 +389,16 @@ export function OnboardClientWizard() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="project.description" className="text-xs font-semibold text-slate-700">Description</Label>
+                <Label
+                  htmlFor="project.description"
+                  className="text-xs font-semibold text-slate-700"
+                >
+                  Description
+                </Label>
                 <Textarea
                   id="project.description"
                   {...register('project.description')}
-                  className="bg-slate-50 border-slate-200 min-h-[80px]"
+                  className="min-h-[80px] border-slate-200 bg-slate-50"
                   placeholder="Initial implementation phase..."
                   disabled={isPending}
                 />
@@ -289,29 +410,42 @@ export function OnboardClientWizard() {
           <div className={step === 3 ? 'block' : 'hidden'}>
             <div className="space-y-6">
               <div>
-                <h4 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 mb-3">Client Organization</h4>
-                <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                <h4 className="mb-3 border-b border-slate-100 pb-2 text-sm font-bold text-slate-900">
+                  Client Organization
+                </h4>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
                   <div>
                     <span className="block text-xs text-slate-500">Name</span>
-                    <span className="font-medium text-slate-900">{formValues.name} {formValues.code ? `(${formValues.code})` : ''}</span>
+                    <span className="font-medium text-slate-900">
+                      {formValues.name} {formValues.code ? `(${formValues.code})` : ''}
+                    </span>
                   </div>
                   <div>
                     <span className="block text-xs text-slate-500">Contact</span>
-                    <span className="font-medium text-slate-900">{formValues.contactName || 'None'}</span>
+                    <span className="font-medium text-slate-900">
+                      {formValues.contactName || 'None'}
+                    </span>
                   </div>
                   <div>
                     <span className="block text-xs text-slate-500">Email (Invitation)</span>
-                    <span className="font-medium text-slate-900">{formValues.email || 'None provided'}</span>
+                    <span className="font-medium text-slate-900">
+                      {formValues.email || 'None provided'}
+                    </span>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h4 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 mb-3">Initial Project</h4>
-                <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                <h4 className="mb-3 border-b border-slate-100 pb-2 text-sm font-bold text-slate-900">
+                  Initial Project
+                </h4>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
                   <div>
                     <span className="block text-xs text-slate-500">Project Name</span>
-                    <span className="font-medium text-slate-900">{formValues.project?.name} {formValues.project?.code ? `(${formValues.project?.code})` : ''}</span>
+                    <span className="font-medium text-slate-900">
+                      {formValues.project?.name}{' '}
+                      {formValues.project?.code ? `(${formValues.project?.code})` : ''}
+                    </span>
                   </div>
                   <div>
                     <span className="block text-xs text-slate-500">Status</span>
@@ -319,9 +453,10 @@ export function OnboardClientWizard() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="rounded-md bg-amber-50 p-3 text-xs text-amber-700">
-                Both the client and project will be created together. If either fails, no data will be saved.
+                Both the client and project will be created together. If either fails, no data will
+                be saved.
               </div>
             </div>
           </div>
@@ -329,7 +464,12 @@ export function OnboardClientWizard() {
           {/* Navigation */}
           <div className="flex justify-end gap-3 border-t pt-6">
             {step === 1 ? (
-              <Button type="button" variant="ghost" onClick={() => setOpen(false)} className="text-slate-600">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setOpen(false)}
+                className="text-slate-600"
+              >
                 Cancel
               </Button>
             ) : (
@@ -339,12 +479,24 @@ export function OnboardClientWizard() {
             )}
 
             {step < 3 ? (
-              <Button type="button" onClick={handleNext} className="bg-indigo-600 hover:bg-indigo-700 text-white min-w-[100px]">
+              <Button
+                type="button"
+                onClick={handleNext}
+                className="min-w-[100px] bg-indigo-600 text-white hover:bg-indigo-700"
+              >
                 Next <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             ) : (
-              <Button type="submit" disabled={isPending || !canSubmit} className="bg-indigo-600 hover:bg-indigo-700 text-white min-w-[200px]">
-                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Create Client & Project'}
+              <Button
+                type="submit"
+                disabled={isPending || !canSubmit}
+                className="min-w-[200px] bg-indigo-600 text-white hover:bg-indigo-700"
+              >
+                {isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  'Create Client & Project'
+                )}
               </Button>
             )}
           </div>

@@ -1,11 +1,11 @@
+import { authenticate } from '@/middleware/authenticate';
 import { z } from 'zod';
 
-import { authenticate } from '@/middleware/authenticate';
-import { withErrorHandler } from '@/lib/errors/global-handler';
-import { ForbiddenError } from '@/lib/errors/forbidden-error';
-import { getRequestContext } from '@/lib/request-context';
-import { ApiResponder } from '@/lib/api-response';
 import { ClientDashboardService } from '@/services/client/client-dashboard.service';
+import { ApiResponder } from '@/lib/api-response';
+import { ForbiddenError } from '@/lib/errors/forbidden-error';
+import { withErrorHandler } from '@/lib/errors/global-handler';
+import { getRequestContext } from '@/lib/request-context';
 
 const QuerySchema = z.object({
   page: z.coerce.number().min(1).default(1),

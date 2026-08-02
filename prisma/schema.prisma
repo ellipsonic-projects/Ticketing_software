@@ -161,6 +161,7 @@ model Client {
 
   email String?
   phone String?
+  industry String?
 
   website String?
 
@@ -247,7 +248,6 @@ model Project {
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
-  slaPolicy     SLAPolicy?
   businessHours BusinessHours[]
   holidays      Holiday[]
   tickets       Ticket[]
@@ -260,20 +260,31 @@ model Project {
 
 model SLAPolicy {
   id        String @id @default(cuid())
-  projectId String @unique
-  tenantId  String
+  tenantId  String @unique
 
-  responseTimeMinutes   Int
-  resolutionTimeMinutes Int
   businessHoursEnabled  Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tiers   SLATier[]
+}
 
-  @@index([tenantId])
+model SLATier {
+  id        String @id @default(cuid())
+  policyId  String
+  priority  TicketPriority
+  
+  responseTimeMinutes   Int
+  resolutionTimeMinutes Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  policy SLAPolicy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@unique([policyId, priority])
 }
 
 model BusinessHours {

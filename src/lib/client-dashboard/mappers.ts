@@ -2,9 +2,9 @@ import { formatDistanceToNow } from 'date-fns';
 
 import {
   DashboardSLA,
+  ProjectHealth,
   ProjectHealthItem,
   SlaPerformance,
-  ProjectHealth,
   SupportTimelineEvent,
   TimelineItem,
 } from './client-dashboard.types';

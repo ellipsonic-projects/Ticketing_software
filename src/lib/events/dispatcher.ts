@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { EventEmitter } from 'events';
+
 import { DomainEvent } from './types';
 
 type EventHandler<T extends DomainEvent> = (event: T) => void | Promise<void>;
@@ -17,7 +18,7 @@ class Dispatcher {
    */
   public subscribe<T extends DomainEvent>(
     eventClass: new (...args: any[]) => T,
-    handler: EventHandler<T>
+    handler: EventHandler<T>,
   ): void {
     // We use the class name as the event name
     this.emitter.on(eventClass.name, async (event: T) => {

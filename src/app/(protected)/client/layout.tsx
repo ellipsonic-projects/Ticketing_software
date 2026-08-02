@@ -2,9 +2,9 @@
 
 import { Loader2 } from 'lucide-react';
 
-import { useAuth } from '@/hooks/use-auth';
-import { DashboardSidebar } from '@/components/client-dashboard/dashboard-sidebar';
 import { DashboardHeader } from '@/components/client-dashboard/dashboard-header';
+import { DashboardSidebar } from '@/components/client-dashboard/dashboard-sidebar';
+import { useAuthRedirect } from '@/hooks/use-auth-redirect';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -30,12 +30,8 @@ function NotLinkedScreen() {
   return (
     <div className="flex h-screen items-center justify-center bg-[#F8FAFC]">
       <div className="rounded-3xl border border-slate-200 bg-white px-12 py-14 text-center shadow-sm">
-        <h2 className="text-2xl font-semibold text-slate-900">
-          Client account not configured
-        </h2>
-        <p className="mt-3 text-slate-500">
-          Your account is not linked to any client.
-        </p>
+        <h2 className="text-2xl font-semibold text-slate-900">Client account not configured</h2>
+        <p className="mt-3 text-slate-500">Your account is not linked to any client.</p>
       </div>
     </div>
   );
@@ -50,13 +46,15 @@ interface ClientPortalLayoutProps {
 }
 
 export default function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
-  const { user, isLoading } = useAuth();
+  // Only CLIENT role may access this layout; unauthenticated or wrong-role → /auth/login
+  const { user, isLoading } = useAuthRedirect(['CLIENT']);
 
-  if (isLoading) {
+  if (isLoading || !user) {
     return <LoadingScreen />;
   }
 
-  if (!user?.clientId) {
+  // Authenticated CLIENT but not yet linked to a client account
+  if (!user.clientId) {
     return <NotLinkedScreen />;
   }
 
@@ -67,15 +65,10 @@ export default function ClientPortalLayout({ children }: ClientPortalLayoutProps
       <DashboardSidebar />
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <DashboardHeader
-          firstName={user.firstName ?? 'there'}
-          roleLabel={roleLabel}
-        />
+        <DashboardHeader firstName={user.firstName ?? 'there'} roleLabel={roleLabel} />
 
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1600px] px-8 py-8 xl:px-10">
-            {children}
-          </div>
+          <div className="mx-auto w-full max-w-[1600px] px-8 py-8 xl:px-10">{children}</div>
         </main>
       </div>
     </div>

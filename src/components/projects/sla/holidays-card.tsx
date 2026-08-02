@@ -1,20 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Trash2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -25,12 +19,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-
-import { HolidayCreateSchema, HolidayCreateInput } from '@/lib/project/sla.schema';
-import { useProjectHolidays, useCreateHoliday, useDeleteHoliday } from '@/hooks/use-sla';
 import { useCan } from '@/hooks/use-can';
+import { useCreateHoliday, useDeleteHoliday, useProjectHolidays } from '@/hooks/use-sla';
+import { HolidayCreateInput, HolidayCreateSchema } from '@/lib/project/sla.schema';
 
-export function HolidaysCard({ projectId, isArchived }: { projectId: string; isArchived?: boolean }) {
+export function HolidaysCard({
+  projectId,
+  isArchived,
+}: {
+  projectId: string;
+  isArchived?: boolean;
+}) {
   const canUpdate = useCan('PROJECT_UPDATE') && !isArchived;
   const { data: response, isLoading } = useProjectHolidays(projectId);
   const { mutateAsync: createHoliday, isPending: isCreating } = useCreateHoliday(projectId);
@@ -69,8 +68,12 @@ export function HolidaysCard({ projectId, isArchived }: { projectId: string; isA
   if (isLoading) {
     return (
       <Card>
-        <CardHeader><CardTitle>Holidays</CardTitle></CardHeader>
-        <CardContent><Skeleton className="h-[200px] w-full" /></CardContent>
+        <CardHeader>
+          <CardTitle>Holidays</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-[200px] w-full" />
+        </CardContent>
       </Card>
     );
   }
@@ -81,9 +84,8 @@ export function HolidaysCard({ projectId, isArchived }: { projectId: string; isA
         <CardTitle>Holidays</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        
         {holidays.length > 0 ? (
-          <div className="border rounded-md">
+          <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -104,7 +106,7 @@ export function HolidaysCard({ projectId, isArchived }: { projectId: string; isA
                           size="icon"
                           disabled={isDeleting}
                           onClick={() => handleDelete(holiday.id)}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          className="text-red-500 hover:bg-red-50 hover:text-red-700"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -116,14 +118,14 @@ export function HolidaysCard({ projectId, isArchived }: { projectId: string; isA
             </Table>
           </div>
         ) : (
-          <div className="text-center py-6 text-slate-500 border rounded-md bg-slate-50">
+          <div className="rounded-md border bg-slate-50 py-6 text-center text-slate-500">
             No holidays configured for this project.
           </div>
         )}
 
         {canUpdate && (
-          <div className="pt-4 border-t">
-            <h4 className="text-sm font-medium mb-4">Add Holiday</h4>
+          <div className="border-t pt-4">
+            <h4 className="mb-4 text-sm font-medium">Add Holiday</h4>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-4">
                 <FormField
@@ -132,13 +134,17 @@ export function HolidaysCard({ projectId, isArchived }: { projectId: string; isA
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <FormControl>
-                        <Input placeholder="Holiday Name (e.g., New Year)" disabled={isCreating} {...field} />
+                        <Input
+                          placeholder="Holiday Name (e.g., New Year)"
+                          disabled={isCreating}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={form.control as any}
                   name="holidayDate"
@@ -152,7 +158,11 @@ export function HolidaysCard({ projectId, isArchived }: { projectId: string; isA
                   )}
                 />
 
-                <Button type="submit" disabled={isCreating} className="bg-indigo-600 hover:bg-indigo-700">
+                <Button
+                  type="submit"
+                  disabled={isCreating}
+                  className="bg-indigo-600 hover:bg-indigo-700"
+                >
                   {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Add Holiday
                 </Button>
@@ -160,7 +170,6 @@ export function HolidaysCard({ projectId, isArchived }: { projectId: string; isA
             </Form>
           </div>
         )}
-
       </CardContent>
     </Card>
   );

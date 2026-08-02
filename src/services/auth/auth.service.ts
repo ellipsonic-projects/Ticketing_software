@@ -1,7 +1,7 @@
 import crypto from 'crypto';
-import { Prisma } from '@prisma/client';
 
 import { env } from '@/config/env';
+import { Prisma } from '@prisma/client';
 
 import { AuditService } from '@/services/audit/audit.service';
 import { emailService } from '@/services/email/email.service';
@@ -214,7 +214,7 @@ export class AuthService {
         prisma.tenant.update({
           where: { id: user.tenantId },
           data: { status: 'ACTIVE' },
-        })
+        }),
       );
     } else if (user.role === 'CLIENT') {
       // Find the client associated with this email and activate it
@@ -226,7 +226,7 @@ export class AuthService {
           prisma.client.update({
             where: { id: client.id },
             data: { status: 'ACTIVE' },
-          })
+          }),
         );
       }
     }

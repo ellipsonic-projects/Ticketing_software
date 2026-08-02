@@ -17,7 +17,7 @@ export class TicketCreatedEvent extends DomainEvent {
     public readonly projectId: string,
     public readonly clientId: string,
     public readonly createdById: string,
-    public readonly priority: TicketPriority
+    public readonly priority: TicketPriority,
   ) {
     super('TicketCreatedEvent');
   }
@@ -29,7 +29,7 @@ export class TicketAssignedEvent extends DomainEvent {
     public readonly ticketNumber: number,
     public readonly tenantId: string,
     public readonly assignedToId: string,
-    public readonly assignedById: string
+    public readonly assignedById: string,
   ) {
     super('TicketAssignedEvent');
   }
@@ -42,7 +42,7 @@ export class TicketReassignedEvent extends DomainEvent {
     public readonly tenantId: string,
     public readonly previousAssignedToId: string | null,
     public readonly newAssignedToId: string,
-    public readonly reassignedById: string
+    public readonly reassignedById: string,
   ) {
     super('TicketReassignedEvent');
   }
@@ -55,7 +55,7 @@ export class TicketStatusChangedEvent extends DomainEvent {
     public readonly tenantId: string,
     public readonly oldStatus: TicketStatus,
     public readonly newStatus: TicketStatus,
-    public readonly changedById: string
+    public readonly changedById: string,
   ) {
     super('TicketStatusChangedEvent');
   }
@@ -68,7 +68,7 @@ export class TicketPriorityChangedEvent extends DomainEvent {
     public readonly tenantId: string,
     public readonly oldPriority: TicketPriority,
     public readonly newPriority: TicketPriority,
-    public readonly changedById: string
+    public readonly changedById: string,
   ) {
     super('TicketPriorityChangedEvent');
   }
@@ -82,7 +82,7 @@ export class TicketCommentAddedEvent extends DomainEvent {
     public readonly tenantId: string,
     public readonly authorId: string,
     public readonly isInternal: boolean,
-    public readonly bodyExcerpt: string
+    public readonly bodyExcerpt: string,
   ) {
     super('TicketCommentAddedEvent');
   }
@@ -95,7 +95,7 @@ export class TicketAttachmentAddedEvent extends DomainEvent {
     public readonly ticketNumber: number,
     public readonly tenantId: string,
     public readonly uploaderId: string,
-    public readonly filename: string
+    public readonly filename: string,
   ) {
     super('TicketAttachmentAddedEvent');
   }
@@ -106,7 +106,7 @@ export class TicketResolvedEvent extends DomainEvent {
     public readonly ticketId: string,
     public readonly ticketNumber: number,
     public readonly tenantId: string,
-    public readonly resolvedById: string
+    public readonly resolvedById: string,
   ) {
     super('TicketResolvedEvent');
   }
@@ -117,7 +117,7 @@ export class TicketClosedEvent extends DomainEvent {
     public readonly ticketId: string,
     public readonly ticketNumber: number,
     public readonly tenantId: string,
-    public readonly closedById: string
+    public readonly closedById: string,
   ) {
     super('TicketClosedEvent');
   }
@@ -128,7 +128,7 @@ export class TicketReopenedEvent extends DomainEvent {
     public readonly ticketId: string,
     public readonly ticketNumber: number,
     public readonly tenantId: string,
-    public readonly reopenedById: string
+    public readonly reopenedById: string,
   ) {
     super('TicketReopenedEvent');
   }

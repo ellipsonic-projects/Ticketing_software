@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ROLES } from '@/lib/auth';
-import { HolidayUpdateSchema } from '@/lib/project/sla.schema';
-import { ForbiddenError } from '@/lib/errors/forbidden-error';
-import { ValidationError } from '@/lib/errors/validation-error';
-import { withErrorHandler } from '@/lib/errors/global-handler';
+
 import { authenticate, RouteContext } from '@/middleware/authenticate';
+
 import { holidayService } from '@/services/project/holiday.service';
+import { ROLES } from '@/lib/auth';
+import { ForbiddenError } from '@/lib/errors/forbidden-error';
+import { withErrorHandler } from '@/lib/errors/global-handler';
+import { ValidationError } from '@/lib/errors/validation-error';
+import { HolidayUpdateSchema } from '@/lib/project/sla.schema';
 import { getRequestContext } from '@/lib/request-context';
 
 async function updateHolidayHandler(req: NextRequest, ctx?: RouteContext) {
@@ -26,8 +28,8 @@ async function updateHolidayHandler(req: NextRequest, ctx?: RouteContext) {
 
   if (!parseResult.success) {
     throw new ValidationError(
-      parseResult.error.issues.map(i => ({ field: i.path.join('.'), message: i.message })),
-      'Invalid Holiday data'
+      parseResult.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      'Invalid Holiday data',
     );
   }
 
@@ -36,7 +38,7 @@ async function updateHolidayHandler(req: NextRequest, ctx?: RouteContext) {
     id,
     holidayId,
     parseResult.data,
-    identity.id
+    identity.id,
   );
 
   return NextResponse.json({ holiday });
@@ -55,13 +57,8 @@ async function deleteHolidayHandler(req: NextRequest, ctx?: RouteContext) {
   }
 
   const { id, holidayId } = await ctx!.params;
-  
-  await holidayService.delete(
-    identity.tenantId,
-    id,
-    holidayId,
-    identity.id
-  );
+
+  await holidayService.delete(identity.tenantId, id, holidayId, identity.id);
 
   return new NextResponse(null, { status: 204 });
 }

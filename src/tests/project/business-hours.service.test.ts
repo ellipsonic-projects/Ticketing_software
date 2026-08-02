@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { businessHoursService } from '@/services/project/business-hours.service';
@@ -24,39 +23,60 @@ describe('BusinessHoursService', () => {
     it('should reject if project does not exist', async () => {
       vi.mocked(ProjectRepository.findById).mockResolvedValue(null);
 
-      await expect(
-        businessHoursService.replaceSchedule('t1', 'p1', [], 'u1')
-      ).rejects.toThrow(NotFoundError);
+      await expect(businessHoursService.replaceSchedule('t1', 'p1', [], 'u1')).rejects.toThrow(
+        NotFoundError,
+      );
     });
 
     it('should reject if project is archived', async () => {
-      vi.mocked(ProjectRepository.findById).mockResolvedValue({ id: 'p1', tenantId: 't1', archivedAt: new Date() } as never);
+      vi.mocked(ProjectRepository.findById).mockResolvedValue({
+        id: 'p1',
+        tenantId: 't1',
+        archivedAt: new Date(),
+      } as never);
 
-      await expect(
-        businessHoursService.replaceSchedule('t1', 'p1', [], 'u1')
-      ).rejects.toThrow(ConflictError);
+      await expect(businessHoursService.replaceSchedule('t1', 'p1', [], 'u1')).rejects.toThrow(
+        ConflictError,
+      );
     });
 
     it('should reject if schedule does not have exactly 7 days', async () => {
-      vi.mocked(ProjectRepository.findById).mockResolvedValue({ id: 'p1', tenantId: 't1', archivedAt: null } as never);
+      vi.mocked(ProjectRepository.findById).mockResolvedValue({
+        id: 'p1',
+        tenantId: 't1',
+        archivedAt: null,
+      } as never);
 
       await expect(
-        businessHoursService.replaceSchedule('t1', 'p1', [{ dayOfWeek: 1, isOpen: true, startTime: '09:00', endTime: '17:00' }], 'u1')
+        businessHoursService.replaceSchedule(
+          't1',
+          'p1',
+          [{ dayOfWeek: 1, isOpen: true, startTime: '09:00', endTime: '17:00' }],
+          'u1',
+        ),
       ).rejects.toThrow(ConflictError);
     });
 
     it('should reject duplicate days', async () => {
-      vi.mocked(ProjectRepository.findById).mockResolvedValue({ id: 'p1', tenantId: 't1', archivedAt: null } as never);
+      vi.mocked(ProjectRepository.findById).mockResolvedValue({
+        id: 'p1',
+        tenantId: 't1',
+        archivedAt: null,
+      } as never);
 
       const invalidSchedule = Array(7).fill({ dayOfWeek: 1, isOpen: false });
 
       await expect(
-        businessHoursService.replaceSchedule('t1', 'p1', invalidSchedule, 'u1')
+        businessHoursService.replaceSchedule('t1', 'p1', invalidSchedule, 'u1'),
       ).rejects.toThrow(ConflictError);
     });
 
     it('should reject open days missing start or end time', async () => {
-      vi.mocked(ProjectRepository.findById).mockResolvedValue({ id: 'p1', tenantId: 't1', archivedAt: null } as never);
+      vi.mocked(ProjectRepository.findById).mockResolvedValue({
+        id: 'p1',
+        tenantId: 't1',
+        archivedAt: null,
+      } as never);
 
       const invalidSchedule = Array.from({ length: 7 }, (_, i) => ({
         dayOfWeek: i,
@@ -64,12 +84,16 @@ describe('BusinessHoursService', () => {
       }));
 
       await expect(
-        businessHoursService.replaceSchedule('t1', 'p1', invalidSchedule, 'u1')
+        businessHoursService.replaceSchedule('t1', 'p1', invalidSchedule, 'u1'),
       ).rejects.toThrow(ConflictError);
     });
 
     it('should reject if start time is after end time', async () => {
-      vi.mocked(ProjectRepository.findById).mockResolvedValue({ id: 'p1', tenantId: 't1', archivedAt: null } as never);
+      vi.mocked(ProjectRepository.findById).mockResolvedValue({
+        id: 'p1',
+        tenantId: 't1',
+        archivedAt: null,
+      } as never);
 
       const invalidSchedule = Array.from({ length: 7 }, (_, i) => ({
         dayOfWeek: i,
@@ -79,12 +103,16 @@ describe('BusinessHoursService', () => {
       }));
 
       await expect(
-        businessHoursService.replaceSchedule('t1', 'p1', invalidSchedule, 'u1')
+        businessHoursService.replaceSchedule('t1', 'p1', invalidSchedule, 'u1'),
       ).rejects.toThrow(ConflictError);
     });
 
     it('should successfully save valid schedule', async () => {
-      vi.mocked(ProjectRepository.findById).mockResolvedValue({ id: 'p1', tenantId: 't1', archivedAt: null } as never);
+      vi.mocked(ProjectRepository.findById).mockResolvedValue({
+        id: 'p1',
+        tenantId: 't1',
+        archivedAt: null,
+      } as never);
       vi.mocked(BusinessHoursRepository.replaceWeekSchedule).mockResolvedValue([] as never);
 
       const validSchedule = Array.from({ length: 7 }, (_, i) => ({

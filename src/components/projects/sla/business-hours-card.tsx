@@ -1,14 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useEffect } from 'react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { useEffect } from 'react';
+import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -18,24 +21,25 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
-
-import { BusinessHoursSchema } from '@/lib/project/sla.schema';
-import { useBusinessHours, useUpdateBusinessHours } from '@/hooks/use-sla';
 import { useCan } from '@/hooks/use-can';
-import { z } from 'zod';
+import { useBusinessHours, useUpdateBusinessHours } from '@/hooks/use-sla';
+import { BusinessHoursSchema } from '@/lib/project/sla.schema';
 
 const FormSchema = z.object({
   schedule: BusinessHoursSchema,
 });
 type FormValues = z.infer<typeof FormSchema>;
 
-const DAYS_OF_WEEK = [
-  'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
-];
+const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-export function BusinessHoursCard({ projectId, isArchived }: { projectId: string; isArchived?: boolean }) {
+export function BusinessHoursCard({
+  projectId,
+  isArchived,
+}: {
+  projectId: string;
+  isArchived?: boolean;
+}) {
   const canUpdate = useCan('PROJECT_UPDATE') && !isArchived;
   const { data: response, isLoading } = useBusinessHours(projectId);
   const { mutateAsync: updateSchedule, isPending } = useUpdateBusinessHours(projectId);
@@ -59,7 +63,7 @@ export function BusinessHoursCard({ projectId, isArchived }: { projectId: string
 
   const { fields } = useFieldArray({
     control: form.control,
-    name: "schedule",
+    name: 'schedule',
   });
 
   // Helper to format ISO Date to HH:mm string
@@ -95,8 +99,12 @@ export function BusinessHoursCard({ projectId, isArchived }: { projectId: string
   if (isLoading) {
     return (
       <Card>
-        <CardHeader><CardTitle>Business Hours</CardTitle></CardHeader>
-        <CardContent><Skeleton className="h-[300px] w-full" /></CardContent>
+        <CardHeader>
+          <CardTitle>Business Hours</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-[300px] w-full" />
+        </CardContent>
       </Card>
     );
   }
@@ -109,20 +117,22 @@ export function BusinessHoursCard({ projectId, isArchived }: { projectId: string
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            
             <div className="space-y-4">
               {fields.map((field, index) => (
-                <div key={field.id} className="grid grid-cols-12 gap-4 items-center border-b pb-4 last:border-b-0 last:pb-0">
-                  <div className="col-span-12 sm:col-span-3 font-medium text-sm">
+                <div
+                  key={field.id}
+                  className="grid grid-cols-12 items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0"
+                >
+                  <div className="col-span-12 text-sm font-medium sm:col-span-3">
                     {DAYS_OF_WEEK[index]}
                   </div>
-                  
+
                   <div className="col-span-12 sm:col-span-3">
                     <FormField
                       control={form.control}
                       name={`schedule.${index}.isOpen`}
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                        <FormItem className="flex flex-row items-center space-y-0 space-x-3">
                           <FormControl>
                             <Checkbox
                               checked={field.value}
@@ -139,7 +149,7 @@ export function BusinessHoursCard({ projectId, isArchived }: { projectId: string
                               disabled={!canUpdate}
                             />
                           </FormControl>
-                          <FormLabel className="font-normal cursor-pointer text-sm">
+                          <FormLabel className="cursor-pointer text-sm font-normal">
                             Enabled
                           </FormLabel>
                         </FormItem>
@@ -192,7 +202,11 @@ export function BusinessHoursCard({ projectId, isArchived }: { projectId: string
 
             {canUpdate && (
               <div className="flex justify-end pt-4">
-                <Button type="submit" disabled={isPending || !form.formState.isDirty} className="bg-indigo-600 hover:bg-indigo-700">
+                <Button
+                  type="submit"
+                  disabled={isPending || !form.formState.isDirty}
+                  className="bg-indigo-600 hover:bg-indigo-700"
+                >
                   {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Save Business Hours
                 </Button>

@@ -11,8 +11,13 @@ const envSchema = z.object({
   SMTP_PORT: z.coerce.number().optional(),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
+  SMTP_FROM: z.string().optional(),
+  AWS_REGION: z.string().optional(),
+  AWS_ACCESS_KEY_ID: z.string().optional(),
+  AWS_SECRET_ACCESS_KEY: z.string().optional(),
+  AWS_S3_BUCKET_NAME: z.string().optional(),
 
-  STORAGE_PROVIDER: z.enum(['local', 's3', 'cloudinary']).default('local'),
+  STORAGE_PROVIDER: z.enum(['local', 's3', 'cloudinary']).default('s3'),
   MAIL_PROVIDER: z.enum(['console', 'smtp', 'resend']).default('console'),
 
   JWT_ACCESS_SECRET: z.string(),

@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -19,14 +21,18 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
-
-import { SLAPolicySchema, SLAPolicyInput } from '@/lib/project/sla.schema';
-import { useProjectSLA, useUpdateProjectSLA } from '@/hooks/use-sla';
 import { useCan } from '@/hooks/use-can';
+import { useProjectSLA, useUpdateProjectSLA } from '@/hooks/use-sla';
+import { SLAPolicyInput, SLAPolicySchema } from '@/lib/project/sla.schema';
 
-export function SLAPolicyCard({ projectId, isArchived }: { projectId: string; isArchived?: boolean }) {
+export function SLAPolicyCard({
+  projectId,
+  isArchived,
+}: {
+  projectId: string;
+  isArchived?: boolean;
+}) {
   const canUpdate = useCan('PROJECT_UPDATE') && !isArchived;
   const { data: response, isLoading } = useProjectSLA(projectId);
   const { mutateAsync: updateSLA, isPending } = useUpdateProjectSLA(projectId);
@@ -65,8 +71,12 @@ export function SLAPolicyCard({ projectId, isArchived }: { projectId: string; is
   if (isLoading) {
     return (
       <Card>
-        <CardHeader><CardTitle>SLA Policy</CardTitle></CardHeader>
-        <CardContent><Skeleton className="h-[200px] w-full" /></CardContent>
+        <CardHeader>
+          <CardTitle>SLA Policy</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-[200px] w-full" />
+        </CardContent>
       </Card>
     );
   }
@@ -79,7 +89,7 @@ export function SLAPolicyCard({ projectId, isArchived }: { projectId: string; is
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <FormField
                 control={form.control as any}
                 name="responseTimeMinutes"
@@ -94,9 +104,7 @@ export function SLAPolicyCard({ projectId, isArchived }: { projectId: string; is
                         onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
                       />
                     </FormControl>
-                    <FormDescription>
-                      Time to first response. Example: 60 (1 hour).
-                    </FormDescription>
+                    <FormDescription>Time to first response. Example: 60 (1 hour).</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -129,7 +137,7 @@ export function SLAPolicyCard({ projectId, isArchived }: { projectId: string; is
               control={form.control as any}
               name="businessHoursEnabled"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow-sm">
+                <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md border p-4 shadow-sm">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
@@ -138,9 +146,7 @@ export function SLAPolicyCard({ projectId, isArchived }: { projectId: string; is
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      Enable Business Hours Constraints
-                    </FormLabel>
+                    <FormLabel>Enable Business Hours Constraints</FormLabel>
                     <FormDescription>
                       If enabled, SLA timers will pause outside of configured business hours.
                     </FormDescription>
@@ -151,7 +157,11 @@ export function SLAPolicyCard({ projectId, isArchived }: { projectId: string; is
 
             {canUpdate && (
               <div className="flex justify-end">
-                <Button type="submit" disabled={isPending || !form.formState.isDirty} className="bg-indigo-600 hover:bg-indigo-700">
+                <Button
+                  type="submit"
+                  disabled={isPending || !form.formState.isDirty}
+                  className="bg-indigo-600 hover:bg-indigo-700"
+                >
                   {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Save SLA Policy
                 </Button>

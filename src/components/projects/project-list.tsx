@@ -2,10 +2,27 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, Eye, Loader2, MoreHorizontal, Pencil, Search, Trash2, Building2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+
+import {
+  Building2,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Loader2,
+  MoreHorizontal,
+  Pencil,
+  Search,
+  Trash2,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
+import { DataTableToolbar } from '@/components/shared/data-table/data-table-toolbar';
+import { EmptyState } from '@/components/shared/data-table/empty-state';
+import { Pagination } from '@/components/shared/data-table/pagination';
+import { SearchInput } from '@/components/shared/data-table/search-input';
+import { SortDropdown } from '@/components/shared/data-table/sort-dropdown';
+import { StatusFilter } from '@/components/shared/data-table/status-filter';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,49 +37,59 @@ import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuGroup,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { useProjects, useArchiveProject } from '@/hooks/use-projects';
 import { useCan } from '@/hooks/use-can';
+import { useArchiveProject, useProjects } from '@/hooks/use-projects';
 
-import { ProjectDashboardStats } from './project-dashboard-stats';
 import { CreateProjectDialog } from './create-project-dialog';
-
-import { DataTableToolbar } from '@/components/shared/data-table/data-table-toolbar';
-import { SearchInput } from '@/components/shared/data-table/search-input';
-import { StatusFilter } from '@/components/shared/data-table/status-filter';
-import { SortDropdown } from '@/components/shared/data-table/sort-dropdown';
-import { Pagination } from '@/components/shared/data-table/pagination';
-import { EmptyState } from '@/components/shared/data-table/empty-state';
+import { ProjectDashboardStats } from './project-dashboard-stats';
 
 interface ProjectListProps {
   clientId?: string;
+  selectedProjectId?: string | null;
+  onSelectProject?: (id: string) => void;
 }
 
-export function ProjectList({ clientId }: ProjectListProps = {}) {
+export function ProjectList({
+  clientId,
+  selectedProjectId,
+  onSelectProject,
+}: ProjectListProps = {}) {
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get('page') || '1', 10);
   const limit = parseInt(searchParams.get('limit') || '10', 10);
   const search = searchParams.get('search') || undefined;
-  const status = searchParams.get('status') as any || undefined;
-  const supportStatus = searchParams.get('supportStatus') as any || undefined;
-  const sort = searchParams.get('sort') as any || 'createdAt';
-  const order = searchParams.get('order') as any || 'desc';
+  const status = (searchParams.get('status') as any) || undefined;
+  const supportStatus = (searchParams.get('supportStatus') as any) || undefined;
+  const sort = (searchParams.get('sort') as any) || 'createdAt';
+  const order = (searchParams.get('order') as any) || 'desc';
 
-  const { data, isLoading } = useProjects({ page, limit, search, status, supportStatus, sort, order, clientId });
+  const { data, isLoading } = useProjects({
+    page,
+    limit,
+    search,
+    status,
+    supportStatus,
+    sort,
+    order,
+    clientId,
+  });
   const { mutateAsync: archiveProject, isPending: isArchiving } = useArchiveProject();
-  
+
   const canCreateProject = useCan('PROJECT_CREATE');
   const canDeleteProject = useCan('PROJECT_DELETE');
   const canUpdateProject = useCan('PROJECT_UPDATE');
 
-  const [projectToArchive, setProjectToArchive] = useState<{ id: string; name: string } | null>(null);
+  const [projectToArchive, setProjectToArchive] = useState<{ id: string; name: string } | null>(
+    null,
+  );
 
   const confirmArchive = async () => {
     if (!projectToArchive) return;
@@ -80,21 +107,9 @@ export function ProjectList({ clientId }: ProjectListProps = {}) {
   const totalPages = data?.pages || 1;
 
   return (
-    <div className="flex h-full flex-col p-8">
-      {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Projects</h1>
-          <p className="text-sm text-slate-500">Manage your projects and client associations.</p>
-        </div>
-        {canCreateProject && <CreateProjectDialog />}
-      </div>
-
-      {/* Stats Card */}
-      <ProjectDashboardStats />
-
+    <div className="flex h-full flex-col">
       {/* Main Content Area */}
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white">
         {/* Toolbar */}
         <div className="border-b border-slate-200 bg-slate-50/50 px-4">
           <DataTableToolbar>
@@ -134,9 +149,13 @@ export function ProjectList({ clientId }: ProjectListProps = {}) {
             </div>
           ) : projects.length === 0 ? (
             <div className="p-8">
-              <EmptyState 
-                title="No projects found" 
-                description={search ? 'Try adjusting your search or filters.' : 'Get started by creating a new project.'} 
+              <EmptyState
+                title="No projects found"
+                description={
+                  search
+                    ? 'Try adjusting your search or filters.'
+                    : 'Get started by creating a new project.'
+                }
               />
             </div>
           ) : (
@@ -145,86 +164,151 @@ export function ProjectList({ clientId }: ProjectListProps = {}) {
                 <tr>
                   <th className="px-6 py-4">Project</th>
                   <th className="px-6 py-4">Client</th>
+                  <th className="px-6 py-4">Support Status</th>
                   <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Created Date</th>
-                  <th className="w-[50px] px-6 py-4"></th>
+                  <th className="px-6 py-4">Support Since</th>
+                  <th className="px-6 py-4">Created On</th>
+                  <th className="w-[80px] px-6 py-4">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white">
-                {projects.map((project) => (
-                  <tr
-                    key={project.id}
-                    className="group transition-colors duration-150 hover:bg-slate-50"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col overflow-hidden">
-                        <span className="truncate font-medium text-slate-900">
-                          {project.name}
-                        </span>
-                        {project.code && (
-                          <span className="truncate text-xs text-slate-500">{project.code}</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-slate-400" />
-                        <span className="font-medium text-slate-700">{project.client?.name || 'Unknown'}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <StatusBadge status={project.status} variant="ring" />
-                    </td>
-                    <td className="px-6 py-4 text-slate-500">
-                      {new Date(project.createdAt).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-md text-slate-400 opacity-0 transition-all hover:bg-slate-200 hover:text-slate-600 group-hover:opacity-100 data-[state=open]:opacity-100">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-[160px] rounded-xl">
-                          <DropdownMenuGroup>
-                            <DropdownMenuLabel className="text-xs text-slate-500">
-                              Actions
-                            </DropdownMenuLabel>
-                            <DropdownMenuItem
-                              className="cursor-pointer"
-                              onClick={() => (window.location.href = `/projects/${project.id}`)}
+                {projects.map((project) => {
+                  const isSelected = selectedProjectId === project.id;
+                  return (
+                    <tr
+                      key={project.id}
+                      onClick={() => onSelectProject?.(project.id)}
+                      className={`group cursor-pointer transition-colors duration-150 hover:bg-slate-50 ${
+                        isSelected
+                          ? 'border-l-2 border-indigo-600 bg-slate-50'
+                          : 'border-l-2 border-transparent'
+                      }`}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${isSelected ? 'bg-blue-100 text-blue-700' : 'bg-blue-50 text-blue-600'}`}
+                          >
+                            <Building2 className="h-5 w-5" />
+                          </div>
+                          <div className="flex flex-col overflow-hidden">
+                            <span
+                              className={`truncate font-medium ${isSelected ? 'text-indigo-900' : 'text-slate-900'}`}
                             >
-                              <Eye className="mr-2 h-4 w-4 text-slate-400" /> View Details
-                            </DropdownMenuItem>
-                            {canUpdateProject && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => (window.location.href = `/projects/${project.id}/edit`)}
-                              >
-                                <Pencil className="mr-2 h-4 w-4 text-slate-400" /> Edit Project
-                              </DropdownMenuItem>
-                            )}
-                            {canDeleteProject && (
-                              <>
-                                <DropdownMenuSeparator />
+                              {project.name}
+                            </span>
+                            <span className="truncate text-xs text-slate-500">
+                              {project.description || project.code || 'No description'}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-100 text-xs font-medium text-purple-700">
+                            {project.client?.name?.substring(0, 2).toUpperCase() || 'NA'}
+                          </div>
+                          <span className="font-medium text-slate-700">
+                            {project.client?.name || 'Unknown'}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${
+                            project.supportStatus === 'ENABLED'
+                              ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/10'
+                              : project.supportStatus === 'PAUSED'
+                                ? 'bg-amber-50 text-amber-700 ring-amber-600/10'
+                                : 'bg-slate-50 text-slate-700 ring-slate-600/10'
+                          }`}
+                        >
+                          {project.supportStatus === 'ENABLED'
+                            ? 'Enabled'
+                            : project.supportStatus === 'PAUSED'
+                              ? 'Paused'
+                              : 'Disabled'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <StatusBadge status={project.status} variant="ring" />
+                      </td>
+                      <td className="px-6 py-4 text-slate-500">
+                        {project.supportStartDate
+                          ? new Date(project.supportStartDate).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })
+                          : '—'}
+                      </td>
+                      <td className="px-6 py-4 text-slate-500">
+                        {new Date(project.createdAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-slate-400 hover:text-slate-600"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-md text-slate-400 hover:text-slate-600 focus:outline-none">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-[160px] rounded-xl">
+                              <DropdownMenuGroup>
+                                <DropdownMenuLabel className="text-xs text-slate-500">
+                                  Actions
+                                </DropdownMenuLabel>
                                 <DropdownMenuItem
-                                  className="cursor-pointer text-amber-600 focus:bg-amber-50 focus:text-amber-700"
-                                  onClick={() =>
-                                    setProjectToArchive({ id: project.id, name: project.name })
-                                  }
+                                  className="cursor-pointer"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.location.href = `/projects/${project.id}`;
+                                  }}
                                 >
-                                  <Trash2 className="mr-2 h-4 w-4" /> Archive Project
+                                  <Eye className="mr-2 h-4 w-4 text-slate-400" /> View Details
                                 </DropdownMenuItem>
-                              </>
-                            )}
-                          </DropdownMenuGroup>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
-                  </tr>
-                ))}
+                                {canUpdateProject && (
+                                  <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.location.href = `/projects/${project.id}/edit`;
+                                    }}
+                                  >
+                                    <Pencil className="mr-2 h-4 w-4 text-slate-400" /> Edit Project
+                                  </DropdownMenuItem>
+                                )}
+                                {canDeleteProject && (
+                                  <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                      className="cursor-pointer text-amber-600 focus:bg-amber-50 focus:text-amber-700"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setProjectToArchive({ id: project.id, name: project.name });
+                                      }}
+                                    >
+                                      <Trash2 className="mr-2 h-4 w-4" /> Archive Project
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
+                              </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}
@@ -247,7 +331,8 @@ export function ProjectList({ clientId }: ProjectListProps = {}) {
           <AlertDialogHeader>
             <AlertDialogTitle>Archive Project</AlertDialogTitle>
             <AlertDialogDescription>
-              This will archive the project {projectToArchive?.name}. It will no longer be visible in the active projects list.
+              This will archive the project {projectToArchive?.name}. It will no longer be visible
+              in the active projects list.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

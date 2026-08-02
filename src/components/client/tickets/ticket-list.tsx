@@ -1,12 +1,14 @@
 'use client';
 
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 
+import { Button } from '@/components/ui/button';
 import { useTickets } from '@/hooks/use-tickets';
 import { TicketWithDetails } from '@/lib/ticket/ticket.types';
+
 import { TicketCard } from './ticket-card';
-import { Button } from '@/components/ui/button';
 
 // ---------------------------------------------------------------------------
 // Constants

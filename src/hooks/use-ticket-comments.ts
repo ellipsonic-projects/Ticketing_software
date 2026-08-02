@@ -1,11 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import { apiClient } from '@/services/api/api-client';
 import { CreateCommentInput } from '@/lib/ticket/ticket.schema';
 
 const fetchTicketComments = async (ticketId: string) => {
-  const res = await fetch(`/api/v1/tickets/${ticketId}/comments`);
-  if (!res.ok) throw new Error('Failed to fetch comments');
-  const json = await res.json();
-  return json.data.comments;
+  const res = await apiClient<{ data: { comments: any[] } }>(`/tickets/${ticketId}/comments`);
+  return res.data.comments;
 };
 
 export function useTicketComments(ticketId: string) {
@@ -20,13 +20,11 @@ export function useCreateComment(ticketId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: CreateCommentInput) => {
-      const res = await fetch(`/api/v1/tickets/${ticketId}/comments`, {
+      const res = await apiClient<{ data: { comment: any } }>(`/tickets/${ticketId}/comments`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error('Failed to add comment');
-      return res.json();
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tickets', ticketId, 'comments'] });

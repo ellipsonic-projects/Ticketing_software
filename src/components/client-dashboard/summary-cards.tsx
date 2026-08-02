@@ -1,13 +1,13 @@
 'use client';
 
 import {
+  Archive,
   ArrowDownRight,
   ArrowUpRight,
-  Minus,
-  Inbox,
-  Clock3,
   CheckCircle2,
-  Archive,
+  Clock3,
+  Inbox,
+  Minus,
   ShieldCheck,
 } from 'lucide-react';
 
@@ -28,11 +28,7 @@ interface StatCardProps {
   suffix?: string;
 }
 
-function TrendBadge({
-  delta,
-}: {
-  delta?: number;
-}) {
+function TrendBadge({ delta }: { delta?: number }) {
   if (delta === undefined) return null;
 
   if (delta === 0) {
@@ -50,16 +46,10 @@ function TrendBadge({
     <div
       className={cn(
         'flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold',
-        positive
-          ? 'bg-emerald-50 text-emerald-600'
-          : 'bg-red-50 text-red-600',
+        positive ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600',
       )}
     >
-      {positive ? (
-        <ArrowUpRight className="h-3 w-3" />
-      ) : (
-        <ArrowDownRight className="h-3 w-3" />
-      )}
+      {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
 
       {positive ? '+' : ''}
       {delta}
@@ -67,88 +57,39 @@ function TrendBadge({
   );
 }
 
-function StatCard({
-  title,
-  value,
-  icon,
-  iconBg,
-  valueColor,
-  delta,
-  suffix,
-}: StatCardProps) {
+function StatCard({ title, value, icon, iconBg, valueColor, delta, suffix }: StatCardProps) {
   return (
-    <div
-      className="
-        group
-        rounded-3xl
-        border
-        border-slate-200
-        bg-white
-        p-6
-        transition-all
-        duration-300
-        hover:-translate-y-1
-        hover:shadow-xl
-      "
-    >
+    <div className="group rounded-3xl border border-slate-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
       <div className="flex items-start justify-between">
-
-        <div
-          className={cn(
-            'flex h-14 w-14 items-center justify-center rounded-2xl',
-            iconBg,
-          )}
-        >
+        <div className={cn('flex h-14 w-14 items-center justify-center rounded-2xl', iconBg)}>
           {icon}
         </div>
 
         <TrendBadge delta={delta} />
-
       </div>
 
       <div className="mt-8">
-
-        <p
-          className={cn(
-            'text-4xl font-bold tracking-tight',
-            valueColor,
-          )}
-        >
+        <p className={cn('text-4xl font-bold tracking-tight', valueColor)}>
           {value}
           {suffix}
         </p>
 
-        <p className="mt-2 text-sm font-medium text-slate-500">
-          {title}
-        </p>
-
+        <p className="mt-2 text-sm font-medium text-slate-500">{title}</p>
       </div>
     </div>
   );
 }
 
-export function SummaryCards({
-  summary,
-}: SummaryCardsProps) {
+export function SummaryCards({ summary }: SummaryCardsProps) {
   return (
-    <section
-      className="
-        grid
-        grid-cols-1
-        gap-6
-        sm:grid-cols-2
-        xl:grid-cols-5
-      "
-    >
+    <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
       <StatCard
         title="Open Requests"
         value={summary.openRequests}
         delta={summary.openRequestsDelta}
         valueColor="text-slate-900"
         iconBg="bg-blue-50"
-        icon={
-          <Inbox className="h-7 w-7 text-blue-600" />
-        }
+        icon={<Inbox className="h-7 w-7 text-blue-600" />}
       />
 
       <StatCard
@@ -157,19 +98,15 @@ export function SummaryCards({
         delta={summary.inProgressDelta}
         valueColor="text-slate-900"
         iconBg="bg-amber-50"
-        icon={
-          <Clock3 className="h-7 w-7 text-amber-500" />
-        }
+        icon={<Clock3 className="h-7 w-7 text-amber-500" />}
       />
-            <StatCard
+      <StatCard
         title="Resolved This Week"
         value={summary.resolvedThisWeek}
         delta={summary.resolvedThisWeekDelta}
         valueColor="text-slate-900"
         iconBg="bg-emerald-50"
-        icon={
-          <CheckCircle2 className="h-7 w-7 text-emerald-600" />
-        }
+        icon={<CheckCircle2 className="h-7 w-7 text-emerald-600" />}
       />
 
       <StatCard
@@ -178,9 +115,7 @@ export function SummaryCards({
         delta={summary.closedThisWeekDelta}
         valueColor="text-slate-900"
         iconBg="bg-slate-100"
-        icon={
-          <Archive className="h-7 w-7 text-slate-600" />
-        }
+        icon={<Archive className="h-7 w-7 text-slate-600" />}
       />
 
       <StatCard
@@ -189,11 +124,8 @@ export function SummaryCards({
         suffix="%"
         valueColor="text-blue-600"
         iconBg="bg-indigo-50"
-        icon={
-          <ShieldCheck className="h-7 w-7 text-indigo-600" />
-        }
+        icon={<ShieldCheck className="h-7 w-7 text-indigo-600" />}
       />
-
     </section>
   );
 }

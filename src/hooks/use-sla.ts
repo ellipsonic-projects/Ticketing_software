@@ -1,36 +1,59 @@
 /* eslint-disable */
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
 import { useAuth } from '@/hooks/use-auth';
 import { apiClient } from '@/services/api/api-client';
-import { SLAPolicyInput, BusinessHoursInput, HolidayCreateInput, HolidayUpdateInput } from '@/lib/project/sla.schema';
+import {
+  BusinessHoursInput,
+  HolidayCreateInput,
+  HolidayUpdateInput,
+  SLASettingsInput,
+  SLATierInput,
+} from '@/lib/project/sla.schema';
 
 export const slaKeys = {
   all: ['project-sla'] as const,
+  tenantSla: ['tenant-sla'] as const,
   policy: (projectId: string) => [...slaKeys.all, projectId, 'policy'] as const,
   businessHours: (projectId: string) => [...slaKeys.all, projectId, 'business-hours'] as const,
   holidays: (projectId: string) => [...slaKeys.all, projectId, 'holidays'] as const,
 };
 
-// --- SLA Policy ---
+// --- Tenant SLA Policy ---
 
-export function useProjectSLA(projectId: string) {
+export function useTenantSLA() {
   const { isAuthenticated } = useAuth();
   return useQuery({
-    queryKey: slaKeys.policy(projectId),
-    queryFn: () => apiClient<any>(`/projects/${projectId}/sla`),
-    enabled: !!projectId && isAuthenticated,
+    queryKey: slaKeys.tenantSla,
+    queryFn: () => apiClient<any>(`/sla`),
+    enabled: isAuthenticated,
   });
 }
 
-export function useUpdateProjectSLA(projectId: string) {
+export function useUpdateTenantSLATier() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: SLAPolicyInput) => apiClient<any>(`/projects/${projectId}/sla`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    }),
+    mutationFn: (data: { priority: string } & SLATierInput) =>
+      apiClient<any>(`/sla`, {
+        method: 'PATCH',
+        body: JSON.stringify({ type: 'TIER', ...data }),
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: slaKeys.policy(projectId) });
+      queryClient.invalidateQueries({ queryKey: slaKeys.tenantSla });
+    },
+  });
+}
+
+export function useUpdateTenantSLASettings() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: SLASettingsInput) =>
+      apiClient<any>(`/sla`, {
+        method: 'PATCH',
+        body: JSON.stringify({ type: 'SETTINGS', ...data }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: slaKeys.tenantSla });
     },
   });
 }
@@ -49,10 +72,11 @@ export function useBusinessHours(projectId: string) {
 export function useUpdateBusinessHours(projectId: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: BusinessHoursInput) => apiClient<any>(`/projects/${projectId}/business-hours`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    }),
+    mutationFn: (data: BusinessHoursInput) =>
+      apiClient<any>(`/projects/${projectId}/business-hours`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: slaKeys.businessHours(projectId) });
     },
@@ -73,10 +97,11 @@ export function useProjectHolidays(projectId: string) {
 export function useCreateHoliday(projectId: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: HolidayCreateInput) => apiClient<any>(`/projects/${projectId}/holidays`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
+    mutationFn: (data: HolidayCreateInput) =>
+      apiClient<any>(`/projects/${projectId}/holidays`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: slaKeys.holidays(projectId) });
     },
@@ -86,7 +111,7 @@ export function useCreateHoliday(projectId: string) {
 export function useUpdateHoliday(projectId: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ holidayId, data }: { holidayId: string; data: HolidayUpdateInput }) => 
+    mutationFn: ({ holidayId, data }: { holidayId: string; data: HolidayUpdateInput }) =>
       apiClient<any>(`/projects/${projectId}/holidays/${holidayId}`, {
         method: 'PATCH',
         body: JSON.stringify(data),
@@ -100,9 +125,10 @@ export function useUpdateHoliday(projectId: string) {
 export function useDeleteHoliday(projectId: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (holidayId: string) => apiClient<any>(`/projects/${projectId}/holidays/${holidayId}`, {
-      method: 'DELETE',
-    }),
+    mutationFn: (holidayId: string) =>
+      apiClient<any>(`/projects/${projectId}/holidays/${holidayId}`, {
+        method: 'DELETE',
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: slaKeys.holidays(projectId) });
     },

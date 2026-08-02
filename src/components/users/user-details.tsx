@@ -77,9 +77,7 @@ export function UserDetails({ id }: { id: string }) {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const onSubmit = async (data: UpdateUserInput) => {

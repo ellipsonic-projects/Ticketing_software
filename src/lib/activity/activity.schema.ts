@@ -1,4 +1,5 @@
-export type TimelineIcon = 'plus' | 'edit' | 'pause' | 'play' | 'trash' | 'check' | 'calendar' | 'clock';
+export type TimelineIcon =
+  'plus' | 'edit' | 'pause' | 'play' | 'trash' | 'check' | 'calendar' | 'clock';
 
 export interface TimelineEvent {
   id: string;

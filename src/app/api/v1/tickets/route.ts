@@ -1,22 +1,24 @@
 import { NextRequest } from 'next/server';
+
 import { authenticate, RouteContext } from '@/middleware/authenticate';
-import { withErrorHandler } from '@/lib/errors/global-handler';
-import { ApiResponder } from '@/lib/api-response';
-import { getRequestContext } from '@/lib/request-context';
-import { ForbiddenError } from '@/lib/errors/forbidden-error';
+import { TicketPriority, TicketStatus } from '@prisma/client';
+
 import { TicketService } from '@/services/ticket/ticket.service';
-import { CreateTicketSchema } from '@/lib/ticket/ticket.schema';
+import { ApiResponder } from '@/lib/api-response';
 import { AppError } from '@/lib/errors/app-error';
-import { TicketStatus, TicketPriority } from '@prisma/client';
+import { ForbiddenError } from '@/lib/errors/forbidden-error';
+import { withErrorHandler } from '@/lib/errors/global-handler';
+import { getRequestContext } from '@/lib/request-context';
+import { CreateTicketSchema } from '@/lib/ticket/ticket.schema';
 
 async function getTicketsHandler(req: NextRequest, ctx?: RouteContext) {
   const reqCtx = getRequestContext();
   const user = reqCtx!.identity!;
   const tenantId = reqCtx!.tenantId!;
   if (!tenantId) throw new ForbiddenError('Tenant context required');
-  
+
   const searchParams = req.nextUrl.searchParams;
-  
+
   const query = {
     search: searchParams.get('search') || undefined,
     status: (searchParams.get('status') as TicketStatus | 'all') || undefined,
@@ -29,6 +31,8 @@ async function getTicketsHandler(req: NextRequest, ctx?: RouteContext) {
     order: (searchParams.get('order') as 'asc' | 'desc') || undefined,
     page: parseInt(searchParams.get('page') || '1', 10),
     limit: parseInt(searchParams.get('limit') || '25', 10),
+    isOverdue: searchParams.get('isOverdue') === 'true',
+    dueToday: searchParams.get('dueToday') === 'true',
   };
 
   // If user is CLIENT, they can only see their own company's tickets
@@ -46,12 +50,12 @@ async function createTicketHandler(req: NextRequest, ctx?: RouteContext) {
   const user = reqCtx!.identity!;
   const tenantId = reqCtx!.tenantId!;
   if (!tenantId) throw new ForbiddenError('Tenant context required');
-  
+
   const body = await req.json();
   const data = CreateTicketSchema.parse(body);
 
   const ticket = await TicketService.createTicket(tenantId, user.id, data);
-  
+
   return ApiResponder.success({ ticket }, 'Ticket created', 201);
 }
 
