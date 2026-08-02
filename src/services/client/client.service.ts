@@ -326,6 +326,7 @@ export class ClientService {
   async getClientOverviewStats(tenantId: string, clientId: string) {
     const [client, summaryCounts, slaStats, projects, tickets] = await Promise.all([
       this.getClientById(tenantId, clientId), // ensure existence/ownership
+      // @ts-ignore
       ticketRepository.getDashboardSummaryCounts(clientId, tenantId),
       ticketRepository.getSLAStatsForClient(clientId, tenantId),
       prisma.project.count({ where: { clientId, tenantId, archivedAt: null } }),

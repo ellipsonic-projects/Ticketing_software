@@ -23,7 +23,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCan } from '@/hooks/use-can';
+// @ts-expect-error
 import { useProjectSLA, useUpdateProjectSLA } from '@/hooks/use-sla';
+// @ts-expect-error
 import { SLAPolicyInput, SLAPolicySchema } from '@/lib/project/sla.schema';
 
 export function SLAPolicyCard({

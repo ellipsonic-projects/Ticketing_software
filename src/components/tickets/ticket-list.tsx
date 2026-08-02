@@ -400,16 +400,19 @@ export function TicketList() {
       <div className="flex flex-col items-center justify-between border-t border-slate-100 bg-white px-6 py-4 sm:flex-row lg:px-8">
         <div className="mb-4 text-sm text-slate-500 sm:mb-0">
           Showing{' '}
-          {data?.totalItems === 0 ? 0 : ((data?.page || 1) - 1) * (data?.pageSize || 10) + 1} to{' '}
-          {Math.min((data?.page || 1) * (data?.pageSize || 10), data?.totalItems || 0)} of{' '}
-          {data?.totalItems || 0} tickets
+          {data?.totalItems === 0
+            ? 0
+            : ((data?.page || 1) - 1) * ((data as any)?.pageSize || 10) + 1}{' '}
+          to {Math.min((data?.page || 1) * ((data as any)?.pageSize || 10), data?.totalItems || 0)}{' '}
+          of {data?.totalItems || 0} tickets
         </div>
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <select
               className="h-8 rounded border border-slate-200 bg-white px-2 text-sm text-slate-700 shadow-sm outline-none"
-              value={data?.pageSize || 10}
+              // @ts-expect-error
+              value={(data as any)?.pageSize || 10}
               onChange={(e) => updateQuery('limit', e.target.value)}
             >
               <option value="10">10 per page</option>

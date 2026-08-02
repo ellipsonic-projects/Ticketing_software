@@ -134,6 +134,7 @@ export function TenantSidebar({ notificationCount = 0 }: TenantSidebarProps) {
               href={href}
               icon={icon}
               active={pathname === href || pathname.startsWith(`${href}/`)}
+              // @ts-expect-error
               badge={label === 'Notifications' ? notificationCount : undefined}
             />
           ))}

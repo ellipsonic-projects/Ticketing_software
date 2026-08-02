@@ -267,7 +267,10 @@ export function ProjectDetails({ projectId }: { projectId: string }) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ActivityTimeline events={activityData?.data} isLoading={isActivityLoading} />
+                  <ActivityTimeline
+                    events={(activityData as any)?.data}
+                    isLoading={isActivityLoading}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>

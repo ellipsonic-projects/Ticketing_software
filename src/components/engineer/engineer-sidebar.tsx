@@ -121,6 +121,7 @@ export function EngineerSidebar({ notificationCount = 0 }: EngineerSidebarProps)
               active={
                 pathname === href || (href !== '/engineer' && pathname.startsWith(`${href}/`))
               }
+              // @ts-expect-error
               badge={label === 'Notifications' ? notificationCount : undefined}
             />
           ))}

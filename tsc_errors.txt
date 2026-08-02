@@ -1,0 +1,29 @@
+src/components/engineer/dashboard/engineer-upcoming-deadlines.tsx(99,70): error TS2339: Property 'resolutionBreachAt' does not exist on type 'TicketWithDetails'.
+src/components/engineer/dashboard/engineer-upcoming-deadlines.tsx(100,49): error TS2339: Property 'resolutionBreachAt' does not exist on type 'TicketWithDetails'.
+src/components/engineer/engineer-sidebar.tsx(124,22): error TS2367: This comparison appears to be unintentional because the types '"Dashboard" | "All Tickets"' and '"Notifications"' have no overlap.
+src/components/projects/project-card.tsx(66,31): error TS2322: Type '{ children: Element; asChild: true; }' is not assignable to type 'IntrinsicAttributes & MenuItemProps & { inset?: boolean | undefined; variant?: "default" | "destructive" | undefined; }'.
+  Property 'asChild' does not exist on type 'IntrinsicAttributes & MenuItemProps & { inset?: boolean | undefined; variant?: "default" | "destructive" | undefined; }'.
+src/components/projects/project-details.tsx(270,59): error TS2339: Property 'data' does not exist on type '{}'.
+src/components/projects/sla/sla-policy-card.tsx(26,10): error TS2305: Module '"@/hooks/use-sla"' has no exported member 'useProjectSLA'.
+src/components/projects/sla/sla-policy-card.tsx(26,25): error TS2305: Module '"@/hooks/use-sla"' has no exported member 'useUpdateProjectSLA'.
+src/components/projects/sla/sla-policy-card.tsx(27,10): error TS2305: Module '"@/lib/project/sla.schema"' has no exported member 'SLAPolicyInput'.
+src/components/projects/sla/sla-policy-card.tsx(27,26): error TS2305: Module '"@/lib/project/sla.schema"' has no exported member 'SLAPolicySchema'.
+src/components/tenant-admin/tenant-header.tsx(90,34): error TS2322: Type '{ children: Element; asChild: true; }' is not assignable to type 'IntrinsicAttributes & Props<unknown>'.
+  Property 'asChild' does not exist on type 'IntrinsicAttributes & Props<unknown>'.
+src/components/tenant-admin/tenant-sidebar.tsx(137,22): error TS2367: This comparison appears to be unintentional because the types '"Dashboard" | "Clients" | "Projects" | "Tickets" | "Engineers" | "SLA Policies"' and '"Notifications"' have no overlap.
+src/components/tickets/create-ticket-form.tsx(27,76): error TS2345: Argument of type 'URLSearchParams' is not assignable to parameter of type '{ page: number; limit: number; sort: "createdAt" | "updatedAt" | "client" | "name"; order: "asc" | "desc"; search?: string | undefined; clientId?: string | undefined; status?: "ACTIVE" | "INACTIVE" | "ARCHIVED" | undefined; supportStatus?: "ENABLED" | ... 1 more ... | undefined; } & { ...; }'.
+  Type 'URLSearchParams' is missing the following properties from type '{ page: number; limit: number; sort: "createdAt" | "updatedAt" | "client" | "name"; order: "asc" | "desc"; search?: string | undefined; clientId?: string | undefined; status?: "ACTIVE" | "INACTIVE" | "ARCHIVED" | undefined; supportStatus?: "ENABLED" | ... 1 more ... | undefined; }': page, limit, order
+src/components/tickets/create-ticket-form.tsx(28,33): error TS2339: Property 'isLoading' does not exist on type 'UseMutationResult<{ ticket: TicketWithDetails; }, Error, { title: string; description: string; projectId: string; priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT"; categoryId?: string | undefined; }, unknown>'.
+src/components/tickets/create-ticket-form.tsx(55,37): error TS2339: Property 'data' does not exist on type '{ ticket: TicketWithDetails; }'.
+src/components/tickets/create-ticket-form.tsx(90,64): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/components/tickets/create-ticket-form.tsx(99,29): error TS2339: Property 'items' does not exist on type 'NoInfer<{ data: ProjectWithClient[]; total: number; pages: number; }>'.
+src/components/tickets/ticket-list.tsx(403,74): error TS2339: Property 'pageSize' does not exist on type 'NoInfer<TicketListResponse>'.
+src/components/tickets/ticket-list.tsx(404,48): error TS2339: Property 'pageSize' does not exist on type 'NoInfer<TicketListResponse>'.
+src/components/tickets/ticket-list.tsx(412,28): error TS2339: Property 'pageSize' does not exist on type 'NoInfer<TicketListResponse>'.
+src/services/client/client-dashboard.service.ts(62,50): error TS2559: Type 'string' has no properties in common with type '{ clientId?: string | undefined; assignedToId?: string | undefined; }'.
+src/services/client/client.service.ts(329,50): error TS2559: Type 'string' has no properties in common with type '{ clientId?: string | undefined; assignedToId?: string | undefined; }'.
+test-create.ts(14,77): error TS2345: Argument of type '{ title: string; description: string; projectId: string; }' is not assignable to parameter of type '{ title: string; description: string; projectId: string; priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT"; categoryId?: string | undefined; }'.
+  Property 'priority' is missing in type '{ title: string; description: string; projectId: string; }' but required in type '{ title: string; description: string; projectId: string; priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT"; categoryId?: string | undefined; }'.
+test-http.ts(29,18): error TS18047: 'project' is possibly 'null'.
+test-http2.ts(34,18): error TS18047: 'project' is possibly 'null'.

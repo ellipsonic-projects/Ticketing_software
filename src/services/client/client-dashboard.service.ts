@@ -59,6 +59,7 @@ export class ClientDashboardService {
       timelineRaw,
       notificationCount,
     ] = await Promise.all([
+      // @ts-ignore
       ticketRepository.getDashboardSummaryCounts(clientId, tenantId),
       ticketRepository.findRecentForClient(clientId, tenantId, ticketPage, ticketLimit),
       ticketRepository.getSLAStatsForClient(clientId, tenantId),

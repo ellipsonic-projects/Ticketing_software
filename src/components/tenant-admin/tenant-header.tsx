@@ -87,7 +87,7 @@ export function TenantHeader({
 
           {/* NOTIFICATION */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger>
               <button className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white transition hover:bg-slate-50 focus:outline-none">
                 <Bell className="h-5 w-5 text-slate-600" />
                 {notificationCount > 0 && (

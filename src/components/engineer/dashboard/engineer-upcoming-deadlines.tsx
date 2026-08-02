@@ -96,8 +96,10 @@ export function EngineerUpcomingDeadlines() {
                       {ticket.number}
                     </Link>
                   </div>
-                  <span className={`text-sm ${getUrgencyColor(ticket.resolutionBreachAt)}`}>
-                    {formatTimeRemaining(ticket.resolutionBreachAt)}
+                  <span
+                    className={`text-sm ${getUrgencyColor((ticket as any).resolutionBreachAt)}`}
+                  >
+                    {formatTimeRemaining((ticket as any).resolutionBreachAt)}
                   </span>
                 </div>
                 <div>

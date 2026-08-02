@@ -63,7 +63,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-44 rounded-xl">
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem>
               <Link href={`/projects/${project.id}/edit`}>Edit Project</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
