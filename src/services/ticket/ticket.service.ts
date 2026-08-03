@@ -54,8 +54,12 @@ export class TicketService {
       throw new NotFoundError('Ticket not found');
     }
 
-    if (user && user.role === 'CLIENT' && ticket.reportedById !== user.id) {
-      throw new NotFoundError('Ticket not found'); // Mask existence
+    if (user && user.role === 'CLIENT') {
+      if (user.clientId && ticket.clientId !== user.clientId) {
+        throw new NotFoundError('Ticket not found'); // Mask existence
+      } else if (!user.clientId && ticket.reportedById !== user.id) {
+        throw new NotFoundError('Ticket not found'); // Mask existence
+      }
     }
 
     return ticket;

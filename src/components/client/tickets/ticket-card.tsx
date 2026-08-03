@@ -105,14 +105,14 @@ export function TicketCard({ ticket, isSelected, onClick }: TicketCardProps) {
   return (
     <div
       onClick={onClick}
-      className={`group flex cursor-pointer flex-col gap-3 rounded-xl border-y border-r border-l-4 bg-white p-4 shadow-sm transition-all hover:shadow-md md:flex-row md:items-center ${BORDER_COLORS[ticket.priority]} ${
+      className={`group flex cursor-pointer flex-col gap-4 rounded-xl border-y border-r border-l-4 bg-white p-4 shadow-sm transition-all hover:shadow-md xl:flex-row xl:items-center ${BORDER_COLORS[ticket.priority]} ${
         isSelected
           ? 'border-r-indigo-600 bg-indigo-50/30 ring-1 ring-indigo-600/20'
           : 'border-r-slate-200'
       }`}
     >
       {/* Column 1: Meta */}
-      <div className="flex w-full flex-col gap-1 md:w-32 lg:w-40">
+      <div className="flex w-full flex-col gap-1 xl:w-32 2xl:w-40">
         <span className="font-semibold text-slate-900">TKT-{ticket.number}</span>
         <span className="text-xs text-slate-500">
           Created: {format(new Date(ticket.createdAt), 'MMM d, yyyy')}
@@ -137,7 +137,7 @@ export function TicketCard({ ticket, isSelected, onClick }: TicketCardProps) {
       </div>
 
       {/* Column 3: Assignee */}
-      <div className="w-full md:w-40 lg:w-48">
+      <div className="w-full xl:w-40 2xl:w-48">
         <span className="text-xs font-medium text-slate-500">Assigned Engineer</span>
         <div className="mt-1 flex items-center gap-3">
           {ticket.assignedTo?.avatarUrl ? (
@@ -162,7 +162,7 @@ export function TicketCard({ ticket, isSelected, onClick }: TicketCardProps) {
       </div>
 
       {/* Column 4: SLA */}
-      <div className="w-full md:w-32 lg:w-36">
+      <div className="w-full xl:w-32 2xl:w-36">
         <span className="text-xs font-medium text-slate-500">SLA</span>
         <div className="mt-1 flex items-center gap-2">
           <Clock className={`h-4 w-4 ${sla.iconColor}`} />
@@ -171,7 +171,7 @@ export function TicketCard({ ticket, isSelected, onClick }: TicketCardProps) {
       </div>
 
       {/* Column 5: Activity & Action */}
-      <div className="flex w-full items-center justify-between gap-4 md:w-48">
+      <div className="flex w-full items-center justify-between gap-4 xl:w-48">
         <div className="flex flex-col gap-1">
           <span className="text-xs font-medium text-slate-500">Last Updated</span>
           <span className="text-sm font-medium text-slate-900">
