@@ -4,11 +4,13 @@ import { useMemo } from 'react';
 import Image from 'next/image';
 
 import { formatDistanceToNow } from 'date-fns';
-import { Bell, CalendarDays, Check, ChevronDown, Menu } from 'lucide-react';
+import { Bell, CalendarDays, Check, ChevronDown, LogOut, Menu, Settings, User } from 'lucide-react';
 
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/use-auth';
@@ -77,7 +79,7 @@ export function BaseHeader({
   onMenuClick,
   themeColor = 'blue',
 }: BaseHeaderProps) {
-  const { accessToken } = useAuth();
+  const { accessToken, logout } = useAuth();
 
   // Notification API Integration
   const { data: notificationsResponse } = useNotifications(accessToken ?? '');
@@ -210,30 +212,65 @@ export function BaseHeader({
           </DropdownMenu>
 
           {/* PROFILE */}
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1.5 transition hover:bg-slate-50 sm:gap-3 sm:rounded-2xl sm:px-3 sm:py-2"
-            aria-label="User menu"
-          >
-            <div
-              className={`relative h-8 w-8 overflow-hidden rounded-full ${avatarBg} sm:h-11 sm:w-11`}
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1.5 transition hover:bg-slate-50 focus:ring-2 focus:ring-slate-100 focus:outline-none sm:gap-3 sm:rounded-2xl sm:px-3 sm:py-2"
+              aria-label="User menu"
             >
-              {avatarUrl ? (
-                <Image src={avatarUrl} alt={firstName} fill sizes="44px" className="object-cover" />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center">
-                  <UserInitials name={firstName} />
-                </div>
-              )}
-            </div>
+              <div
+                className={`relative h-8 w-8 overflow-hidden rounded-full ${avatarBg} sm:h-11 sm:w-11`}
+              >
+                {avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt={firstName}
+                    fill
+                    sizes="44px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <UserInitials name={firstName} />
+                  </div>
+                )}
+              </div>
 
-            <div className="hidden text-left xl:block">
-              <p className="text-sm font-semibold text-slate-900">{firstName}</p>
-              {roleLabel && <p className="mt-0.5 text-xs text-slate-500">{roleLabel}</p>}
-            </div>
+              <div className="hidden text-left xl:block">
+                <p className="text-sm font-semibold text-slate-900">{firstName}</p>
+                {roleLabel && <p className="mt-0.5 text-xs text-slate-500">{roleLabel}</p>}
+              </div>
 
-            <ChevronDown className="hidden h-4 w-4 text-slate-400 xl:block" />
-          </button>
+              <ChevronDown className="hidden h-4 w-4 text-slate-400 xl:block" />
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+              align="end"
+              className="w-56 rounded-xl border-slate-100 p-2 shadow-lg"
+            >
+              <div className="px-2 py-1.5">
+                <p className="text-sm font-medium text-slate-900">{firstName}</p>
+                <p className="text-xs text-slate-500">{roleLabel ?? 'User'}</p>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer rounded-lg p-2 text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+                <User className="mr-2 h-4 w-4" />
+                <span>My Profile</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer rounded-lg p-2 text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Account Settings</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => logout()}
+                className="cursor-pointer rounded-lg p-2 text-red-600 transition hover:bg-red-50 hover:text-red-700"
+                variant="destructive"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
