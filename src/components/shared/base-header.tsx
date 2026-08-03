@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import Image from 'next/image';
 
 import { formatDistanceToNow } from 'date-fns';
-import { Bell, CalendarDays, Check, ChevronDown, Menu, Search } from 'lucide-react';
+import { Bell, CalendarDays, Check, ChevronDown, Menu } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -28,9 +28,7 @@ export interface BaseHeaderProps {
   roleLabel?: string;
   notificationCount?: number; // Deprecated: Now fetched internally
   onMenuClick?: () => void;
-  searchPlaceholder?: string;
   themeColor?: 'blue' | 'violet';
-  showSearch?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -77,9 +75,7 @@ export function BaseHeader({
   avatarUrl,
   roleLabel,
   onMenuClick,
-  searchPlaceholder = 'Search...',
   themeColor = 'blue',
-  showSearch = true,
 }: BaseHeaderProps) {
   const { accessToken } = useAuth();
 
@@ -129,23 +125,8 @@ export function BaseHeader({
           </div>
         </div>
 
-        {/* RIGHT — Search, Notifications, Profile */}
+        {/* RIGHT — Notifications, Profile */}
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-5">
-          {/* SEARCH */}
-          {showSearch && (
-            <div className="relative hidden lg:block">
-              <Search className="absolute top-1/2 left-5 h-5 w-5 -translate-y-1/2 text-slate-400" />
-              <input
-                type="search"
-                placeholder={searchPlaceholder}
-                className={`h-12 w-[320px] rounded-2xl border border-slate-200 bg-slate-50 pr-16 pl-14 text-sm text-slate-700 transition outline-none placeholder:text-slate-400 focus:bg-white focus:ring-4 ${focusBorder} ${focusRing} xl:w-[360px]`}
-              />
-              <div className="absolute top-1/2 right-4 -translate-y-1/2 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-500">
-                ⌘ K
-              </div>
-            </div>
-          )}
-
           {/* NOTIFICATIONS */}
           <DropdownMenu>
             <DropdownMenuTrigger
