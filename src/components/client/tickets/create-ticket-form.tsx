@@ -224,17 +224,17 @@ export function CreateTicketForm() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-4xl py-6">
+    <div className="mx-auto w-full max-w-4xl py-2 sm:py-4">
       {/* Hero */}
-      <div className="mb-12 flex items-center gap-6">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-md ring-4 ring-blue-50/50">
-          <Ticket className="h-7 w-7 text-white" />
+      <div className="mb-6 flex items-center gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-md ring-4 ring-blue-50/50">
+          <Ticket className="h-6 w-6 text-white" />
         </div>
         <div className="pt-1">
-          <h1 className="text-3xl leading-tight font-bold tracking-tight text-slate-900">
+          <h1 className="text-2xl leading-tight font-bold tracking-tight text-slate-900">
             Create Support Ticket
           </h1>
-          <p className="mt-1.5 text-base text-slate-500">
+          <p className="mt-1 text-sm text-slate-500">
             Report an issue for one of your projects. Our support team will review and assign it.
           </p>
         </div>
@@ -243,72 +243,74 @@ export function CreateTicketForm() {
       {/* Card */}
       <div className="overflow-hidden rounded-3xl border-0 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-100">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-8 sm:p-12">
-            {/* Project */}
-            <FormField
-              control={form.control}
-              name="projectId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-semibold text-slate-900">
-                    Project <span className="text-red-500">*</span>
-                  </FormLabel>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-6 sm:p-8">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {/* Project */}
+              <FormField
+                control={form.control}
+                name="projectId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-semibold text-slate-900">
+                      Project <span className="text-red-500">*</span>
+                    </FormLabel>
 
-                  <Select onValueChange={field.onChange} value={field.value || ''}>
+                    <Select onValueChange={field.onChange} value={field.value || ''}>
+                      <FormControl>
+                        <SelectTrigger className="h-12 rounded-xl border-slate-200/40 bg-slate-50/50 shadow-sm transition-all hover:bg-slate-50 focus:ring-2 focus:ring-blue-500/20">
+                          <SelectValue placeholder="Select a project" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="rounded-xl border-slate-100 shadow-xl">
+                        {isLoadingProjects ? (
+                          <div className="flex items-center p-3 text-sm text-slate-500">
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Loading Projects...
+                          </div>
+                        ) : projects.length === 0 ? (
+                          <div className="p-3 text-sm text-slate-500">No projects available</div>
+                        ) : (
+                          projects.map((project) => (
+                            <SelectItem key={project.id} value={project.id}>
+                              {project.name}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+
+                    <p className="text-xs text-slate-500">
+                      Choose the project where you are facing the issue.
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Issue Title */}
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-semibold text-slate-900">
+                      Issue Title <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
-                      <SelectTrigger className="h-12 rounded-xl border-slate-200/40 bg-slate-50/50 shadow-sm transition-all hover:bg-slate-50 focus:ring-2 focus:ring-blue-500/20">
-                        <SelectValue placeholder="Select a project" />
-                      </SelectTrigger>
+                      <Input
+                        {...field}
+                        placeholder="Enter a short and clear title for the issue"
+                        className="h-12 rounded-xl border-slate-200/40 bg-slate-50/50 shadow-sm transition-all hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-blue-500/20"
+                      />
                     </FormControl>
-                    <SelectContent className="rounded-xl border-slate-100 shadow-xl">
-                      {isLoadingProjects ? (
-                        <div className="flex items-center p-3 text-sm text-slate-500">
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Loading Projects...
-                        </div>
-                      ) : projects.length === 0 ? (
-                        <div className="p-3 text-sm text-slate-500">No projects available</div>
-                      ) : (
-                        projects.map((project) => (
-                          <SelectItem key={project.id} value={project.id}>
-                            {project.name}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-
-                  <p className="text-[13px] text-slate-500">
-                    Choose the project where you are facing the issue.
-                  </p>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Issue Title */}
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-semibold text-slate-900">
-                    Issue Title <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Enter a short and clear title for the issue"
-                      className="h-12 rounded-xl border-slate-200/40 bg-slate-50/50 shadow-sm transition-all hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-blue-500/20"
-                    />
-                  </FormControl>
-                  <p className="text-[13px] text-slate-500">
-                    Provide a concise summary of your issue.
-                  </p>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <p className="text-[13px] text-slate-500">
+                      Provide a concise summary of your issue.
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             {/* Description */}
             <FormField
@@ -339,10 +341,10 @@ export function CreateTicketForm() {
                       <Textarea
                         {...field}
                         placeholder="Describe the issue in detail. Include steps to reproduce, expected behavior, and any other relevant information."
-                        className="min-h-[200px] resize-none rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0"
+                        className="min-h-[120px] resize-none rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0"
                       />
                       {/* Footer */}
-                      <div className="flex items-center justify-end border-t border-slate-200/40 bg-transparent px-4 py-2">
+                      <div className="flex items-center justify-end border-t border-slate-200/40 bg-transparent px-4 py-1.5">
                         <span className="text-xs text-slate-500">
                           {description.length}/5000 characters
                         </span>
@@ -364,22 +366,22 @@ export function CreateTicketForm() {
                 onDrop={handleFileDrop}
                 onDragOver={(e) => e.preventDefault()}
                 onClick={() => fileInputRef.current?.click()}
-                className="group cursor-pointer rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50/30 px-8 py-12 transition-all hover:border-blue-400 hover:bg-blue-50/80"
+                className="group cursor-pointer rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50/30 px-6 py-8 transition-all hover:border-blue-400 hover:bg-blue-50/80"
               >
                 <div className="flex flex-col items-center justify-center text-center">
-                  <div className="mb-4 rounded-full bg-white p-4 shadow-sm ring-1 ring-slate-200/50 transition-transform group-hover:-translate-y-1 group-hover:shadow-md">
-                    <CloudUpload className="h-7 w-7 text-blue-600" />
+                  <div className="mb-3 rounded-full bg-white p-3 shadow-sm ring-1 ring-slate-200/50 transition-transform group-hover:-translate-y-1 group-hover:shadow-md">
+                    <CloudUpload className="h-6 w-6 text-blue-600" />
                   </div>
-                  <h4 className="text-base font-semibold text-slate-900">
+                  <h4 className="text-sm font-semibold text-slate-900">
                     Drag and drop your files here
                   </h4>
-                  <p className="mt-2 text-sm text-slate-500">
+                  <p className="mt-1 text-xs text-slate-500">
                     or <span className="font-medium text-blue-600">click to browse</span>
                   </p>
-                  <p className="mt-4 text-xs text-slate-500">
+                  <p className="mt-2 text-[11px] text-slate-500">
                     Supports: PDF, DOCX, PNG, JPG, ZIP, TXT
                   </p>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="text-[11px] text-slate-500">
                     Maximum {MAX_FILE_SIZE_MB}MB per file • Up to {MAX_FILE_COUNT} files
                   </p>
                   <input
@@ -425,51 +427,33 @@ export function CreateTicketForm() {
 
               {/* SLA info block */}
               {selectedProject?.slaPolicy && (
-                <div className="rounded-2xl border border-slate-200/60 bg-gradient-to-br from-slate-50 to-white p-6 shadow-sm ring-1 ring-slate-200/30">
-                  <div className="mb-6 flex items-center gap-2">
-                    <Info className="h-5 w-5 text-blue-600" />
-                    <h3 className="font-semibold text-slate-900">Project SLA</h3>
-                    <span className="text-sm text-slate-500">(For your reference)</span>
+                <div className="flex items-center justify-between rounded-xl border border-slate-200/60 bg-gradient-to-br from-slate-50 to-white px-5 py-3 shadow-sm ring-1 ring-slate-200/30">
+                  <div className="flex items-center gap-2">
+                    <Info className="h-4 w-4 text-blue-600" />
+                    <span className="text-sm font-medium text-slate-900">Project SLA</span>
                   </div>
-
-                  <div className="grid grid-cols-2 divide-x divide-slate-200">
-                    <div className="flex items-center gap-4 pr-8">
-                      <div className="rounded-full bg-blue-100 p-3">
-                        <Clock3 className="h-5 w-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-slate-500">Response SLA</p>
-                        <p className="mt-1 text-lg font-semibold text-slate-900">
-                          {formatHours(selectedProject.slaPolicy!.responseTimeMinutes)}
-                        </p>
-                      </div>
+                  <div className="flex items-center gap-6 text-sm">
+                    <div className="flex items-center gap-2 text-slate-600">
+                      <Clock3 className="h-4 w-4" />
+                      <span>
+                        Resp: {formatHours(selectedProject.slaPolicy.responseTimeMinutes)}
+                      </span>
                     </div>
-
-                    <div className="flex items-center gap-4 pl-8">
-                      <div className="rounded-full bg-green-100 p-3">
-                        <Clock3 className="h-5 w-5 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-slate-500">Resolution SLA</p>
-                        <p className="mt-1 text-lg font-semibold text-green-700">
-                          {formatHours(selectedProject.slaPolicy!.resolutionTimeMinutes)}
-                        </p>
-                      </div>
+                    <div className="flex items-center gap-2 font-medium text-green-700">
+                      <Clock3 className="h-4 w-4" />
+                      <span>
+                        Res: {formatHours(selectedProject.slaPolicy.resolutionTimeMinutes)}
+                      </span>
                     </div>
                   </div>
-
-                  <p className="mt-6 text-sm text-slate-500">
-                    These SLA timings are applicable once the ticket is assigned to our support
-                    team.
-                  </p>
                 </div>
               )}
 
-              <div className="flex justify-end gap-3 border-t border-slate-100 pt-6">
+              <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-11 rounded-xl border-slate-200 px-6 font-medium hover:bg-slate-50"
+                  className="h-10 rounded-xl border-slate-200 px-6 font-medium hover:bg-slate-50"
                   onClick={() => router.back()}
                 >
                   Cancel
@@ -477,7 +461,7 @@ export function CreateTicketForm() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="h-11 rounded-xl bg-blue-600 px-8 font-medium text-white shadow-sm transition-all hover:bg-blue-700 hover:shadow"
+                  className="h-10 rounded-xl bg-blue-600 px-8 font-medium text-white shadow-sm transition-all hover:bg-blue-700 hover:shadow"
                 >
                   {isSubmitting ? (
                     <>
