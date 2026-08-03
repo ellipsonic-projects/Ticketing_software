@@ -226,9 +226,9 @@ export function CreateTicketForm() {
   return (
     <div className="mx-auto w-full max-w-4xl py-6">
       {/* Hero */}
-      <div className="mb-10 flex items-start gap-5">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-violet-50 shadow-sm ring-1 ring-blue-100/50">
-          <Ticket className="h-8 w-8 text-blue-600" />
+      <div className="mb-12 flex items-center gap-6">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-md ring-4 ring-blue-50/50">
+          <Ticket className="h-7 w-7 text-white" />
         </div>
         <div className="pt-1">
           <h1 className="text-3xl leading-tight font-bold tracking-tight text-slate-900">
@@ -241,9 +241,9 @@ export function CreateTicketForm() {
       </div>
 
       {/* Card */}
-      <div className="overflow-hidden rounded-2xl border-0 bg-white shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] ring-1 ring-slate-200/50">
+      <div className="overflow-hidden rounded-3xl border-0 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-100">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10 p-8 sm:p-10">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-8 sm:p-12">
             {/* Project */}
             <FormField
               control={form.control}
@@ -256,11 +256,11 @@ export function CreateTicketForm() {
 
                   <Select onValueChange={field.onChange} value={field.value || ''}>
                     <FormControl>
-                      <SelectTrigger className="h-12 rounded-xl border-slate-200/60 bg-white/50 shadow-sm transition-all hover:border-blue-400 focus:ring-2 focus:ring-blue-500/20">
+                      <SelectTrigger className="h-12 rounded-xl border-slate-200/40 bg-slate-50/50 shadow-sm transition-all hover:bg-slate-50 focus:ring-2 focus:ring-blue-500/20">
                         <SelectValue placeholder="Select a project" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="rounded-xl shadow-lg ring-1 ring-slate-200/50">
+                    <SelectContent className="rounded-xl border-slate-100 shadow-xl">
                       {isLoadingProjects ? (
                         <div className="flex items-center p-3 text-sm text-slate-500">
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -278,8 +278,8 @@ export function CreateTicketForm() {
                     </SelectContent>
                   </Select>
 
-                  <p className="text-xs text-slate-500">
-                    Choose the project where you are facing the issue gggggg.
+                  <p className="text-[13px] text-slate-500">
+                    Choose the project where you are facing the issue.
                   </p>
                   <FormMessage />
                 </FormItem>
@@ -299,10 +299,12 @@ export function CreateTicketForm() {
                     <Input
                       {...field}
                       placeholder="Enter a short and clear title for the issue"
-                      className="h-12 rounded-xl border-slate-200/60 bg-white/50 shadow-sm transition-all hover:border-blue-400 focus-visible:ring-2 focus-visible:ring-blue-500/20"
+                      className="h-12 rounded-xl border-slate-200/40 bg-slate-50/50 shadow-sm transition-all hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-blue-500/20"
                     />
                   </FormControl>
-                  <p className="text-xs text-slate-500">Provide a concise summary of your issue.</p>
+                  <p className="text-[13px] text-slate-500">
+                    Provide a concise summary of your issue.
+                  </p>
                   <FormMessage />
                 </FormItem>
               )}
@@ -318,9 +320,9 @@ export function CreateTicketForm() {
                     Description <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
-                    <div className="overflow-hidden rounded-xl border border-slate-200/60 shadow-sm transition-all focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500/20 hover:border-blue-400">
+                    <div className="overflow-hidden rounded-xl border border-slate-200/40 bg-slate-50/30 shadow-sm transition-all focus-within:border-blue-400/50 focus-within:ring-2 focus-within:ring-blue-500/20 hover:border-slate-300">
                       {/* Toolbar */}
-                      <div className="flex items-center gap-1 border-b border-slate-200/60 bg-slate-50/50 px-3 py-2">
+                      <div className="flex items-center gap-1 border-b border-slate-200/40 bg-slate-50/50 px-3 py-2">
                         {[Bold, Italic, List, ListOrdered, Link2].map((Icon, i) => (
                           <Button
                             key={i}
@@ -337,10 +339,10 @@ export function CreateTicketForm() {
                       <Textarea
                         {...field}
                         placeholder="Describe the issue in detail. Include steps to reproduce, expected behavior, and any other relevant information."
-                        className="min-h-[200px] resize-none rounded-none border-0 bg-white/50 shadow-none focus-visible:ring-0"
+                        className="min-h-[200px] resize-none rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0"
                       />
                       {/* Footer */}
-                      <div className="flex items-center justify-end border-t border-slate-200/60 bg-slate-50/30 px-4 py-2">
+                      <div className="flex items-center justify-end border-t border-slate-200/40 bg-transparent px-4 py-2">
                         <span className="text-xs text-slate-500">
                           {description.length}/5000 characters
                         </span>
