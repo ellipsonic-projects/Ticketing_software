@@ -102,7 +102,7 @@ export function TicketCard({ ticket }: TicketCardProps) {
 
   return (
     <div
-      className={`flex flex-col gap-4 rounded-2xl border-y border-r border-l-4 border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md md:flex-row md:items-center ${BORDER_COLORS[ticket.priority]}`}
+      className={`flex flex-col gap-3 rounded-xl border-y border-r border-l-4 border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md md:flex-row md:items-center ${BORDER_COLORS[ticket.priority]}`}
     >
       {/* Column 1: Meta */}
       <div className="flex w-full flex-col gap-1 md:w-32 lg:w-40">
