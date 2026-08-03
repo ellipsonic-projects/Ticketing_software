@@ -32,7 +32,7 @@ const BADGE_COLORS: Record<string, string> = {
 };
 
 export function ClientTicketSidePanel({ ticketId, onClose }: ClientTicketSidePanelProps) {
-  const { data: ticketResponse, isLoading } = useTicket(ticketId);
+  const { data: ticket, isLoading } = useTicket(ticketId);
 
   if (isLoading) {
     return (
@@ -42,7 +42,6 @@ export function ClientTicketSidePanel({ ticketId, onClose }: ClientTicketSidePan
     );
   }
 
-  const ticket = ticketResponse?.ticket;
   if (!ticket) return null;
 
   return (
