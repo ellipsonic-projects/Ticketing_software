@@ -10,12 +10,5 @@ export interface PlatformHeaderProps {
 }
 
 export function PlatformHeader(props: PlatformHeaderProps) {
-  return (
-    <BaseHeader
-      {...props}
-      roleLabel="Platform Admin"
-      themeColor="violet"
-      searchPlaceholder="Search tenants, users..."
-    />
-  );
+  return <BaseHeader {...props} roleLabel="Platform Admin" themeColor="violet" />;
 }

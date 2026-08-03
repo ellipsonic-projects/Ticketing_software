@@ -11,11 +11,5 @@ export interface TenantHeaderProps {
 }
 
 export function TenantHeader(props: TenantHeaderProps) {
-  return (
-    <BaseHeader
-      {...props}
-      themeColor="blue"
-      searchPlaceholder="Search clients, projects, tickets..."
-    />
-  );
+  return <BaseHeader {...props} themeColor="blue" />;
 }

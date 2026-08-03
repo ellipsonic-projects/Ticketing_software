@@ -11,7 +11,5 @@ export interface DashboardHeaderProps {
 }
 
 export function DashboardHeader(props: DashboardHeaderProps) {
-  return (
-    <BaseHeader {...props} themeColor="blue" searchPlaceholder="Search tickets, projects..." />
-  );
+  return <BaseHeader {...props} themeColor="blue" />;
 }

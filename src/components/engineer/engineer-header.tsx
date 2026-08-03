@@ -11,11 +11,5 @@ export interface EngineerHeaderProps {
 }
 
 export function EngineerHeader(props: EngineerHeaderProps) {
-  return (
-    <BaseHeader
-      {...props}
-      themeColor="blue"
-      searchPlaceholder="Search clients, projects, tickets..."
-    />
-  );
+  return <BaseHeader {...props} themeColor="blue" />;
 }
