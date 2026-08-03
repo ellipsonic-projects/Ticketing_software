@@ -225,15 +225,6 @@ export function CreateTicketForm() {
 
   return (
     <div className="mx-auto w-full max-w-4xl py-6">
-      {/* Back Button */}
-      <Link
-        href="/client/tickets"
-        className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-all hover:-translate-x-1 hover:text-slate-900"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to My Tickets
-      </Link>
-
       {/* Hero */}
       <div className="mb-10 flex items-start gap-5">
         <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-violet-50 shadow-sm ring-1 ring-blue-100/50">
@@ -288,7 +279,7 @@ export function CreateTicketForm() {
                   </Select>
 
                   <p className="text-xs text-slate-500">
-                    Choose the project where you are facing the issue.
+                    Choose the project where you are facing the issue gggggg.
                   </p>
                   <FormMessage />
                 </FormItem>
