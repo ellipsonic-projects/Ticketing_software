@@ -26,7 +26,6 @@ const NAV_ITEMS = [
   { label: 'My Projects', href: '/client/projects', icon: FolderOpen },
   { label: 'My Tickets', href: '/client/tickets', icon: Ticket },
   { label: 'Create Ticket', href: '/client/tickets/new', icon: PlusCircle },
-  { label: 'Notifications', href: '/client/notifications', icon: Bell },
   { label: 'Profile', href: '/client/profile', icon: User },
 ] as const;
 
@@ -74,14 +73,6 @@ function ClientInfoFooter() {
 }
 
 export function DashboardSidebar({ notificationCount, isOpen, onClose }: DashboardSidebarProps) {
-  // We can pass badge notification counts dynamically to specific NAV_ITEMS
-  const itemsWithBadges = NAV_ITEMS.map((item) => {
-    if (item.label === 'Notifications') {
-      return { ...item, badge: notificationCount };
-    }
-    return item;
-  });
-
   return (
     <BaseSidebar
       isOpen={isOpen}
@@ -94,7 +85,7 @@ export function DashboardSidebar({ notificationCount, isOpen, onClose }: Dashboa
           <div className="h-6 w-6 rounded-full border-2 border-blue-600" />
         </div>
       }
-      navItems={itemsWithBadges}
+      navItems={NAV_ITEMS}
       showHelpCard={true}
       customFooter={<ClientInfoFooter />}
     />
