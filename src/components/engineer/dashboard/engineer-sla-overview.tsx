@@ -40,7 +40,7 @@ export function EngineerSlaOverview() {
   ];
 
   return (
-    <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:h-[420px]">
       <div className="mb-6 flex items-center justify-between">
         <h3 className="font-semibold text-slate-900">SLA Overview</h3>
         <Link
