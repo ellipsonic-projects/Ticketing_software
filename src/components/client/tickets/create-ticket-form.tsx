@@ -224,11 +224,11 @@ export function CreateTicketForm() {
   };
 
   return (
-    <div className="w-full">
+    <div className="mx-auto w-full max-w-4xl py-6">
       {/* Back Button */}
       <Link
         href="/client/tickets"
-        className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900"
+        className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-all hover:-translate-x-1 hover:text-slate-900"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to My Tickets
@@ -236,23 +236,23 @@ export function CreateTicketForm() {
 
       {/* Hero */}
       <div className="mb-10 flex items-start gap-5">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-blue-100 bg-blue-50">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-violet-50 shadow-sm ring-1 ring-blue-100/50">
           <Ticket className="h-8 w-8 text-blue-600" />
         </div>
-        <div>
-          <h1 className="text-[38px] leading-tight font-bold tracking-tight text-slate-900">
+        <div className="pt-1">
+          <h1 className="text-3xl leading-tight font-bold tracking-tight text-slate-900">
             Create Support Ticket
           </h1>
-          <p className="mt-2 text-base text-slate-500">
+          <p className="mt-1.5 text-base text-slate-500">
             Report an issue for one of your projects. Our support team will review and assign it.
           </p>
         </div>
       </div>
 
       {/* Card */}
-      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+      <div className="overflow-hidden rounded-2xl border-0 bg-white shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] ring-1 ring-slate-200/50">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10 p-10">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10 p-8 sm:p-10">
             {/* Project */}
             <FormField
               control={form.control}
@@ -265,11 +265,11 @@ export function CreateTicketForm() {
 
                   <Select onValueChange={field.onChange} value={field.value || ''}>
                     <FormControl>
-                      <SelectTrigger className="h-12 rounded-xl">
+                      <SelectTrigger className="h-12 rounded-xl border-slate-200/60 bg-white/50 shadow-sm transition-all hover:border-blue-400 focus:ring-2 focus:ring-blue-500/20">
                         <SelectValue placeholder="Select a project" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="rounded-xl shadow-lg ring-1 ring-slate-200/50">
                       {isLoadingProjects ? (
                         <div className="flex items-center p-3 text-sm text-slate-500">
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -308,7 +308,7 @@ export function CreateTicketForm() {
                     <Input
                       {...field}
                       placeholder="Enter a short and clear title for the issue"
-                      className="h-12 rounded-xl"
+                      className="h-12 rounded-xl border-slate-200/60 bg-white/50 shadow-sm transition-all hover:border-blue-400 focus-visible:ring-2 focus-visible:ring-blue-500/20"
                     />
                   </FormControl>
                   <p className="text-xs text-slate-500">Provide a concise summary of your issue.</p>
@@ -327,9 +327,9 @@ export function CreateTicketForm() {
                     Description <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
-                    <div className="overflow-hidden rounded-2xl border border-slate-200">
+                    <div className="overflow-hidden rounded-xl border border-slate-200/60 shadow-sm transition-all focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500/20 hover:border-blue-400">
                       {/* Toolbar */}
-                      <div className="flex items-center gap-2 border-b border-slate-200 bg-slate-50 px-4 py-3">
+                      <div className="flex items-center gap-1 border-b border-slate-200/60 bg-slate-50/50 px-3 py-2">
                         {[Bold, Italic, List, ListOrdered, Link2].map((Icon, i) => (
                           <Button
                             key={i}
@@ -346,10 +346,10 @@ export function CreateTicketForm() {
                       <Textarea
                         {...field}
                         placeholder="Describe the issue in detail. Include steps to reproduce, expected behavior, and any other relevant information."
-                        className="min-h-[220px] resize-none rounded-none border-0 shadow-none focus-visible:ring-0"
+                        className="min-h-[200px] resize-none rounded-none border-0 bg-white/50 shadow-none focus-visible:ring-0"
                       />
                       {/* Footer */}
-                      <div className="flex items-center justify-end border-t border-slate-200 bg-white px-4 py-2">
+                      <div className="flex items-center justify-end border-t border-slate-200/60 bg-slate-50/30 px-4 py-2">
                         <span className="text-xs text-slate-500">
                           {description.length}/5000 characters
                         </span>
@@ -371,11 +371,11 @@ export function CreateTicketForm() {
                 onDrop={handleFileDrop}
                 onDragOver={(e) => e.preventDefault()}
                 onClick={() => fileInputRef.current?.click()}
-                className="cursor-pointer rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 px-8 py-14 transition hover:border-blue-300 hover:bg-blue-50/40"
+                className="group cursor-pointer rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50/30 px-8 py-12 transition-all hover:border-blue-400 hover:bg-blue-50/80"
               >
                 <div className="flex flex-col items-center justify-center text-center">
-                  <div className="mb-4 rounded-full bg-blue-100 p-4">
-                    <CloudUpload className="h-8 w-8 text-blue-600" />
+                  <div className="mb-4 rounded-full bg-white p-4 shadow-sm ring-1 ring-slate-200/50 transition-transform group-hover:-translate-y-1 group-hover:shadow-md">
+                    <CloudUpload className="h-7 w-7 text-blue-600" />
                   </div>
                   <h4 className="text-base font-semibold text-slate-900">
                     Drag and drop your files here
@@ -432,7 +432,7 @@ export function CreateTicketForm() {
 
               {/* SLA info block */}
               {selectedProject?.slaPolicy && (
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+                <div className="rounded-2xl border border-slate-200/60 bg-gradient-to-br from-slate-50 to-white p-6 shadow-sm ring-1 ring-slate-200/30">
                   <div className="mb-6 flex items-center gap-2">
                     <Info className="h-5 w-5 text-blue-600" />
                     <h3 className="font-semibold text-slate-900">Project SLA</h3>
@@ -472,17 +472,20 @@ export function CreateTicketForm() {
                 </div>
               )}
 
-              {/* Actions */}
-              <div className="flex justify-end gap-4 pt-4">
+              <div className="flex justify-end gap-3 border-t border-slate-100 pt-6">
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-12 rounded-xl px-8"
+                  className="h-11 rounded-xl border-slate-200 px-6 font-medium hover:bg-slate-50"
                   onClick={() => router.back()}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isSubmitting} className="h-12 rounded-xl px-8">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="h-11 rounded-xl bg-blue-600 px-8 font-medium text-white shadow-sm transition-all hover:bg-blue-700 hover:shadow"
+                >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
