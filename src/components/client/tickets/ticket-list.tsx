@@ -88,87 +88,91 @@ export function TicketList({ selectedTicketId, onSelectTicket }: TicketListProps
   const endItem = Math.min(currentPage * limit, totalItems);
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Toolbar */}
-      <div className="flex flex-col items-start justify-between gap-4 border-b border-slate-200 px-4 py-4 sm:flex-row sm:items-center lg:px-6">
-        <h2 className="text-lg font-semibold text-slate-900">
-          Total Tickets <span className="ml-2 font-bold">{totalItems}</span>
-        </h2>
-        <Button
-          className="rounded-lg bg-blue-600 text-white shadow-sm hover:bg-blue-700"
-          onClick={() => router.push('/client/tickets/new')}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          New Ticket
-        </Button>
-      </div>
-
-      {/* Filters Row */}
-      <div className="flex flex-col gap-3 border-b border-slate-200 px-4 pb-4 sm:flex-row lg:px-6">
-        <form
-          onSubmit={handleSearchSubmit}
-          className="relative flex w-full shrink-0 items-center sm:max-w-sm"
-        >
-          <Search className="pointer-events-none absolute left-3 h-4 w-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search tickets..."
-            className="h-10 w-full rounded-lg border border-slate-200 bg-white pr-4 pl-9 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-          />
-        </form>
-
-        <div className="flex flex-1 flex-wrap items-center gap-3">
-          <select
-            className="h-10 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-            value={searchParams.get('status') || 'all'}
-            onChange={(e) => updateQuery('status', e.target.value)}
+    <div className="flex h-full flex-col">
+      <div className="shrink-0">
+        {/* Toolbar */}
+        <div className="flex flex-col items-start justify-between gap-4 border-b border-slate-200 px-4 py-4 sm:flex-row sm:items-center lg:px-6">
+          <h2 className="text-lg font-semibold text-slate-900">
+            Total Tickets <span className="ml-2 font-bold">{totalItems}</span>
+          </h2>
+          <Button
+            className="rounded-lg bg-blue-600 text-white shadow-sm hover:bg-blue-700"
+            onClick={() => router.push('/client/tickets/new')}
           >
-            <option value="all">All Statuses</option>
-            {Object.keys(TicketStatus).map((s) => (
-              <option key={s} value={s}>
-                {s.replace(/_/g, ' ')}
-              </option>
-            ))}
-          </select>
+            <Plus className="mr-2 h-4 w-4" />
+            New Ticket
+          </Button>
+        </div>
 
-          <select
-            className="h-10 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-            value={searchParams.get('priority') || 'all'}
-            onChange={(e) => updateQuery('priority', e.target.value)}
+        {/* Filters Row */}
+        <div className="flex flex-col gap-3 border-b border-slate-200 px-4 pb-4 sm:flex-row lg:px-6">
+          <form
+            onSubmit={handleSearchSubmit}
+            className="relative flex w-full shrink-0 items-center sm:max-w-sm"
           >
-            <option value="all">All Priorities</option>
-            {Object.keys(TicketPriority).map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
+            <Search className="pointer-events-none absolute left-3 h-4 w-4 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search tickets..."
+              className="h-10 w-full rounded-lg border border-slate-200 bg-white pr-4 pl-9 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+          </form>
+
+          <div className="flex flex-1 flex-wrap items-center gap-3">
+            <select
+              className="h-10 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              value={searchParams.get('status') || 'all'}
+              onChange={(e) => updateQuery('status', e.target.value)}
+            >
+              <option value="all">All Statuses</option>
+              {Object.keys(TicketStatus).map((s) => (
+                <option key={s} value={s}>
+                  {s.replace(/_/g, ' ')}
+                </option>
+              ))}
+            </select>
+
+            <select
+              className="h-10 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              value={searchParams.get('priority') || 'all'}
+              onChange={(e) => updateQuery('priority', e.target.value)}
+            >
+              <option value="all">All Priorities</option>
+              {Object.keys(TicketPriority).map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
       {/* List */}
-      <div className="flex flex-col gap-4 p-4 lg:p-6">
-        {items.length === 0 ? (
-          <div className="flex h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-slate-500">
-            <p>No tickets found.</p>
-          </div>
-        ) : (
-          items.map((ticket) => (
-            <TicketCard
-              key={ticket.id}
-              ticket={ticket}
-              isSelected={selectedTicketId === ticket.id}
-              onClick={() => onSelectTicket?.(ticket.id)}
-            />
-          ))
-        )}
+      <div className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <div className="flex flex-col gap-4">
+          {items.length === 0 ? (
+            <div className="flex h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-slate-500">
+              <p>No tickets found.</p>
+            </div>
+          ) : (
+            items.map((ticket) => (
+              <TicketCard
+                key={ticket.id}
+                ticket={ticket}
+                isSelected={selectedTicketId === ticket.id}
+                onClick={() => onSelectTicket?.(ticket.id)}
+              />
+            ))
+          )}
+        </div>
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-slate-200 px-4 py-4 sm:flex-row lg:px-6">
+        <div className="flex shrink-0 flex-col items-center justify-between gap-4 border-t border-slate-200 bg-white px-4 py-4 sm:flex-row lg:px-6">
           <span className="text-sm text-slate-600">
             Showing {startItem} to {endItem} of {totalItems} tickets
           </span>
