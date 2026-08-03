@@ -80,7 +80,7 @@ export function ProfilePageContent() {
   const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase();
 
   return (
-    <div className="mx-auto max-w-5xl p-6 lg:p-8">
+    <div className="h-full w-full p-6 lg:p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">Profile Settings</h1>
         <p className="mt-1.5 text-slate-500">
@@ -88,7 +88,7 @@ export function ProfilePageContent() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_2fr] lg:gap-8">
+      <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-[320px_1fr] lg:gap-10">
         {/* Left Column: Avatar & Summary */}
         <div className="space-y-6">
           <Card className="overflow-hidden border-slate-200/60 shadow-sm transition-all hover:shadow-md">
