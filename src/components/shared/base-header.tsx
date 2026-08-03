@@ -3,13 +3,20 @@
 import { useMemo } from 'react';
 import Image from 'next/image';
 
-import { Bell, CalendarDays, ChevronDown, Menu, Search } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { Bell, CalendarDays, Check, ChevronDown, Menu, Search } from 'lucide-react';
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/hooks/use-auth';
+import {
+  useMarkAllNotificationsAsRead,
+  useMarkNotificationAsRead,
+  useNotifications,
+} from '@/hooks/use-notifications';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -19,7 +26,7 @@ export interface BaseHeaderProps {
   firstName: string;
   avatarUrl?: string | null;
   roleLabel?: string;
-  notificationCount?: number;
+  notificationCount?: number; // Deprecated: Now fetched internally
   onMenuClick?: () => void;
   searchPlaceholder?: string;
   themeColor?: 'blue' | 'violet';
@@ -69,12 +76,21 @@ export function BaseHeader({
   firstName,
   avatarUrl,
   roleLabel,
-  notificationCount = 0,
   onMenuClick,
   searchPlaceholder = 'Search...',
   themeColor = 'blue',
   showSearch = true,
 }: BaseHeaderProps) {
+  const { accessToken } = useAuth();
+
+  // Notification API Integration
+  const { data: notificationsResponse } = useNotifications(accessToken ?? '');
+  const markAsRead = useMarkNotificationAsRead(accessToken ?? '');
+  const markAllAsRead = useMarkAllNotificationsAsRead(accessToken ?? '');
+
+  const notifications = notificationsResponse?.data ?? [];
+  const unreadCount = notificationsResponse?.meta?.unreadCount ?? 0;
+
   // Theme classes
   const accentText = themeColor === 'violet' ? 'text-violet-600' : 'text-blue-600';
   const avatarBg = themeColor === 'violet' ? 'bg-violet-600' : 'bg-blue-600';
@@ -137,47 +153,72 @@ export function BaseHeader({
               aria-label="View notifications"
             >
               <Bell className="h-5 w-5 text-slate-600" />
-              {notificationCount > 0 && (
+              {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
-                  {notificationCount > 99 ? '99+' : notificationCount}
+                  {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
               )}
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="mt-2 w-72 rounded-xl border-slate-100 p-0 shadow-lg sm:w-80"
+              className="mt-2 w-72 rounded-xl border-slate-100 p-0 shadow-lg sm:w-96"
             >
               <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
                 <span className="font-semibold text-slate-800">Notifications</span>
-                <button className={`text-xs font-medium ${notificationLinkHover}`}>
-                  Mark all as read
-                </button>
+                {unreadCount > 0 && (
+                  <button
+                    onClick={() => markAllAsRead.mutate()}
+                    className={`text-xs font-medium ${notificationLinkHover} disabled:opacity-50`}
+                    disabled={markAllAsRead.isPending}
+                  >
+                    Mark all as read
+                  </button>
+                )}
               </div>
-              <div className="flex max-h-[300px] flex-col overflow-y-auto">
-                <div className="cursor-pointer border-b border-slate-50 px-4 py-3 transition hover:bg-slate-50">
-                  <p className="text-sm font-medium text-slate-800">New ticket created</p>
-                  <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">
-                    TKT-0012: Login page is throwing 500 error
-                  </p>
-                  <p className="mt-1 text-[10px] text-slate-400">2 mins ago</p>
-                </div>
-                <div className="relative cursor-pointer border-b border-slate-50 px-4 py-3 transition hover:bg-slate-50">
-                  <span
-                    className={`absolute top-4 left-2 h-1.5 w-1.5 rounded-full ${notificationDot}`}
-                  ></span>
-                  <p className="pl-2 text-sm font-medium text-slate-800">SLA Warning</p>
-                  <p className="mt-0.5 line-clamp-1 pl-2 text-xs text-slate-500">
-                    TKT-0008 is approaching resolution breach
-                  </p>
-                  <p className="mt-1 pl-2 text-[10px] text-slate-400">1 hour ago</p>
-                </div>
-                <div className="cursor-pointer px-4 py-3 transition hover:bg-slate-50">
-                  <p className="text-sm font-medium text-slate-800">System Alert</p>
-                  <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">
-                    Scheduled maintenance in 2 hours
-                  </p>
-                  <p className="mt-1 text-[10px] text-slate-400">3 hours ago</p>
-                </div>
+              <div className="flex max-h-[400px] flex-col overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="px-4 py-8 text-center text-sm text-slate-500">
+                    You have no new notifications.
+                  </div>
+                ) : (
+                  notifications.map((notification) => (
+                    <div
+                      key={notification.id}
+                      onClick={() => !notification.isRead && markAsRead.mutate(notification.id)}
+                      className={`relative border-b border-slate-50 px-4 py-3 transition ${
+                        notification.isRead
+                          ? 'bg-white opacity-70'
+                          : 'cursor-pointer hover:bg-slate-50'
+                      }`}
+                    >
+                      {!notification.isRead && (
+                        <span
+                          className={`absolute top-5 left-2 h-1.5 w-1.5 rounded-full ${notificationDot}`}
+                        ></span>
+                      )}
+                      <p
+                        className={`pl-2 text-sm font-medium ${notification.isRead ? 'text-slate-600' : 'text-slate-900'}`}
+                      >
+                        {notification.title}
+                      </p>
+                      <p className="mt-0.5 pl-2 text-xs leading-relaxed text-slate-500">
+                        {notification.message}
+                      </p>
+                      <div className="mt-2 flex items-center justify-between pl-2">
+                        <p className="text-[10px] text-slate-400">
+                          {formatDistanceToNow(new Date(notification.createdAt), {
+                            addSuffix: true,
+                          })}
+                        </p>
+                        {notification.isRead && (
+                          <div className="flex items-center gap-1 text-[10px] text-slate-400">
+                            <Check className="h-3 w-3" /> Read
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
               <div className="border-t border-slate-100 p-2 text-center">
                 <button className="text-xs font-semibold text-slate-500 hover:text-slate-700">
