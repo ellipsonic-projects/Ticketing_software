@@ -64,7 +64,7 @@ export default function ClientPortalLayout({ children }: ClientPortalLayoutProps
   const roleLabel = user.role ? formatRoleLabel(user.role) : undefined;
 
   return (
-    <div className="flex flex-1 overflow-hidden bg-[#F8FAFC]">
+    <div className="flex h-screen w-full overflow-hidden bg-[#F8FAFC]">
       <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">

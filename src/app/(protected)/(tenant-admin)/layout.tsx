@@ -58,7 +58,7 @@ export default function TenantAdminLayout({ children }: TenantAdminLayoutProps) 
   const notificationCount = 0;
 
   return (
-    <div className="flex flex-1 overflow-hidden bg-[#F8FAFC]">
+    <div className="flex h-screen w-full overflow-hidden bg-[#F8FAFC]">
       <TenantSidebar
         notificationCount={notificationCount}
         isOpen={sidebarOpen}
