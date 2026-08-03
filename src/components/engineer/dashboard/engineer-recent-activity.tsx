@@ -13,15 +13,8 @@ export function EngineerRecentActivity() {
 
   return (
     <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-4">
+      <div className="mb-4 border-b border-slate-100 pb-4">
         <h3 className="font-semibold text-slate-900">Recent Activity</h3>
-        <Link
-          href="/engineer/activity"
-          className="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-700"
-        >
-          View all activity
-          <ArrowRight className="ml-1 h-4 w-4" />
-        </Link>
       </div>
 
       <div className="flex-1 overflow-y-auto pr-2">
