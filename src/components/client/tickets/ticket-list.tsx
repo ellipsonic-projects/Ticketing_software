@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { TicketPriority, TicketStatus } from '@prisma/client';
+import { ChevronLeft, ChevronRight, Plus, Search } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { useTickets } from '@/hooks/use-tickets';
@@ -31,10 +33,28 @@ export function TicketList() {
   const currentPage = parseInt(searchParams.get('page') ?? String(DEFAULT_PAGE), 10);
   const limit = parseInt(searchParams.get('limit') ?? String(DEFAULT_LIMIT), 10);
 
-  const setPage = (page: number) => {
+  const [searchValue, setSearchValue] = useState(searchParams.get('search') || '');
+
+  const updateQuery = (key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('page', page.toString());
+    if (key !== 'page') params.delete('page'); // Reset to page 1 on filter change
+
+    if (value === null || value === 'all') {
+      params.delete(key);
+    } else {
+      params.set(key, value);
+    }
+
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateQuery('search', searchValue || null);
+  };
+
+  const setPage = (page: number) => {
+    updateQuery('page', page.toString());
   };
 
   if (isLoading) {
@@ -76,6 +96,51 @@ export function TicketList() {
           <Plus className="mr-2 h-4 w-4" />
           New Ticket
         </Button>
+      </div>
+
+      {/* Filters Row */}
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <form
+          onSubmit={handleSearchSubmit}
+          className="relative flex w-full shrink-0 items-center sm:max-w-sm"
+        >
+          <Search className="pointer-events-none absolute left-3 h-4 w-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search tickets..."
+            className="h-10 w-full rounded-lg border border-slate-200 bg-white pr-4 pl-9 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+          />
+        </form>
+
+        <div className="flex flex-1 flex-wrap items-center gap-3">
+          <select
+            className="h-10 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            value={searchParams.get('status') || 'all'}
+            onChange={(e) => updateQuery('status', e.target.value)}
+          >
+            <option value="all">All Statuses</option>
+            {Object.keys(TicketStatus).map((s) => (
+              <option key={s} value={s}>
+                {s.replace(/_/g, ' ')}
+              </option>
+            ))}
+          </select>
+
+          <select
+            className="h-10 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            value={searchParams.get('priority') || 'all'}
+            onChange={(e) => updateQuery('priority', e.target.value)}
+          >
+            <option value="all">All Priorities</option>
+            {Object.keys(TicketPriority).map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* List */}
