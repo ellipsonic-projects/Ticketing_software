@@ -143,15 +143,26 @@ export function BaseSidebar({
       <nav className="flex-1 overflow-y-auto px-4" aria-label="Sidebar navigation">
         <div className="space-y-1 sm:space-y-2">
           {navItems.map((item) => {
-            // Determine active state: exact match OR starts with (if not root)
-            // Example: /engineer is active on /engineer, but /engineer/tickets is active on /engineer/tickets
-            // To prevent /dashboard matching /dashboard-settings, check exactly or strictly starts with /path/
-            const isActive =
-              pathname === item.href ||
-              (item.href !== '/' &&
-                item.href.split('/').length > 1 &&
-                pathname.startsWith(`${item.href}/`)) ||
-              (item.href === '/platform/dashboard' && pathname === item.href); // specific overrides if needed
+            // Find the most specific match (longest href) to prevent parent items
+            // from highlighting when a child item has its own menu entry
+            const bestMatch = navItems.reduce(
+              (best, current) => {
+                // If it's the root '/' we only match exactly.
+                // Otherwise we check if pathname starts with current.href
+                const isMatch =
+                  current.href === '/'
+                    ? pathname === '/'
+                    : pathname === current.href || pathname.startsWith(`${current.href}/`);
+
+                if (isMatch && current.href.length > best.href.length) {
+                  return current;
+                }
+                return best;
+              },
+              { href: '' },
+            );
+
+            const isActive = bestMatch.href === item.href;
 
             return (
               <NavItem
@@ -159,10 +170,7 @@ export function BaseSidebar({
                 label={item.label}
                 href={item.href}
                 icon={item.icon}
-                active={
-                  pathname === item.href ||
-                  (item.href.split('/').length > 2 && pathname.startsWith(item.href))
-                } // more generic matching logic
+                active={isActive}
                 badge={item.badge}
                 onClick={onClose}
                 themeColor={themeColor}
