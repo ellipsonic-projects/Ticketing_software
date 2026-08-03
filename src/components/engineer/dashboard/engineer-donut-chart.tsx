@@ -38,12 +38,12 @@ export function EngineerDonutChart() {
   ].filter((d) => d.value > 0);
 
   return (
-    <div className="flex h-full flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="mb-4">
         <h3 className="font-semibold text-slate-900">My Tickets by Status</h3>
       </div>
 
-      <div className="flex flex-1 items-center gap-6">
+      <div className="flex items-center gap-4">
         <div className="relative h-[200px] w-[200px] shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>

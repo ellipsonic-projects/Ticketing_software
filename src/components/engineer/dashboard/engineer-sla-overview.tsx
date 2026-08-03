@@ -40,7 +40,7 @@ export function EngineerSlaOverview() {
   ];
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="mb-6 flex items-center justify-between">
         <h3 className="font-semibold text-slate-900">SLA Overview</h3>
         <Link
@@ -52,7 +52,7 @@ export function EngineerSlaOverview() {
         </Link>
       </div>
 
-      <div className="flex flex-1 flex-col justify-center space-y-6">
+      <div className="flex flex-1 flex-col justify-center space-y-5">
         {slaStats.map((stat) => (
           <div key={stat.label}>
             <div className="mb-2 flex items-center justify-between">

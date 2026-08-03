@@ -54,7 +54,7 @@ export function EngineerUpcomingDeadlines() {
   };
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-4">
         <h3 className="font-semibold text-slate-900">Upcoming Deadlines</h3>
         <Link

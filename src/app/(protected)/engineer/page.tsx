@@ -19,7 +19,7 @@ export default function EngineerDashboardPage() {
       <EngineerKpiCards />
 
       {/* Middle Row: Charts and Deadlines */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
         <div className="lg:col-span-1">
           <EngineerDonutChart />
         </div>
