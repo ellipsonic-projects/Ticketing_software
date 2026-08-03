@@ -23,7 +23,12 @@ const DEFAULT_LIMIT = 25;
 // Component
 // ---------------------------------------------------------------------------
 
-export function TicketList() {
+interface TicketListProps {
+  selectedTicketId?: string | null;
+  onSelectTicket?: (id: string) => void;
+}
+
+export function TicketList({ selectedTicketId, onSelectTicket }: TicketListProps = {}) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -85,7 +90,7 @@ export function TicketList() {
   return (
     <div className="flex flex-col gap-6">
       {/* Toolbar */}
-      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col items-start justify-between gap-4 border-b border-slate-200 px-4 py-4 sm:flex-row sm:items-center lg:px-6">
         <h2 className="text-lg font-semibold text-slate-900">
           Total Tickets <span className="ml-2 font-bold">{totalItems}</span>
         </h2>
@@ -99,7 +104,7 @@ export function TicketList() {
       </div>
 
       {/* Filters Row */}
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="flex flex-col gap-3 border-b border-slate-200 px-4 pb-4 sm:flex-row lg:px-6">
         <form
           onSubmit={handleSearchSubmit}
           className="relative flex w-full shrink-0 items-center sm:max-w-sm"
@@ -144,19 +149,26 @@ export function TicketList() {
       </div>
 
       {/* List */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 p-4 lg:p-6">
         {items.length === 0 ? (
           <div className="flex h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-slate-500">
             <p>No tickets found.</p>
           </div>
         ) : (
-          items.map((ticket) => <TicketCard key={ticket.id} ticket={ticket} />)
+          items.map((ticket) => (
+            <TicketCard
+              key={ticket.id}
+              ticket={ticket}
+              isSelected={selectedTicketId === ticket.id}
+              onClick={() => onSelectTicket?.(ticket.id)}
+            />
+          ))
         )}
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="mt-4 flex flex-col items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-6 py-4 sm:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-slate-200 px-4 py-4 sm:flex-row lg:px-6">
           <span className="text-sm text-slate-600">
             Showing {startItem} to {endItem} of {totalItems} tickets
           </span>

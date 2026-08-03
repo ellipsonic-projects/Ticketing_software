@@ -87,13 +87,15 @@ function getSlaDisplay(ticket: TicketWithDetails): SlaDisplayInfo {
 
 interface TicketCardProps {
   ticket: TicketWithDetails;
+  isSelected?: boolean;
+  onClick?: () => void;
 }
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export function TicketCard({ ticket }: TicketCardProps) {
+export function TicketCard({ ticket, isSelected, onClick }: TicketCardProps) {
   const sla = getSlaDisplay(ticket);
 
   const assigneeInitials = ticket.assignedTo
@@ -102,7 +104,12 @@ export function TicketCard({ ticket }: TicketCardProps) {
 
   return (
     <div
-      className={`flex flex-col gap-3 rounded-xl border-y border-r border-l-4 border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md md:flex-row md:items-center ${BORDER_COLORS[ticket.priority]}`}
+      onClick={onClick}
+      className={`group flex cursor-pointer flex-col gap-3 rounded-xl border-y border-r border-l-4 bg-white p-4 shadow-sm transition-all hover:shadow-md md:flex-row md:items-center ${BORDER_COLORS[ticket.priority]} ${
+        isSelected
+          ? 'border-r-indigo-600 bg-indigo-50/30 ring-1 ring-indigo-600/20'
+          : 'border-r-slate-200'
+      }`}
     >
       {/* Column 1: Meta */}
       <div className="flex w-full flex-col gap-1 md:w-32 lg:w-40">
@@ -182,12 +189,15 @@ export function TicketCard({ ticket }: TicketCardProps) {
           </div>
         </div>
 
-        <Link
-          href={`/client/tickets/${ticket.id}`}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900"
+        <button
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-colors ${
+            isSelected
+              ? 'border-indigo-200 bg-indigo-100 text-indigo-700'
+              : 'border-slate-200 text-slate-400 group-hover:bg-slate-50 group-hover:text-slate-900'
+          }`}
         >
           <ArrowRight className="h-5 w-5" />
-        </Link>
+        </button>
       </div>
     </div>
   );
