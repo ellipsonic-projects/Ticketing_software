@@ -11,5 +11,5 @@ export interface TenantHeaderProps {
 }
 
 export function TenantHeader(props: TenantHeaderProps) {
-  return <BaseHeader {...props} themeColor="blue" />;
+  return <BaseHeader {...props} themeColor="blue" profileHref="/profile" />;
 }

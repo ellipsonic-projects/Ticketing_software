@@ -11,5 +11,5 @@ export interface DashboardHeaderProps {
 }
 
 export function DashboardHeader(props: DashboardHeaderProps) {
-  return <BaseHeader {...props} themeColor="blue" />;
+  return <BaseHeader {...props} themeColor="blue" profileHref="/client/profile" />;
 }

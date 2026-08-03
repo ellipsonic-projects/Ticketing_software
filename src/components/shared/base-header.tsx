@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { formatDistanceToNow } from 'date-fns';
 import { Bell, CalendarDays, Check, ChevronDown, LogOut, Menu, Settings, User } from 'lucide-react';
@@ -31,6 +32,7 @@ export interface BaseHeaderProps {
   notificationCount?: number; // Deprecated: Now fetched internally
   onMenuClick?: () => void;
   themeColor?: 'blue' | 'violet';
+  profileHref?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -78,6 +80,7 @@ export function BaseHeader({
   roleLabel,
   onMenuClick,
   themeColor = 'blue',
+  profileHref,
 }: BaseHeaderProps) {
   const { accessToken, logout } = useAuth();
 
@@ -252,14 +255,14 @@ export function BaseHeader({
                 <p className="text-xs text-slate-500">{roleLabel ?? 'User'}</p>
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer rounded-lg p-2 text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
-                <User className="mr-2 h-4 w-4" />
-                <span>My Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer rounded-lg p-2 text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Account Settings</span>
-              </DropdownMenuItem>
+              {profileHref && (
+                <Link href={profileHref}>
+                  <DropdownMenuItem className="cursor-pointer rounded-lg p-2 text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>My Profile</span>
+                  </DropdownMenuItem>
+                </Link>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => logout()}

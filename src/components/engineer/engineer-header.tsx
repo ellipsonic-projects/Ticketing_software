@@ -11,5 +11,5 @@ export interface EngineerHeaderProps {
 }
 
 export function EngineerHeader(props: EngineerHeaderProps) {
-  return <BaseHeader {...props} themeColor="blue" />;
+  return <BaseHeader {...props} themeColor="blue" profileHref="/engineer/profile" />;
 }
