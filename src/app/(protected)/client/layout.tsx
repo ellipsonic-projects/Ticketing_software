@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import { Loader2 } from 'lucide-react';
 
 import { DashboardHeader } from '@/components/client-dashboard/dashboard-header';
@@ -48,6 +50,7 @@ interface ClientPortalLayoutProps {
 export default function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
   // Only CLIENT role may access this layout; unauthenticated or wrong-role → /auth/login
   const { user, isLoading } = useAuthRedirect(['CLIENT']);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (isLoading || !user) {
     return <LoadingScreen />;
@@ -62,13 +65,19 @@ export default function ClientPortalLayout({ children }: ClientPortalLayoutProps
 
   return (
     <div className="flex flex-1 overflow-hidden bg-[#F8FAFC]">
-      <DashboardSidebar />
+      <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <DashboardHeader firstName={user.firstName ?? 'there'} roleLabel={roleLabel} />
+        <DashboardHeader
+          firstName={user.firstName ?? 'there'}
+          roleLabel={roleLabel}
+          onMenuClick={() => setSidebarOpen(true)}
+        />
 
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1600px] px-8 py-8 xl:px-10">{children}</div>
+          <div className="mx-auto w-full max-w-[1600px] px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8 xl:px-10">
+            {children}
+          </div>
         </main>
       </div>
     </div>

@@ -2,20 +2,20 @@
 
 import { BaseHeader } from '@/components/shared/base-header';
 
-export interface TenantHeaderProps {
+export interface PlatformHeaderProps {
   firstName: string;
   avatarUrl?: string | null;
   notificationCount?: number;
-  roleLabel?: string;
   onMenuClick?: () => void;
 }
 
-export function TenantHeader(props: TenantHeaderProps) {
+export function PlatformHeader(props: PlatformHeaderProps) {
   return (
     <BaseHeader
       {...props}
-      themeColor="blue"
-      searchPlaceholder="Search clients, projects, tickets..."
+      roleLabel="Platform Admin"
+      themeColor="violet"
+      searchPlaceholder="Search tenants, users..."
     />
   );
 }

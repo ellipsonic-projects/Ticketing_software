@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Loader2 } from 'lucide-react';
@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/use-auth';
 export default function EngineerLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
   const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (
@@ -35,10 +36,15 @@ export default function EngineerLayout({ children }: { children: React.ReactNode
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-slate-50 font-sans text-slate-900">
-      <EngineerSidebar />
+      <EngineerSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex flex-1 flex-col overflow-hidden">
-        <EngineerHeader firstName={user.firstName} avatarUrl={undefined} roleLabel="Engineer" />
-        <main className="flex-1 overflow-y-auto p-8">{children}</main>
+        <EngineerHeader
+          firstName={user.firstName}
+          avatarUrl={undefined}
+          roleLabel="Engineer"
+          onMenuClick={() => setSidebarOpen(true)}
+        />
+        <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 lg:p-8">{children}</main>
       </div>
     </div>
   );

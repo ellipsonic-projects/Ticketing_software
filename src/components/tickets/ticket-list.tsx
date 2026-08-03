@@ -252,7 +252,7 @@ export function TicketList() {
       </div>
 
       {/* 3. Table */}
-      <div className="min-h-[500px] bg-white px-6 lg:px-8">
+      <div className="min-h-[500px] overflow-x-auto bg-white px-6 lg:px-8">
         <Table>
           <TableHeader>
             <TableRow className="border-b border-slate-100 hover:bg-transparent">

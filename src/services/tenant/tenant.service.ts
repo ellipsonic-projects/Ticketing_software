@@ -312,6 +312,10 @@ export class TenantService {
     };
   }
 
+  static async getTenantStats() {
+    return tenantRepository.getStats();
+  }
+
   static async getTenantById(id: string) {
     const tenant = await tenantRepository.findById(id);
     if (!tenant || tenant.deletedAt) throw new TenantNotFoundError();

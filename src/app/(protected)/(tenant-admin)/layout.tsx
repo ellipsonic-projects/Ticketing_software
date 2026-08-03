@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import { Role } from '@prisma/client';
 import { Loader2 } from 'lucide-react';
 
@@ -43,6 +45,7 @@ interface TenantAdminLayoutProps {
 
 export default function TenantAdminLayout({ children }: TenantAdminLayoutProps) {
   const { user, isLoading } = useAuthRedirect([Role.TENANT_ADMIN, Role.ENGINEER]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Wait for auth to resolve (redirect fires inside the hook if needed)
   if (isLoading || !user) {
@@ -56,17 +59,24 @@ export default function TenantAdminLayout({ children }: TenantAdminLayoutProps) 
 
   return (
     <div className="flex flex-1 overflow-hidden bg-[#F8FAFC]">
-      <TenantSidebar notificationCount={notificationCount} />
+      <TenantSidebar
+        notificationCount={notificationCount}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <TenantHeader
           firstName={user.firstName ?? 'there'}
           roleLabel={roleLabel}
           notificationCount={notificationCount}
+          onMenuClick={() => setSidebarOpen(true)}
         />
 
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1600px] px-8 py-8 xl:px-10">{children}</div>
+          <div className="mx-auto w-full max-w-[1600px] px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8 xl:px-10">
+            {children}
+          </div>
         </main>
       </div>
     </div>

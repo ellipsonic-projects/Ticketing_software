@@ -59,4 +59,11 @@ export const tenantApi = {
       token,
     });
   },
+
+  getTenantStats: async (token: string) => {
+    return apiClient<{ data: { total: number; active: number; suspended: number } }>(
+      '/platform/tenants/stats',
+      { token },
+    );
+  },
 };

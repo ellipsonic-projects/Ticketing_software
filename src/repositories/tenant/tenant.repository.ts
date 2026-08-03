@@ -46,6 +46,18 @@ export class TenantRepository {
     ]);
   }
 
+  async getStats(
+    tx?: Prisma.TransactionClient,
+  ): Promise<{ total: number; active: number; suspended: number }> {
+    const db = tx || prisma;
+    const [total, active, suspended] = await Promise.all([
+      db.tenant.count({ where: { deletedAt: null } }),
+      db.tenant.count({ where: { status: 'ACTIVE', deletedAt: null } }),
+      db.tenant.count({ where: { status: 'SUSPENDED', deletedAt: null } }),
+    ]);
+    return { total, active, suspended };
+  }
+
   async softDelete(id: string, deletedBy?: string, tx?: Prisma.TransactionClient): Promise<Tenant> {
     const db = tx || prisma;
     return db.tenant.update({
