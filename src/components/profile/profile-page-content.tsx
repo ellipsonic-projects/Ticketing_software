@@ -91,7 +91,7 @@ export function ProfilePageContent() {
       <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-[320px_1fr] lg:gap-10">
         {/* Left Column: Avatar & Summary */}
         <div className="space-y-6">
-          <Card className="overflow-hidden border-slate-200/60 shadow-sm transition-all hover:shadow-md">
+          <Card className="overflow-hidden rounded-2xl border-0 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] ring-1 ring-slate-200/50 transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <div className="h-28 w-full bg-gradient-to-r from-blue-600 to-violet-600"></div>
             <CardContent className="flex flex-col items-center pb-8 text-center">
               <div className="-mt-14 mb-4 flex h-28 w-28 items-center justify-center rounded-full border-4 border-white bg-blue-600 text-4xl font-bold text-white shadow-md">
@@ -113,8 +113,8 @@ export function ProfilePageContent() {
         {/* Right Column: Edit Form */}
         <div className="space-y-6">
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Card className="border-slate-200/60 shadow-sm transition-all hover:shadow-md">
-              <CardHeader className="pb-5">
+            <Card className="overflow-hidden rounded-2xl border-0 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] ring-1 ring-slate-200/50 transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+              <CardHeader className="px-7 pt-7 pb-5">
                 <CardTitle className="flex items-center gap-2 text-xl font-bold text-slate-900">
                   <UserIcon className="h-5 w-5 text-blue-600" />
                   Personal Information
@@ -124,8 +124,8 @@ export function ProfilePageContent() {
                   platform.
                 </CardDescription>
               </CardHeader>
-              <Separator className="mb-6 opacity-60" />
-              <CardContent className="space-y-6 px-6">
+              <Separator className="mb-6 bg-slate-100" />
+              <CardContent className="space-y-7 px-7">
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="firstName" className="text-sm font-semibold text-slate-700">
@@ -134,7 +134,7 @@ export function ProfilePageContent() {
                     <Input
                       id="firstName"
                       placeholder="Enter your first name"
-                      className="border-slate-200 bg-white transition-all focus-visible:ring-2 focus-visible:ring-blue-500/20"
+                      className="rounded-xl border-slate-200/60 bg-white/50 shadow-sm transition-all hover:border-blue-400 focus-visible:ring-2 focus-visible:ring-blue-500/20"
                       {...register('firstName')}
                     />
                     {errors.firstName && (
@@ -149,7 +149,7 @@ export function ProfilePageContent() {
                     <Input
                       id="lastName"
                       placeholder="Enter your last name"
-                      className="border-slate-200 bg-white transition-all focus-visible:ring-2 focus-visible:ring-blue-500/20"
+                      className="rounded-xl border-slate-200/60 bg-white/50 shadow-sm transition-all hover:border-blue-400 focus-visible:ring-2 focus-visible:ring-blue-500/20"
                       {...register('lastName')}
                     />
                     {errors.lastName && (
@@ -163,7 +163,7 @@ export function ProfilePageContent() {
                   <Input
                     disabled
                     value={user?.email || ''}
-                    className="border-slate-200 bg-slate-50 font-medium text-slate-500"
+                    className="rounded-xl border-slate-200/60 bg-slate-50/80 font-medium text-slate-500 shadow-inner"
                   />
                   <p className="mt-1.5 text-xs text-slate-400">
                     Email addresses are linked to your identity provider and cannot be changed
@@ -171,8 +171,8 @@ export function ProfilePageContent() {
                   </p>
                 </div>
               </CardContent>
-              <Separator className="mt-6 opacity-60" />
-              <CardFooter className="flex justify-end rounded-b-xl bg-slate-50/50 p-6">
+              <Separator className="mt-7 bg-slate-100" />
+              <CardFooter className="flex justify-end bg-slate-50/40 p-6 px-7">
                 <Button
                   type="submit"
                   disabled={isSaving}
