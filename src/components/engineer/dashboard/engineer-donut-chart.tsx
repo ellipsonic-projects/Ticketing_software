@@ -43,8 +43,8 @@ export function EngineerDonutChart() {
         <h3 className="font-semibold text-slate-900">My Tickets by Status</h3>
       </div>
 
-      <div className="flex flex-1 items-center gap-4">
-        <div className="relative h-[200px] w-[200px] shrink-0">
+      <div className="flex flex-1 flex-col items-center justify-center gap-8 md:flex-row md:justify-around">
+        <div className="relative h-[220px] w-[220px] shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -79,7 +79,7 @@ export function EngineerDonutChart() {
         </div>
 
         {/* Legend */}
-        <div className="flex flex-1 flex-col justify-center space-y-3">
+        <div className="flex flex-col justify-center space-y-4 md:w-48">
           {data.map((item) => (
             <div key={item.name} className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -97,7 +97,7 @@ export function EngineerDonutChart() {
         </div>
       </div>
 
-      <div className="mt-6 border-t border-slate-100 pt-4">
+      <div className="mt-4 border-t border-slate-100 pt-4">
         <Link
           href="/engineer/tickets"
           className="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-700"
