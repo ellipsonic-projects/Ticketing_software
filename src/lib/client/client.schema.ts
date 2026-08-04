@@ -42,11 +42,12 @@ export type ClientQuery = z.infer<typeof ClientQuerySchema>;
 
 export const OnboardClientSchema = CreateClientSchema.extend({
   email: z.string().trim().email('Invalid email format').min(1, 'Email is required for onboarding'),
+  phone: z.string().trim().min(1, 'Phone number is required for onboarding'),
   contactName: z.string().trim().min(1, 'Contact name is required for onboarding'),
   project: z.object({
     name: z.string().trim().min(1, 'Project name is required'),
     code: optionalString,
-    description: optionalString,
+    description: z.string().trim().min(1, 'Project description is required'),
     status: z.enum(['ACTIVE', 'INACTIVE']).optional().default('ACTIVE'),
   }),
 });

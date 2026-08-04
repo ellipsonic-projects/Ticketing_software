@@ -354,12 +354,6 @@ export function ClientDetails({ id }: ClientDetailsProps) {
         <Tabs defaultValue="projects" className="mt-8">
           <TabsList className="h-auto w-full justify-start gap-6 rounded-none border-b border-slate-200 bg-transparent p-0">
             <TabsTrigger
-              value="overview"
-              className="rounded-none border-b-2 border-transparent px-1 py-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
-            >
-              Overview
-            </TabsTrigger>
-            <TabsTrigger
               value="projects"
               className="rounded-none border-b-2 border-transparent px-1 py-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
             >
@@ -373,11 +367,7 @@ export function ClientDetails({ id }: ClientDetailsProps) {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="mt-6">
-            <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">
-              Overview content goes here.
-            </div>
-          </TabsContent>
+
 
           <TabsContent value="projects" className="mt-6">
             <ProjectGrid clientId={id} />

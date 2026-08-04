@@ -3,9 +3,10 @@
 import Link from 'next/link';
 
 import { ArrowRight, ChevronLeft, ChevronRight, FolderOpen } from 'lucide-react';
+import { motion, Variants } from 'framer-motion';
 
 import { PaginatedTickets, TicketListItem } from '@/lib/client-dashboard/client-dashboard.types';
-import { cn } from '@/lib/utils';
+import { cn, getStringColorHover, getStringColorGradient } from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -30,6 +31,16 @@ const STATUS_LABELS: Record<TicketListItem['status'], string> = {
   IN_PROGRESS: 'In Progress',
   RESOLVED: 'Resolved',
   CLOSED: 'Closed',
+};
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.05 } },
+};
+
+const rowVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
 };
 
 // ---------------------------------------------------------------------------
@@ -60,8 +71,8 @@ function AssigneeCell({ name }: { name: string | null }) {
 
   return (
     <div className="flex items-center gap-3">
-      <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-blue-100">
-        <span className="text-xs font-semibold text-blue-600">{initials}</span>
+      <div className={cn("flex h-9 w-9 items-center justify-center overflow-hidden rounded-full font-bold shadow-sm ring-1 ring-inset", getStringColorGradient(name))}>
+        <span className="text-xs text-white">{initials}</span>
       </div>
       <span className="text-sm font-medium text-slate-700">{name}</span>
     </div>
@@ -71,8 +82,8 @@ function AssigneeCell({ name }: { name: string | null }) {
 function TableHeader() {
   const cols = ['Ticket', 'Project', 'Status', 'Priority', 'Engineer', 'Updated'];
   return (
-    <thead className="bg-slate-50">
-      <tr className="text-left">
+    <thead className="bg-slate-50/50">
+      <tr className="text-left border-b border-slate-200">
         {cols.map((col, i) => (
           <th
             key={col}
@@ -100,9 +111,9 @@ export function RecentTicketsTable({
   isLoading,
 }: RecentTicketsTableProps) {
   return (
-    <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-3xl border border-slate-200/60 bg-white/70 backdrop-blur-xl shadow-sm">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-100 px-8 py-6">
+      <div className="flex items-center justify-between border-b border-slate-200/60 bg-white/40 px-8 py-6">
         <div>
           <h2 className="text-xl font-bold text-slate-900">Recent Tickets</h2>
           <p className="mt-1 text-sm text-slate-500">
@@ -122,7 +133,12 @@ export function RecentTicketsTable({
       <div className="overflow-x-auto">
         <table className="w-full">
           <TableHeader />
-          <tbody className="divide-y divide-slate-100">
+          <motion.tbody 
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="divide-y divide-slate-100/50"
+          >
             {isLoading ? (
               <tr>
                 <td colSpan={6} className="py-16 text-center">
@@ -138,7 +154,11 @@ export function RecentTicketsTable({
               </tr>
             ) : (
               data.items.map((ticket) => (
-                <tr key={ticket.id} className="transition hover:bg-slate-50">
+                <motion.tr 
+                  variants={rowVariants}
+                  key={ticket.id} 
+                  className={cn("group transition-colors", getStringColorHover(ticket.projectName))}
+                >
                   <td className="px-8 py-5">
                     <div className="flex flex-col">
                       <span className="font-semibold text-slate-900">{ticket.title}</span>
@@ -179,15 +199,15 @@ export function RecentTicketsTable({
                   <td className="px-4 py-5">
                     <span className="text-sm text-slate-500">{ticket.updatedAt}</span>
                   </td>
-                </tr>
+                </motion.tr>
               ))
             )}
-          </tbody>
+          </motion.tbody>
         </table>
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between border-t border-slate-100 px-8 py-5">
+      <div className="flex items-center justify-between border-t border-slate-200/60 bg-white/40 px-8 py-5">
         <p className="text-sm text-slate-500">
           Showing <span className="font-semibold text-slate-700">{data.items.length}</span> of{' '}
           <span className="font-semibold text-slate-700">{data.total}</span> tickets

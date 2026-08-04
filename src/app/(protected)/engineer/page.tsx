@@ -8,7 +8,7 @@ import { EngineerSlaOverview } from '@/components/engineer/dashboard/engineer-sl
 import { EngineerUpcomingDeadlines } from '@/components/engineer/dashboard/engineer-upcoming-deadlines';
 
 export const metadata: Metadata = {
-  title: 'Engineer Dashboard | Elipsonics',
+  title: 'Engineer Dashboard | Elipdesk',
   description: 'View assigned tickets, SLAs, and recent activity.',
 };
 

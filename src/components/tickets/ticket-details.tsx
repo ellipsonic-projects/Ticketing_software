@@ -49,6 +49,8 @@ import { useTicketTimeline } from '@/hooks/use-ticket-timeline';
 import { useAssignTicket, useTicket, useUpdateTicket } from '@/hooks/use-tickets';
 import { useUsers } from '@/hooks/use-users';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { isValidMimeType, MAX_FILE_SIZE_BYTES } from '@/lib/storage/file-validation';
 
 export function TicketDetails({ id }: { id: string }) {
   const { user } = useAuth();
@@ -139,6 +141,19 @@ export function TicketDetails({ id }: { id: string }) {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      toast.error(`${file.name} exceeds 5MB limit`);
+      e.target.value = '';
+      return;
+    }
+    
+    if (!isValidMimeType(file.type)) {
+      toast.error(`${file.name} has an unsupported file type`);
+      e.target.value = '';
+      return;
+    }
+
     uploadAttachment(file);
     e.target.value = '';
   };

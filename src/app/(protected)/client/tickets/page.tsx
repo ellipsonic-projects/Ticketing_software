@@ -22,12 +22,12 @@ export default function ClientTicketsPage() {
           selectedTicketId ? 'grid-cols-[1fr_400px] xl:grid-cols-[1fr_500px]' : 'grid-cols-1'
         }`}
       >
-        <div className="flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex min-w-0 flex-col rounded-xl border border-slate-200 bg-white shadow-sm">
           <TicketList selectedTicketId={selectedTicketId} onSelectTicket={setSelectedTicketId} />
         </div>
 
         {selectedTicketId && (
-          <div className="flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex min-w-0 flex-col rounded-xl border border-slate-200 bg-white shadow-sm">
             <ClientTicketSidePanel
               ticketId={selectedTicketId}
               onClose={() => setSelectedTicketId(null)}

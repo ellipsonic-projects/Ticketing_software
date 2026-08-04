@@ -27,6 +27,8 @@ const envSchema = z.object({
   AWS_ACCESS_KEY_ID: z.string().optional(),
   AWS_SECRET_ACCESS_KEY: z.string().optional(),
   AWS_S3_BUCKET_NAME: z.string().optional(),
+  AWS_S3_ENDPOINT: z.string().optional(),
+  AWS_S3_PUBLIC_URL_PREFIX: z.string().optional(),
 
   STORAGE_PROVIDER: z.enum(['local', 's3', 'cloudinary']).default('s3'),
   MAIL_PROVIDER: z.enum(['console', 'smtp', 'resend']).default('console'),

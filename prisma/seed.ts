@@ -16,11 +16,11 @@ async function main() {
   // 1. Tenant
   // ---------------------------------------------------------------------------
   const tenant = await prisma.tenant.upsert({
-    where: { slug: 'elipsonics' },
+    where: { slug: 'elipdesk' },
     update: {},
     create: {
-      name: 'Elipsonics Tech',
-      slug: 'elipsonics',
+      name: 'Elipdesk Tech',
+      slug: 'elipdesk',
       status: 'ACTIVE',
       timezone: 'Asia/Kolkata',
       currency: 'INR',
@@ -36,11 +36,11 @@ async function main() {
 
   const [platformAdmin, tenantAdmin, eng1, eng2, eng3] = await Promise.all([
     prisma.user.upsert({
-      where: { email: 'platform@elipsonics.com' },
+      where: { email: 'platform@elipdesk.com' },
       update: {},
       create: {
         tenantId: tenant.id,
-        email: 'platform@elipsonics.com',
+        email: 'platform@elipdesk.com',
         password: adminPass,
         firstName: 'Platform',
         lastName: 'Admin',
@@ -50,11 +50,11 @@ async function main() {
       },
     }),
     prisma.user.upsert({
-      where: { email: 'admin@elipsonics.com' },
+      where: { email: 'admin@elipdesk.com' },
       update: {},
       create: {
         tenantId: tenant.id,
-        email: 'admin@elipsonics.com',
+        email: 'admin@elipdesk.com',
         password: adminPass,
         firstName: 'Arun',
         lastName: 'Sharma',
@@ -64,11 +64,11 @@ async function main() {
       },
     }),
     prisma.user.upsert({
-      where: { email: 'john.doe@elipsonics.com' },
+      where: { email: 'john.doe@elipdesk.com' },
       update: {},
       create: {
         tenantId: tenant.id,
-        email: 'john.doe@elipsonics.com',
+        email: 'john.doe@elipdesk.com',
         password: engPass,
         firstName: 'John',
         lastName: 'Doe',
@@ -78,11 +78,11 @@ async function main() {
       },
     }),
     prisma.user.upsert({
-      where: { email: 'sarah.wilson@elipsonics.com' },
+      where: { email: 'sarah.wilson@elipdesk.com' },
       update: {},
       create: {
         tenantId: tenant.id,
-        email: 'sarah.wilson@elipsonics.com',
+        email: 'sarah.wilson@elipdesk.com',
         password: engPass,
         firstName: 'Sarah',
         lastName: 'Wilson',
@@ -92,11 +92,11 @@ async function main() {
       },
     }),
     prisma.user.upsert({
-      where: { email: 'michael.lee@elipsonics.com' },
+      where: { email: 'michael.lee@elipdesk.com' },
       update: {},
       create: {
         tenantId: tenant.id,
-        email: 'michael.lee@elipsonics.com',
+        email: 'michael.lee@elipdesk.com',
         password: engPass,
         firstName: 'Michael',
         lastName: 'Lee',
@@ -534,10 +534,10 @@ async function main() {
 
   console.log('\n🎉 Seed complete!');
   console.log('\n📋 Login credentials:');
-  console.log('  Platform Admin : platform@elipsonics.com / Admin@1234');
-  console.log('  Tenant Admin   : admin@elipsonics.com / Admin@1234');
-  console.log('  Engineer       : john.doe@elipsonics.com / Engineer@1234');
-  console.log('  Client Portal  : priya@acme.com / Client@1234  (slug: elipsonics)');
+  console.log('  Platform Admin : platform@elipdesk.com / Admin@1234');
+  console.log('  Tenant Admin   : admin@elipdesk.com / Admin@1234');
+  console.log('  Engineer       : john.doe@elipdesk.com / Engineer@1234');
+  console.log('  Client Portal  : priya@acme.com / Client@1234  (slug: elipdesk)');
 }
 
 main()

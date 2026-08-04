@@ -22,6 +22,7 @@ export const ErrorCodes = {
   INVALID_TENANT_CONTEXT: 'INVALID_TENANT_CONTEXT',
   MUST_CHANGE_PASSWORD: 'MUST_CHANGE_PASSWORD',
   EMAIL_DELIVERY_FAILED: 'EMAIL_DELIVERY_FAILED',
+  RATE_LIMIT_EXCEEDED: 'RATE_LIMIT_EXCEEDED',
 } as const;
 
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];

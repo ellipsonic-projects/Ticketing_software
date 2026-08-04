@@ -35,7 +35,7 @@ export default function EngineerLayout({ children }: { children: React.ReactNode
   }
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-slate-50 font-sans text-slate-900">
+    <div className="fixed inset-0 flex overflow-hidden bg-slate-50 font-sans text-slate-900">
       <EngineerSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <EngineerHeader
@@ -44,7 +44,7 @@ export default function EngineerLayout({ children }: { children: React.ReactNode
           roleLabel="Engineer"
           onMenuClick={() => setSidebarOpen(true)}
         />
-        <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 lg:p-8">{children}</main>
+        <main className="flex-1 overflow-y-auto px-4 pb-4 pt-0 sm:px-6 sm:pb-6 sm:pt-0 lg:px-8 lg:pb-8 lg:pt-0">{children}</main>
       </div>
     </div>
   );

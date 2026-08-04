@@ -10,6 +10,7 @@ import {
   Minus,
   ShieldCheck,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 import { DashboardSummary } from '@/lib/client-dashboard/client-dashboard.types';
 import { cn } from '@/lib/utils';
@@ -59,7 +60,10 @@ function TrendBadge({ delta }: { delta?: number }) {
 
 function StatCard({ title, value, icon, iconBg, valueColor, delta, suffix }: StatCardProps) {
   return (
-    <div className="group rounded-3xl border border-slate-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <motion.div 
+      variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
+      className="group rounded-3xl border border-slate-200/60 bg-white/70 backdrop-blur-xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:bg-white/90"
+    >
       <div className="flex items-start justify-between">
         <div className={cn('flex h-14 w-14 items-center justify-center rounded-2xl', iconBg)}>
           {icon}
@@ -76,13 +80,18 @@ function StatCard({ title, value, icon, iconBg, valueColor, delta, suffix }: Sta
 
         <p className="mt-2 text-sm font-medium text-slate-500">{title}</p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 export function SummaryCards({ summary }: SummaryCardsProps) {
   return (
-    <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
+    <motion.section 
+      variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } }}
+      initial="hidden"
+      animate="show"
+      className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5"
+    >
       <StatCard
         title="Open Requests"
         value={summary.openRequests}
@@ -126,6 +135,6 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
         iconBg="bg-indigo-50"
         icon={<ShieldCheck className="h-7 w-7 text-indigo-600" />}
       />
-    </section>
+    </motion.section>
   );
 }

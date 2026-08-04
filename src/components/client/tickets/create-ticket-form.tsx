@@ -47,6 +47,7 @@ import { useProjects } from '@/hooks/use-projects';
 import { apiClient } from '@/services/api/api-client';
 import { ProjectWithClient } from '@/lib/project/project.types';
 import { TicketWithDetails } from '@/lib/ticket/ticket.types';
+import { isValidMimeType } from '@/lib/storage/file-validation';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -126,6 +127,10 @@ export function CreateTicketForm() {
     const valid = incoming.filter((file) => {
       if (file.size > MAX_FILE_SIZE_BYTES) {
         toast.error(`${file.name} exceeds ${MAX_FILE_SIZE_MB}MB`);
+        return false;
+      }
+      if (!isValidMimeType(file.type)) {
+        toast.error(`${file.name} has an unsupported file type`);
         return false;
       }
       return true;

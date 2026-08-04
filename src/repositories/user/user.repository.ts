@@ -72,7 +72,7 @@ export class UserRepository {
     tenantId: string,
     query: ListUsersQuery,
   ): Promise<{ data: User[]; total: number }> {
-    const { page, pageSize, search, status, role, sort, sortOrder } = query;
+    const { page, pageSize, search, status, role, excludeRole, sort, sortOrder } = query;
 
     const where: Prisma.UserWhereInput = {
       tenantId,
@@ -85,6 +85,8 @@ export class UserRepository {
 
     if (role) {
       where.role = role;
+    } else if (excludeRole) {
+      where.role = { not: excludeRole };
     }
 
     if (search) {

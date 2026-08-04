@@ -8,6 +8,7 @@ import {
   Ticket,
   UserCog,
   Users,
+  ClipboardList,
 } from 'lucide-react';
 
 import { BaseSidebar } from '@/components/shared/base-sidebar';
@@ -26,12 +27,13 @@ const NAV_ITEMS = [
   { label: 'Tickets', href: '/tickets', icon: Ticket },
   { label: 'Engineers', href: '/users', icon: UserCog },
   { label: 'SLA Policies', href: '/sla', icon: Settings2 },
+  { label: 'Audit Logs', href: '/audit-logs', icon: ClipboardList },
 ];
 
 export function TenantSidebar({ notificationCount, isOpen, onClose }: TenantSidebarProps) {
   const { user } = useAuth();
 
-  const tenantName = user?.tenant?.name ? user.tenant.name.split(' ')[0] : 'Elipsonics';
+  const tenantName = user?.tenant?.name ? user.tenant.name.split(' ')[0] : 'Elipdesk';
   const fullTenantName = user?.tenant?.name ?? 'Workspace';
 
   // Inject dynamic badge for notification count into NavItems if required in the future,
@@ -50,7 +52,6 @@ export function TenantSidebar({ notificationCount, isOpen, onClose }: TenantSide
         </div>
       }
       navItems={NAV_ITEMS}
-      showHelpCard={true}
       footerTitle={fullTenantName}
       footerSubtitle="Tenant Admin"
       footerIcon={

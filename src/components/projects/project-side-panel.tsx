@@ -32,9 +32,9 @@ export function ProjectSidePanel({ projectId, onClose }: ProjectSidePanelProps) 
   if (!project) return null;
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-white">
+    <div className="flex h-full w-full min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200/60 bg-white/70 shadow-sm backdrop-blur-xl">
       {/* Header */}
-      <div className="flex items-start justify-between border-b border-slate-200 px-6 py-5">
+      <div className="flex items-start justify-between border-b border-slate-200/60 bg-white/40 px-6 py-5 backdrop-blur-md">
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
             <Folder className="h-6 w-6" />
@@ -62,18 +62,7 @@ export function ProjectSidePanel({ projectId, onClose }: ProjectSidePanelProps) 
             >
               Overview
             </TabsTrigger>
-            <TabsTrigger
-              value="support"
-              className="relative h-10 rounded-none border-b-2 border-transparent bg-transparent px-0 pt-2 pb-3 text-sm font-medium text-slate-500 hover:text-slate-900 data-[state=active]:border-indigo-600 data-[state=active]:text-indigo-600 data-[state=active]:shadow-none"
-            >
-              Support Config
-            </TabsTrigger>
-            <TabsTrigger
-              value="sla"
-              className="relative h-10 rounded-none border-b-2 border-transparent bg-transparent px-0 pt-2 pb-3 text-sm font-medium text-slate-500 hover:text-slate-900 data-[state=active]:border-indigo-600 data-[state=active]:text-indigo-600 data-[state=active]:shadow-none"
-            >
-              SLA
-            </TabsTrigger>
+
             <TabsTrigger
               value="activity"
               className="relative h-10 rounded-none border-b-2 border-transparent bg-transparent px-0 pt-2 pb-3 text-sm font-medium text-slate-500 hover:text-slate-900 data-[state=active]:border-indigo-600 data-[state=active]:text-indigo-600 data-[state=active]:shadow-none"
@@ -153,94 +142,7 @@ export function ProjectSidePanel({ projectId, onClose }: ProjectSidePanelProps) 
               </div>
             </div>
 
-            {/* Support Configuration */}
-            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="font-semibold text-slate-900">Support Configuration</h3>
-                <Button variant="link" className="h-auto p-0 text-xs text-indigo-600">
-                  View All
-                </Button>
-              </div>
-              <div className="grid grid-cols-2 gap-y-6">
-                <div>
-                  <p className="text-[11px] font-medium text-slate-400">Support Status</p>
-                  <div className="mt-1">
-                    <span
-                      className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${
-                        project.supportStatus === 'ENABLED'
-                          ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/10'
-                          : project.supportStatus === 'PAUSED'
-                            ? 'bg-amber-50 text-amber-700 ring-amber-600/10'
-                            : 'bg-slate-50 text-slate-700 ring-slate-600/10'
-                      }`}
-                    >
-                      {project.supportStatus === 'ENABLED'
-                        ? 'Enabled'
-                        : project.supportStatus === 'PAUSED'
-                          ? 'Paused'
-                          : 'Disabled'}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-[11px] font-medium text-slate-400">Default Priority</p>
-                  <div className="mt-1">
-                    <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-red-600/10 ring-inset">
-                      {project.defaultPriority || 'High'}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-[11px] font-medium text-slate-400">Response Channel</p>
-                  <p className="mt-1 text-[13px] font-medium text-slate-900">Portal</p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-medium text-slate-400">Escalation Email</p>
-                  <p className="mt-1 text-[13px] font-medium text-slate-900">
-                    {project.supportEmail || 'support@elipsonics.com'}
-                  </p>
-                </div>
-              </div>
-            </div>
 
-            {/* SLA Summary */}
-            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="font-semibold text-slate-900">SLA Summary</h3>
-                <Button variant="link" className="h-auto p-0 text-xs text-indigo-600">
-                  View SLA
-                </Button>
-              </div>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="flex flex-col items-center justify-center rounded-lg border border-slate-100 bg-slate-50 p-3 text-center">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 text-purple-600">
-                    <Clock className="h-4 w-4" />
-                  </div>
-                  <p className="mt-2 text-sm font-semibold text-slate-900">
-                    {slaPolicy ? `${slaPolicy.responseTimeMinutes} mins` : 'N/A'}
-                  </p>
-                  <p className="text-[10px] font-medium text-slate-500">Response SLA</p>
-                </div>
-                <div className="flex flex-col items-center justify-center rounded-lg border border-slate-100 bg-slate-50 p-3 text-center">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-orange-600">
-                    <AlertCircle className="h-4 w-4" />
-                  </div>
-                  <p className="mt-2 text-sm font-semibold text-slate-900">
-                    {slaPolicy ? `${Math.round(slaPolicy.resolutionTimeMinutes / 60)} hrs` : 'N/A'}
-                  </p>
-                  <p className="text-[10px] font-medium text-slate-500">Resolution SLA</p>
-                </div>
-                <div className="flex flex-col items-center justify-center rounded-lg border border-slate-100 bg-slate-50 p-3 text-center">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
-                    <CheckCircle2 className="h-4 w-4" />
-                  </div>
-                  <p className="mt-2 text-sm font-semibold text-slate-900">
-                    {slaPolicy?.businessHoursEnabled ? 'Yes' : 'No'}
-                  </p>
-                  <p className="text-[10px] font-medium text-slate-500">With Business Hours</p>
-                </div>
-              </div>
-            </div>
 
             {/* Activity */}
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -265,12 +167,7 @@ export function ProjectSidePanel({ projectId, onClose }: ProjectSidePanelProps) 
             </div>
           </TabsContent>
 
-          <TabsContent value="support" className="m-0 text-sm text-slate-500">
-            <p>Support configuration forms will go here.</p>
-          </TabsContent>
-          <TabsContent value="sla" className="m-0 text-sm text-slate-500">
-            <p>Detailed SLA configurations will go here.</p>
-          </TabsContent>
+
           <TabsContent value="activity" className="m-0 text-sm text-slate-500">
             <p>Full activity timeline will go here.</p>
           </TabsContent>

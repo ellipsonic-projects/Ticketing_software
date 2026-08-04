@@ -15,6 +15,20 @@ import {
   Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { motion, Variants } from 'framer-motion';
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 }
+  }
+};
+
+const rowVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+};
 
 import { DataTableToolbar } from '@/components/shared/data-table/data-table-toolbar';
 import { EmptyState } from '@/components/shared/data-table/empty-state';
@@ -43,12 +57,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { useCan } from '@/hooks/use-can';
 import { useClients, useDeleteClient, useUpdateClient } from '@/hooks/use-clients';
-import { cn } from '@/lib/utils';
-
-import { OnboardClientWizard } from './onboard-client-wizard';
+import { cn, getStringColorGradient, getStringColorHover } from '@/lib/utils';
 
 export interface ClientListProps {
   selectedClientId?: string | null;
@@ -58,7 +71,8 @@ export interface ClientListProps {
 export function ClientList({ selectedClientId, onSelectClient }: ClientListProps) {
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get('page') || '1', 10);
-  const limit = parseInt(searchParams.get('limit') || '10', 10);
+  
+  const limit = parseInt(searchParams.get('limit') || '6', 10);
   const search = searchParams.get('search') || undefined;
   const status = (searchParams.get('status') as any) || undefined;
   const sort = (searchParams.get('sort') as any) || 'createdAt';
@@ -67,7 +81,6 @@ export function ClientList({ selectedClientId, onSelectClient }: ClientListProps
   const { data, isLoading } = useClients({ page, limit, search, status, sort, order });
   const { mutateAsync: deleteClient, isPending: isDeleting } = useDeleteClient();
   const { mutateAsync: updateClient, isPending: isUpdating } = useUpdateClient();
-  const canCreateClient = useCan('CLIENT_CREATE');
   const canDeleteClient = useCan('CLIENT_DELETE');
   const canUpdateClient = useCan('CLIENT_UPDATE');
 
@@ -89,22 +102,11 @@ export function ClientList({ selectedClientId, onSelectClient }: ClientListProps
   const totalPages = data?.pages || 1;
 
   return (
-    <div className="flex h-full min-w-0 flex-1 flex-col">
-      {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Client Management</h1>
-          <p className="text-sm text-slate-500">
-            Manage all client organizations associated with your tenant.
-          </p>
-        </div>
-        {canCreateClient && <OnboardClientWizard />}
-      </div>
-
+    <div className="flex h-full flex-col">
       {/* Main Content Area */}
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/60 bg-white/70 shadow-sm backdrop-blur-xl">
         {/* Toolbar */}
-        <div className="border-b border-slate-200 bg-slate-50/50 px-4">
+        <div className="border-b border-slate-200/60 bg-white/40 p-4">
           <DataTableToolbar>
             <SearchInput placeholder="Search clients..." />
             <StatusFilter
@@ -127,133 +129,125 @@ export function ClientList({ selectedClientId, onSelectClient }: ClientListProps
         </div>
 
         {/* Table Area */}
-        <div className="flex-1 overflow-auto">
-          {isLoading ? (
-            <div className="flex h-full items-center justify-center">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
-            </div>
-          ) : clients.length === 0 ? (
-            <div className="p-8">
-              <EmptyState
-                title="No clients found"
-                description={
-                  search
-                    ? 'Try adjusting your search or filters.'
-                    : 'Get started by creating a new client.'
-                }
-              />
-            </div>
-          ) : (
-            <table className="w-full text-left text-sm">
-              <thead className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 text-xs font-semibold text-slate-500 backdrop-blur">
-                <tr>
-                  <th className="px-6 py-4">Client</th>
-                  <th className="px-6 py-4">Company</th>
-                  <th className="px-6 py-4">Email</th>
-                  <th className="px-6 py-4">Projects</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Created On</th>
-                  <th className="w-[50px] px-6 py-4">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 bg-white">
-                {clients.map((client) => (
-                  <tr
-                    key={client.id}
-                    onClick={() => onSelectClient?.(client.id)}
-                    className={cn(
-                      'group cursor-pointer transition-colors duration-150',
-                      selectedClientId === client.id ? 'bg-slate-50' : 'hover:bg-slate-50/50',
-                    )}
-                  >
+        <div className="w-full overflow-x-auto overflow-y-hidden">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50/40 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+              <tr>
+                <th className="px-6 py-4">Client</th>
+                <th className="px-6 py-4">Company</th>
+                <th className="px-6 py-4">Email</th>
+                <th className="px-6 py-4">Projects</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Created On</th>
+              </tr>
+            </thead>
+            <motion.tbody 
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+              className="divide-y divide-slate-100/80"
+            >
+              {isLoading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className="bg-white">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-50 font-bold text-indigo-600">
-                          {client.name.substring(0, 2).toUpperCase()}
-                        </div>
-                        <span className="truncate font-medium text-slate-900">
-                          {client.name.substring(0, 2).toUpperCase()}
-                        </span>
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <Skeleton className="h-4 w-32" />
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex flex-col overflow-hidden">
-                        <span className="truncate font-medium text-slate-900">{client.name}</span>
-                      </div>
+                      <Skeleton className="h-4 w-40" />
                     </td>
                     <td className="px-6 py-4">
-                      {client.email ? (
-                        <span className="font-medium text-slate-700">{client.email}</span>
-                      ) : (
-                        <span className="text-xs text-slate-400 italic">No email</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 font-medium text-slate-700">
-                      {(client as any).projectsCount || 0}
+                      <Skeleton className="h-4 w-48" />
                     </td>
                     <td className="px-6 py-4">
-                      <StatusBadge status={client.status} variant="ring" />
+                      <Skeleton className="h-4 w-12" />
                     </td>
-                    <td className="px-6 py-4 text-slate-500">
-                      {new Date(client.createdAt).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
+                    <td className="px-6 py-4">
+                      <Skeleton className="h-6 w-24 rounded-full" />
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-md text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-200 hover:text-slate-600 data-[state=open]:opacity-100">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-[160px] rounded-xl">
-                          <DropdownMenuGroup>
-                            <DropdownMenuLabel className="text-xs text-slate-500">
-                              Actions
-                            </DropdownMenuLabel>
-                            <DropdownMenuItem
-                              className="cursor-pointer"
-                              onClick={() => (window.location.href = `/clients/${client.id}`)}
-                            >
-                              <Eye className="mr-2 h-4 w-4 text-slate-400" /> View Details
-                            </DropdownMenuItem>
-                            {canUpdateClient && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() =>
-                                  (window.location.href = `/clients/${client.id}?tab=edit`)
-                                }
-                              >
-                                <Pencil className="mr-2 h-4 w-4 text-slate-400" /> Edit Client
-                              </DropdownMenuItem>
-                            )}
-                            {canDeleteClient && (
-                              <>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700"
-                                  onClick={() =>
-                                    setClientToDelete({ id: client.id, name: client.name })
-                                  }
-                                >
-                                  <Trash2 className="mr-2 h-4 w-4" /> Archive Client
-                                </DropdownMenuItem>
-                              </>
-                            )}
-                          </DropdownMenuGroup>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                    <td className="px-6 py-4">
+                      <Skeleton className="h-4 w-24" />
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                ))
+              ) : clients.length === 0 ? (
+                <tr>
+                  <td colSpan={6}>
+                    <div className="p-8">
+                      <EmptyState
+                        title="No clients found"
+                        description={
+                          search
+                            ? 'Try adjusting your search or filters.'
+                            : 'Get started by creating a new client.'
+                        }
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                  clients.map((client) => (
+                    <motion.tr
+                      variants={rowVariants}
+                      key={client.id}
+                      onClick={() => onSelectClient?.(client.id)}
+                      data-selected={selectedClientId === client.id}
+                      className={cn(
+                        'group cursor-pointer transition-colors',
+                        getStringColorHover(client.name)
+                      )}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-4">
+                          <div className={cn(
+                            "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200/60 bg-gradient-to-br font-bold shadow-sm ring-1",
+                            getStringColorGradient(client.name)
+                          )}>
+                            {client.name.substring(0, 2).toUpperCase()}
+                          </div>
+                          <span className="truncate font-bold tracking-tight text-slate-900">
+                            {(client as any).code || client.name.substring(0, 2).toUpperCase()}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col overflow-hidden">
+                          <span className="truncate font-medium text-slate-900">{client.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        {client.email ? (
+                          <span className="font-medium text-slate-700">{client.email}</span>
+                        ) : (
+                          <span className="text-xs text-slate-400 italic">No email</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 font-medium text-slate-700">
+                        {(client as any).projectsCount || 0}
+                      </td>
+                      <td className="px-6 py-4">
+                        <StatusBadge status={client.status} variant="ring" />
+                      </td>
+                      <td className="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        {new Date(client.createdAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </td>
+                    </motion.tr>
+                  ))
+              )}
+            </motion.tbody>
+          </table>
         </div>
 
         {/* Pagination Footer */}
         {!isLoading && (
-          <div className="border-t border-slate-200 bg-slate-50/50">
+          <div className="border-t border-slate-200/60 bg-white/40">
             <Pagination totalPages={totalPages} totalItems={totalClients} />
           </div>
         )}

@@ -5,8 +5,8 @@ import { HeroIllustration } from '@/components/auth/hero-illustration';
 import { LoginForm } from '@/components/auth/login-form';
 
 export const metadata: Metadata = {
-  title: 'Sign In | Elipsonics',
-  description: 'Sign in to your Elipsonics account and manage your support operations',
+  title: 'Sign In | Elipdesk',
+  description: 'Sign in to your Elipdesk account and manage your support operations',
 };
 
 export default function LoginPage() {
@@ -38,7 +38,7 @@ export default function LoginPage() {
           >
             Resolve Support Tickets Faster
             <br />
-            with <span className="text-blue-600">Elipsonics</span>
+            with <span className="text-blue-600">Elipdesk</span>
           </h1>
           <p className="mx-auto max-w-xl text-[17px] leading-relaxed text-slate-500">
             Join thousands of teams delivering exceptional customer support with
@@ -86,7 +86,7 @@ export default function LoginPage() {
             Trusted by <span className="font-bold text-slate-900">5,000+</span> support teams
           </p>
           <p className="text-sm text-slate-500">
-            Powered by <span className="font-semibold text-slate-700">Elipsonics</span>
+            Powered by <span className="font-semibold text-slate-700">Elipdesk</span>
           </p>
         </div>
       </div>

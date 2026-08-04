@@ -6,17 +6,17 @@ import { ExportTicketsButton } from '@/components/tickets/export-tickets-button'
 import { TicketList } from '@/components/tickets/ticket-list';
 
 export const metadata: Metadata = {
-  title: 'Tickets | Elipsonics',
+  title: 'Tickets | Elipdesk',
   description: 'Manage support tickets',
 };
 
 export default function TicketsPage() {
   return (
-    <div className="flex h-full w-full flex-col bg-white">
+    <div className="flex flex-col p-8">
       {/* Header */}
-      <div className="flex flex-col items-start justify-between border-b border-transparent px-6 py-6 sm:flex-row sm:items-center lg:px-8">
+      <div className="mb-8 flex flex-col items-start justify-between sm:flex-row sm:items-center">
         <div>
-          <h1 className="mb-1 text-2xl font-bold tracking-tight text-slate-900">Tickets</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Tickets</h1>
           <p className="text-sm text-slate-500">View, manage and assign tickets to engineers.</p>
         </div>
 
@@ -25,7 +25,7 @@ export default function TicketsPage() {
         </div>
       </div>
 
-      <div className="flex w-full flex-1 flex-col">
+      <div className="flex flex-col">
         <Suspense
           fallback={<div className="p-8 text-center text-slate-500">Loading tickets...</div>}
         >

@@ -59,6 +59,7 @@ export const GET = withErrorHandler(
       search: searchParams.get('search') || undefined,
       status: searchParams.get('status') || undefined,
       role: searchParams.get('role') || undefined,
+      excludeRole: searchParams.get('excludeRole') || undefined,
       sort: searchParams.get('sort') || undefined,
       sortOrder: searchParams.get('sortOrder') || undefined,
     };

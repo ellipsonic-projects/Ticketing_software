@@ -24,7 +24,9 @@ export function Pagination({ totalPages, totalItems }: PaginationProps) {
   const searchParams = useSearchParams();
 
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
-  const currentLimit = parseInt(searchParams.get('limit') || '10', 10);
+  const currentLimit = parseInt(searchParams.get('limit') || '6', 10);
+
+  const selectOptions = [6, 12, 24, 48];
 
   const setPage = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -52,7 +54,7 @@ export function Pagination({ totalPages, totalItems }: PaginationProps) {
               <SelectValue placeholder={currentLimit} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[10, 25, 50, 100].map((pageSize) => (
+              {selectOptions.map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
                   {pageSize}
                 </SelectItem>

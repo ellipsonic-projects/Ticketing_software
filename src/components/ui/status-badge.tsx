@@ -28,11 +28,11 @@ export function StatusBadge({ status, variant = 'dot', className }: StatusBadgeP
   };
 
   const dotColorMap: Record<string, string> = {
-    ACTIVE: 'bg-emerald-500',
-    INACTIVE: 'bg-slate-500',
-    SUSPENDED: 'bg-red-500',
-    PENDING_ACTIVATION: 'bg-amber-500',
-    INVITED: 'bg-amber-500',
+    ACTIVE: 'bg-emerald-500 ring-1 ring-emerald-500/30 shadow-emerald-500/50',
+    INACTIVE: 'bg-slate-400 ring-1 ring-slate-400/30',
+    SUSPENDED: 'bg-red-500 ring-1 ring-red-500/30 shadow-red-500/50',
+    PENDING_ACTIVATION: 'bg-amber-500 ring-1 ring-amber-500/30 shadow-amber-500/50',
+    INVITED: 'bg-amber-500 ring-1 ring-amber-500/30 shadow-amber-500/50',
   };
 
   const emojiMap: Record<string, string> = {
@@ -56,17 +56,14 @@ export function StatusBadge({ status, variant = 'dot', className }: StatusBadgeP
   const label = labelMap[normalizedStatus] || normalizedStatus;
 
   if (variant === 'ring') {
-    const ringStyle = ringMap[normalizedStatus] || ringMap.INACTIVE;
+    const dotStyle = dotColorMap[normalizedStatus] || dotColorMap.INACTIVE;
     return (
-      <span
-        className={cn(
-          'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset',
-          ringStyle,
-          className,
-        )}
-      >
-        {status.charAt(0).toUpperCase() + status.slice(1).toLowerCase().replace('_', ' ')}
-      </span>
+      <div className={cn("flex items-center gap-2 font-bold text-[11px]", className)}>
+        <span className={cn("h-1.5 w-1.5 rounded-full shadow-sm", dotStyle)}></span>
+        <span className="text-slate-700 uppercase tracking-wide">
+          {status.replace('_', ' ')}
+        </span>
+      </div>
     );
   }
 

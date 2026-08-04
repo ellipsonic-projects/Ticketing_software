@@ -116,6 +116,7 @@ model AuditLog {
   entityId  String
   action    String
   actorId   String?
+  tenantId  String?
   before    Json?
   after     Json?
   createdAt DateTime @default(now())
@@ -123,6 +124,7 @@ model AuditLog {
   @@index([entity, entityId])
   @@index([action])
   @@index([createdAt])
+  @@index([tenantId])
 }
 
 enum TenantStatus {

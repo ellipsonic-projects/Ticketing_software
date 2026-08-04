@@ -40,7 +40,7 @@ export function DataTableToolbar({ children }: DataTableToolbarProps) {
           <Button
             variant="ghost"
             onClick={resetFilters}
-            className="h-10 px-2 text-sm font-medium lg:px-3"
+            className="h-10 rounded-full px-3 text-sm font-medium text-slate-500 hover:bg-slate-100/80 hover:text-slate-900 lg:px-4"
           >
             Reset
             <X className="ml-2 h-4 w-4" />

@@ -40,6 +40,7 @@ export const ListUsersSchema = z.object({
   search: z.string().optional(),
   status: UserStatusEnum.optional(),
   role: RoleEnum.optional(),
+  excludeRole: RoleEnum.optional(),
   sort: z
     .enum(['createdAt', 'firstName', 'lastName', 'email', 'status', 'role'])
     .default('createdAt'),

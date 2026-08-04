@@ -63,7 +63,7 @@ export function AuthCard({ title, description, children, footer }: AuthCardProps
               backgroundClip: 'text',
             }}
           >
-            Elipsonics
+            Elipdesk
           </span>
         </div>
 

@@ -14,7 +14,7 @@ export function PlatformHeader(props: PlatformHeaderProps) {
     <BaseHeader
       {...props}
       roleLabel="Platform Admin"
-      themeColor="violet"
+      themeColor="blue"
       profileHref="/platform/profile"
     />
   );

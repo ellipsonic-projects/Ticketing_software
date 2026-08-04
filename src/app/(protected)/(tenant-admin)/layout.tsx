@@ -58,7 +58,7 @@ export default function TenantAdminLayout({ children }: TenantAdminLayoutProps) 
   const notificationCount = 0;
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#F8FAFC]">
+    <div className="fixed inset-0 flex overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-50 via-slate-50/50 to-white">
       <TenantSidebar
         notificationCount={notificationCount}
         isOpen={sidebarOpen}
@@ -74,7 +74,7 @@ export default function TenantAdminLayout({ children }: TenantAdminLayoutProps) 
         />
 
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1600px] px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8 xl:px-10">
+          <div className="mx-auto w-full max-w-[1600px] px-4 pb-4 pt-0 sm:px-6 sm:pb-6 sm:pt-0 lg:px-8 lg:pb-8 lg:pt-0 xl:px-10">
             {children}
           </div>
         </main>

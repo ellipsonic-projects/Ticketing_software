@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowUpRight, Clock3, ShieldCheck } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 import { SlaPerformance } from '@/lib/client-dashboard/client-dashboard.types';
 import { cn } from '@/lib/utils';
@@ -103,7 +104,7 @@ function CircularProgress({ value, size = 150, strokeWidth = 10 }: CircularProgr
 
 function MetricCard({ title, value, subtitle }: MetricCardProps) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 transition-all duration-300 hover:border-slate-300 hover:bg-white">
+    <div className="rounded-2xl border border-slate-200/60 bg-white/40 p-5 transition-all duration-300 hover:border-slate-300 hover:bg-white/60">
       <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">{title}</p>
       <h3 className="mt-2 text-2xl font-bold text-slate-900">{value}</h3>
       <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
@@ -117,7 +118,12 @@ function MetricCard({ title, value, subtitle }: MetricCardProps) {
 
 export function SlaPerformanceCard({ sla }: SlaPerformanceCardProps) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition-all duration-300 hover:shadow-lg">
+    <motion.div 
+      variants={{ hidden: { opacity: 0, scale: 0.95 }, show: { opacity: 1, scale: 1, transition: { type: 'spring', duration: 0.8 } } }}
+      initial="hidden"
+      animate="show"
+      className="rounded-3xl border border-slate-200/60 bg-white/70 backdrop-blur-xl p-7 shadow-sm transition-all duration-300 hover:shadow-lg"
+    >
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
@@ -155,7 +161,7 @@ export function SlaPerformanceCard({ sla }: SlaPerformanceCardProps) {
       </div>
 
       {/* Insight block */}
-      <div className="mt-8 rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-6">
+      <div className="mt-8 rounded-3xl border border-indigo-200/60 bg-indigo-50/50 backdrop-blur-md p-6">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-100">
             <Clock3 className="h-5 w-5 text-indigo-600" />
@@ -171,13 +177,13 @@ export function SlaPerformanceCard({ sla }: SlaPerformanceCardProps) {
         <p className="mt-5 text-sm leading-7 text-slate-600">{getSlaInsight(sla.complianceRate)}</p>
 
         <div className="mt-6 grid grid-cols-2 gap-5">
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-200/60 bg-white/50 backdrop-blur-sm p-5 shadow-sm">
             <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
               Target SLA
             </p>
             <h4 className="mt-2 text-3xl font-bold text-slate-900">{SLA_TARGET}%</h4>
           </div>
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-200/60 bg-white/50 backdrop-blur-sm p-5 shadow-sm">
             <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
               Current SLA
             </p>
@@ -187,6 +193,6 @@ export function SlaPerformanceCard({ sla }: SlaPerformanceCardProps) {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

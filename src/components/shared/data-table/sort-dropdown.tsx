@@ -52,9 +52,9 @@ export function SortDropdown({
 
   return (
     <Select value={currentValue} onValueChange={onValueChange}>
-      <SelectTrigger className="w-[200px]">
+      <SelectTrigger className="h-10 w-[200px] rounded-full border-slate-200/60 bg-white/60 px-4 text-sm font-medium text-slate-700 shadow-sm backdrop-blur transition-all hover:bg-white/80 focus:ring-4 focus:ring-indigo-500/10 data-[state=open]:border-indigo-500/50">
         <div className="flex items-center gap-2">
-          <ArrowDownUp className="h-4 w-4 text-gray-500" />
+          <ArrowDownUp className="h-4 w-4 text-slate-400" />
           <SelectValue placeholder="Sort by..." />
         </div>
       </SelectTrigger>

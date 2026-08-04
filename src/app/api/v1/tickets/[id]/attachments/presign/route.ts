@@ -4,6 +4,7 @@ import { authenticate, RouteContext } from '@/middleware/authenticate';
 
 import { s3Service } from '@/services/storage/s3.service';
 import { ApiResponder } from '@/lib/api-response';
+import { isValidMimeType, isValidFileSize, MAX_FILE_SIZE_BYTES } from '@/lib/storage/file-validation';
 import { withErrorHandler } from '@/lib/errors/global-handler';
 import { getRequestContext } from '@/lib/request-context';
 
@@ -20,6 +21,12 @@ async function presignHandler(req: NextRequest, ctx?: RouteContext) {
   if (!filename || !contentType) {
     return ApiResponder.error('Filename and contentType are required', [], 400);
   }
+
+  if (!isValidMimeType(contentType)) {
+    return ApiResponder.error('Invalid file type', [], 400);
+  }
+
+  // Size could be validated here if passed from client, but definitely validate in the creation route.
 
   const folder = `tenants/${tenantId}/tickets/${params.id}`;
 

@@ -13,7 +13,9 @@ class S3Service {
 
     if (env.AWS_REGION && env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && this.bucketName) {
       this.client = new S3Client({
-        region: env.AWS_REGION,
+        region: env.AWS_REGION || 'auto',
+        endpoint: env.AWS_S3_ENDPOINT,
+        forcePathStyle: !!env.AWS_S3_ENDPOINT, // Required for Supabase & MinIO
         credentials: {
           accessKeyId: env.AWS_ACCESS_KEY_ID,
           secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
@@ -52,7 +54,9 @@ class S3Service {
     // URL expires in 5 minutes
     const url = await getSignedUrl(this.client, command, { expiresIn: 300 });
 
-    const publicUrl = `https://${this.bucketName}.s3.${env.AWS_REGION}.amazonaws.com/${key}`;
+    const publicUrl = env.AWS_S3_PUBLIC_URL_PREFIX 
+      ? `${env.AWS_S3_PUBLIC_URL_PREFIX}/${key}`
+      : `https://${this.bucketName}.s3.${env.AWS_REGION}.amazonaws.com/${key}`;
 
     return {
       url,

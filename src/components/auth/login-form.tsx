@@ -127,7 +127,7 @@ export function LoginForm() {
                 Help
               </Link>
             </div>
-            <p className="text-[12px] text-slate-400">© 2026 Elipsonics. All rights reserved.</p>
+            <p className="text-[12px] text-slate-400">© 2026 Elipdesk. All rights reserved.</p>
           </div>
         </div>
       }

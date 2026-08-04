@@ -1,6 +1,6 @@
 'use client';
 
-import { Building2, LayoutDashboard, Ticket } from 'lucide-react';
+import { Building2, LayoutDashboard, Ticket, ClipboardList } from 'lucide-react';
 
 import { BaseSidebar } from '@/components/shared/base-sidebar';
 import { useAuth } from '@/hooks/use-auth';
@@ -14,12 +14,13 @@ export interface EngineerSidebarProps {
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '/engineer', icon: LayoutDashboard },
   { label: 'All Tickets', href: '/engineer/tickets', icon: Ticket },
+  { label: 'Audit Logs', href: '/engineer/audit-logs', icon: ClipboardList },
 ] as const;
 
 export function EngineerSidebar({ isOpen, onClose }: EngineerSidebarProps) {
   const { user } = useAuth();
 
-  const tenantName = user?.tenant?.name ? user.tenant.name.split(' ')[0] : 'Elipsonics';
+  const tenantName = user?.tenant?.name ? user.tenant.name.split(' ')[0] : 'Elipdesk';
   const fullTenantName = user?.tenant?.name ?? 'Workspace';
 
   return (
@@ -35,7 +36,6 @@ export function EngineerSidebar({ isOpen, onClose }: EngineerSidebarProps) {
         </div>
       }
       navItems={NAV_ITEMS}
-      showHelpCard={true}
       footerTitle={fullTenantName}
       footerSubtitle="Engineer"
       footerIcon={

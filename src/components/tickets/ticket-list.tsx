@@ -3,6 +3,21 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { cn, getStringColorGradient, getStringColorHover } from '@/lib/utils';
+import { motion, Variants } from 'framer-motion';
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 }
+  }
+};
+
+const rowVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+};
 
 import { TicketPriority, TicketStatus } from '@prisma/client';
 import { format } from 'date-fns';
@@ -32,7 +47,6 @@ import {
 } from '@/components/ui/table';
 import { useAuth } from '@/hooks/use-auth';
 import { useTickets } from '@/hooks/use-tickets';
-
 import { AssignEngineerSidebar } from './assign-engineer-sidebar';
 
 // ---------------------------------------------------------------------------
@@ -116,7 +130,9 @@ export function TicketList() {
     return 'All Tickets';
   })();
 
-  const { data, isLoading } = useTickets(searchParams);
+  const queryParams = new URLSearchParams(searchParams.toString());
+  if (!queryParams.has('limit')) queryParams.set('limit', '6');
+  const { data, isLoading } = useTickets(queryParams);
 
   // ---------------------------------------------------------------------------
   // Navigation Handlers
@@ -170,9 +186,9 @@ export function TicketList() {
   ];
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/60 bg-white/70 shadow-sm backdrop-blur-xl">
       {/* 1. Tabs Row */}
-      <div className="w-full border-b border-slate-200 bg-white px-6 lg:px-8">
+      <div className="w-full border-b border-slate-200/60 bg-white/40 px-6 lg:px-8">
         <div className="scrollbar-hide flex space-x-6 overflow-x-auto">
           {TABS.map((tab) => (
             <button
@@ -191,16 +207,16 @@ export function TicketList() {
       </div>
 
       {/* 2. Filters Row */}
-      <div className="flex flex-col gap-4 border-b border-slate-100 bg-white px-6 py-4 lg:px-8 xl:flex-row">
+      <div className="flex flex-col gap-4 border-b border-slate-200/60 bg-white/40 px-6 py-4 lg:px-8 xl:flex-row">
         <form
           onSubmit={handleSearchSubmit}
           className="relative flex w-full shrink-0 items-center xl:max-w-sm"
         >
-          <Search className="pointer-events-none absolute left-3 h-4 w-4 text-slate-400" />
+          <Search className="pointer-events-none absolute left-4 h-4 w-4 text-slate-400" />
           <input
             type="text"
             placeholder="Search by ID, title, or keyword..."
-            className="h-10 w-full rounded-lg border border-slate-200 bg-white pr-4 pl-9 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+            className="h-10 w-full rounded-full border border-slate-200/60 bg-white/60 pr-4 pl-10 text-sm text-slate-900 shadow-sm backdrop-blur transition-all placeholder:text-slate-400 hover:bg-white/80 focus:border-indigo-500/50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:outline-none"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
@@ -208,7 +224,7 @@ export function TicketList() {
 
         <div className="flex flex-1 flex-wrap items-center gap-3">
           <select
-            className="h-10 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="h-10 rounded-full border border-slate-200/60 bg-white/60 px-4 py-2 text-sm text-slate-700 shadow-sm backdrop-blur transition-all hover:bg-white/80 focus:border-indigo-500/50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:outline-none"
             value={searchParams.get('projectId') || 'all'}
             onChange={(e) => updateQuery('projectId', e.target.value)}
           >
@@ -217,7 +233,7 @@ export function TicketList() {
           </select>
 
           <select
-            className="h-10 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="h-10 rounded-full border border-slate-200/60 bg-white/60 px-4 py-2 text-sm text-slate-700 shadow-sm backdrop-blur transition-all hover:bg-white/80 focus:border-indigo-500/50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:outline-none"
             value={searchParams.get('clientId') || 'all'}
             onChange={(e) => updateQuery('clientId', e.target.value)}
           >
@@ -225,7 +241,7 @@ export function TicketList() {
           </select>
 
           <select
-            className="h-10 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="h-10 rounded-full border border-slate-200/60 bg-white/60 px-4 py-2 text-sm text-slate-700 shadow-sm backdrop-blur transition-all hover:bg-white/80 focus:border-indigo-500/50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:outline-none"
             value={searchParams.get('status') || 'all'}
             onChange={(e) => updateQuery('status', e.target.value)}
           >
@@ -238,7 +254,7 @@ export function TicketList() {
           </select>
 
           <select
-            className="h-10 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="h-10 rounded-full border border-slate-200/60 bg-white/60 px-4 py-2 text-sm text-slate-700 shadow-sm backdrop-blur transition-all hover:bg-white/80 focus:border-indigo-500/50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:outline-none"
             value={searchParams.get('priority') || 'all'}
             onChange={(e) => updateQuery('priority', e.target.value)}
           >
@@ -252,28 +268,33 @@ export function TicketList() {
       </div>
 
       {/* 3. Table */}
-      <div className="min-h-[500px] overflow-x-auto bg-white px-6 lg:px-8">
+      <div className="flex-1 overflow-x-auto px-6 lg:px-8">
         <Table>
           <TableHeader>
-            <TableRow className="border-b border-slate-100 hover:bg-transparent">
+            <TableRow className="border-b border-slate-200 bg-slate-50/50 hover:bg-slate-50/50">
               <TableHead className="w-[40px] pl-0">
                 <input
                   type="checkbox"
                   className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                 />
               </TableHead>
-              <TableHead className="font-semibold text-slate-900">Ticket ID</TableHead>
-              <TableHead className="min-w-[200px] font-semibold text-slate-900">Title</TableHead>
-              <TableHead className="font-semibold text-slate-900">Client</TableHead>
-              <TableHead className="font-semibold text-slate-900">Project</TableHead>
-              <TableHead className="font-semibold text-slate-900">Priority</TableHead>
-              <TableHead className="font-semibold text-slate-900">Status</TableHead>
-              <TableHead className="min-w-[180px] font-semibold text-slate-900">Engineer</TableHead>
-              <TableHead className="font-semibold text-slate-900">SLA Status</TableHead>
-              <TableHead className="font-semibold text-slate-900">Created At</TableHead>
+              <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Ticket ID</TableHead>
+              <TableHead className="min-w-[200px] text-[11px] font-semibold uppercase tracking-wider text-slate-500">Title</TableHead>
+              <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Client</TableHead>
+              <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Project</TableHead>
+              <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Priority</TableHead>
+              <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Status</TableHead>
+              <TableHead className="min-w-[180px] text-[11px] font-semibold uppercase tracking-wider text-slate-500">Engineer</TableHead>
+              <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">SLA Status</TableHead>
+              <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Created At</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <motion.tbody 
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="[&_tr:last-child]:border-0"
+          >
             {isLoading ? (
               <TableRow>
                 <TableCell colSpan={10} className="h-48 text-center text-slate-500">
@@ -292,9 +313,13 @@ export function TicketList() {
                 const sla = getSlaStatus(ticket);
 
                 return (
-                  <TableRow
+                  <motion.tr
+                    variants={rowVariants}
                     key={ticket.id}
-                    className="group cursor-pointer border-b border-slate-100/50 hover:bg-slate-50/50"
+                    className={cn(
+                      "group cursor-pointer border-b border-slate-100/50 transition-colors",
+                      getStringColorHover(ticket.client?.name || 'ticket')
+                    )}
                   >
                     <TableCell className="pl-0">
                       <input
@@ -324,29 +349,51 @@ export function TicketList() {
                     <TableCell className="text-slate-600">{ticket.project?.name}</TableCell>
 
                     <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${getPriorityColor(ticket.priority)} uppercase`}
-                      >
-                        {ticket.priority}
-                      </Badge>
+                      <div className="flex items-center gap-1.5 font-bold text-[11px]">
+                        <span
+                          className={cn(
+                            "h-1.5 w-1.5 rounded-full shadow-sm",
+                            ticket.priority === 'URGENT' ? 'bg-red-500 ring-1 ring-red-500/30 shadow-red-500/50' : 
+                            ticket.priority === 'HIGH' ? 'bg-orange-500 ring-1 ring-orange-500/30' : 
+                            ticket.priority === 'MEDIUM' ? 'bg-blue-500 ring-1 ring-blue-500/30' : 
+                            'bg-slate-400 ring-1 ring-slate-400/30'
+                          )}
+                        />
+                        <span className="text-slate-700 uppercase tracking-wide">
+                          {ticket.priority}
+                        </span>
+                      </div>
                     </TableCell>
 
                     <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${getStatusColor(ticket.status)} uppercase`}
-                      >
-                        {getStatusLabel(ticket.status)}
-                      </Badge>
+                      <div className="flex items-center gap-1.5 font-bold text-[11px]">
+                        <span
+                          className={cn(
+                            "h-1.5 w-1.5 rounded-full shadow-sm",
+                            ticket.status === 'OPEN' || ticket.status === 'IN_PROGRESS' || ticket.status === 'WAITING_ON_CLIENT' 
+                              ? 'bg-blue-500 ring-1 ring-blue-500/30 shadow-blue-500/50' 
+                              : ticket.status === 'RESOLVED' || ticket.status === 'CLOSED'
+                                ? 'bg-emerald-500 ring-1 ring-emerald-500/30 shadow-emerald-500/50'
+                                : 'bg-slate-400 ring-1 ring-slate-400/30'
+                          )}
+                        />
+                        <span className="text-slate-700 uppercase tracking-wide">
+                          {getStatusLabel(ticket.status)}
+                        </span>
+                      </div>
                     </TableCell>
 
                     <TableCell>
                       {ticket.assignedTo ? (
                         <div className="flex items-center gap-2">
-                          <Avatar className="h-7 w-7 border border-slate-200">
+                          <Avatar className="h-7 w-7 border-0">
                             <AvatarImage src={ticket.assignedTo.avatarUrl || ''} />
-                            <AvatarFallback className="bg-slate-100 text-[10px] text-slate-600">
+                            <AvatarFallback 
+                              className={cn(
+                                "text-[10px] bg-gradient-to-br font-bold shadow-sm ring-1 ring-inset",
+                                getStringColorGradient(ticket.assignedTo.firstName)
+                              )}
+                            >
                               {ticket.assignedTo.firstName[0]}
                               {ticket.assignedTo.lastName[0]}
                             </AvatarFallback>
@@ -376,34 +423,43 @@ export function TicketList() {
                     </TableCell>
 
                     <TableCell>
-                      <div className={`flex items-center gap-1.5 text-sm font-medium ${sla.color}`}>
-                        <sla.icon className="h-4 w-4" />
-                        <span>{sla.label}</span>
+                      <div className="flex items-center gap-1.5 font-bold text-[11px]">
+                        <span
+                          className={cn(
+                            "h-1.5 w-1.5 rounded-full shadow-sm",
+                            sla.label === 'Breached' ? 'bg-red-500 ring-1 ring-red-500/30 shadow-red-500/50' : 
+                            sla.label === 'Warning' ? 'bg-amber-500 ring-1 ring-amber-500/30 shadow-amber-500/50' : 
+                            'bg-emerald-500 ring-1 ring-emerald-500/30 shadow-emerald-500/50'
+                          )}
+                        />
+                        <span className="text-slate-700 uppercase tracking-wide">
+                          {sla.label}
+                        </span>
                       </div>
                     </TableCell>
 
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                       <div>{format(new Date(ticket.createdAt), 'MMM d, yyyy')}</div>
-                      <div className="text-xs text-slate-400">
+                      <div className="text-[10px] text-slate-300">
                         {format(new Date(ticket.createdAt), 'hh:mm a')}
                       </div>
                     </TableCell>
-                  </TableRow>
+                  </motion.tr>
                 );
               })
             )}
-          </TableBody>
+          </motion.tbody>
         </Table>
       </div>
 
       {/* 4. Pagination Footer */}
-      <div className="flex flex-col items-center justify-between border-t border-slate-100 bg-white px-6 py-4 sm:flex-row lg:px-8">
+      <div className="flex flex-col items-center justify-between border-t border-slate-200/60 bg-white/40 px-6 py-4 sm:flex-row lg:px-8">
         <div className="mb-4 text-sm text-slate-500 sm:mb-0">
           Showing{' '}
           {data?.totalItems === 0
             ? 0
-            : ((data?.page || 1) - 1) * ((data as any)?.pageSize || 10) + 1}{' '}
-          to {Math.min((data?.page || 1) * ((data as any)?.pageSize || 10), data?.totalItems || 0)}{' '}
+            : ((data?.page || 1) - 1) * ((data as any)?.pageSize || 8) + 1}{' '}
+          to {Math.min((data?.page || 1) * ((data as any)?.pageSize || 8), data?.totalItems || 0)}{' '}
           of {data?.totalItems || 0} tickets
         </div>
 
@@ -412,10 +468,11 @@ export function TicketList() {
             <select
               className="h-8 rounded border border-slate-200 bg-white px-2 text-sm text-slate-700 shadow-sm outline-none"
               // @ts-ignore
-              value={(data as any)?.pageSize || 10}
+              value={(data as any)?.pageSize || '6'}
               onChange={(e) => updateQuery('limit', e.target.value)}
             >
-              <option value="10">10 per page</option>
+              <option value="6">6 per page</option>
+              <option value="15">15 per page</option>
               <option value="25">25 per page</option>
               <option value="50">50 per page</option>
             </select>

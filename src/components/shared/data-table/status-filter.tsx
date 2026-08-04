@@ -42,7 +42,7 @@ export function StatusFilter({ paramName, placeholder = 'Filter...', options }: 
 
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="h-10 w-[160px] rounded-full border-slate-200/60 bg-white/60 px-4 text-sm font-medium text-slate-700 shadow-sm backdrop-blur transition-all hover:bg-white/80 focus:ring-4 focus:ring-indigo-500/10 data-[state=open]:border-indigo-500/50">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

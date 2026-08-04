@@ -283,15 +283,18 @@ export function OnboardClientWizard() {
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="phone" className="text-xs font-semibold text-slate-700">
-                    Phone Number
+                    Phone Number *
                   </Label>
                   <Input
                     id="phone"
                     {...register('phone')}
-                    className="h-10 border-slate-200 bg-slate-50"
+                    className={`h-10 bg-slate-50 ${errors.phone ? 'border-red-400' : 'border-slate-200'}`}
                     placeholder="+1 (555) 000-0000"
                     disabled={isPending}
                   />
+                  {errors.phone && (
+                    <span className="text-[11px] text-red-500">{errors.phone.message as string}</span>
+                  )}
                 </div>
               </div>
 
@@ -393,15 +396,20 @@ export function OnboardClientWizard() {
                   htmlFor="project.description"
                   className="text-xs font-semibold text-slate-700"
                 >
-                  Description
+                  Description *
                 </Label>
                 <Textarea
                   id="project.description"
                   {...register('project.description')}
-                  className="min-h-[80px] border-slate-200 bg-slate-50"
+                  className={`min-h-[80px] bg-slate-50 ${errors.project?.description ? 'border-red-400' : 'border-slate-200'}`}
                   placeholder="Initial implementation phase..."
                   disabled={isPending}
                 />
+                {errors.project?.description && (
+                  <span className="text-[11px] text-red-500">
+                    {errors.project.description.message as string}
+                  </span>
+                )}
               </div>
             </div>
           </div>

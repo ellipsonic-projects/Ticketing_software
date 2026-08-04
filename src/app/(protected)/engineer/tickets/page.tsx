@@ -10,7 +10,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  title: 'Tickets | Elipsonics',
+  title: 'Tickets | Elipdesk',
   description: 'Manage support tickets',
 };
 

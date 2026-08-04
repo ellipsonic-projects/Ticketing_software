@@ -258,7 +258,6 @@ export function PlatformDashboard() {
                 <th className="px-6 py-4">Domain</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Created At</th>
-                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -284,15 +283,12 @@ export function PlatformDashboard() {
                     <td className="px-6 py-4">
                       <Skeleton className="h-4 w-24" />
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <Skeleton className="ml-auto h-8 w-8 rounded-lg" />
-                    </td>
                   </tr>
                 ))
               ) : tenants.length === 0 ? (
                 // Empty State
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
                     No tenants found matching your criteria.
                   </td>
                 </tr>
@@ -341,28 +337,6 @@ export function PlatformDashboard() {
                           day: 'numeric',
                           year: 'numeric',
                         })}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 rounded-lg border-slate-200 text-slate-500 hover:text-slate-700"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-100 hover:text-slate-700">
-                              <MoreVertical className="h-4 w-4" />
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40 rounded-xl">
-                              <DropdownMenuItem className="cursor-pointer">Edit</DropdownMenuItem>
-                              <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600">
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
                       </td>
                     </tr>
                   );

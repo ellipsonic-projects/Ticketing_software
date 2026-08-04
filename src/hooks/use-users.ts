@@ -13,3 +13,13 @@ export function useUsers(query?: ListUsersInput) {
     enabled: isAuthenticated,
   });
 }
+
+export function useUser(id: string) {
+  const { isAuthenticated } = useAuth();
+
+  return useQuery({
+    queryKey: ['users', id],
+    queryFn: () => userApi.getUser(id),
+    enabled: isAuthenticated && !!id,
+  });
+}

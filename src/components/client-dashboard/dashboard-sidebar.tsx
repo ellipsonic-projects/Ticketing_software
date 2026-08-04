@@ -9,6 +9,7 @@ import {
   PlusCircle,
   Ticket,
   User,
+  ClipboardList,
 } from 'lucide-react';
 
 import { BaseSidebar } from '@/components/shared/base-sidebar';
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
   { label: 'My Tickets', href: '/client/tickets', icon: Ticket },
   { label: 'Create Ticket', href: '/client/tickets/new', icon: PlusCircle },
   { label: 'Profile', href: '/client/profile', icon: User },
+  { label: 'Audit Logs', href: '/client/audit-logs', icon: ClipboardList },
 ] as const;
 
 function ClientInfoFooter() {
@@ -78,7 +80,7 @@ export function DashboardSidebar({ notificationCount, isOpen, onClose }: Dashboa
       isOpen={isOpen}
       onClose={onClose}
       themeColor="blue"
-      logoTitle="Elipsonics"
+      logoTitle="Elipdesk"
       logoSubtitle="Client Portal"
       logoIcon={
         <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-blue-600">
@@ -86,7 +88,6 @@ export function DashboardSidebar({ notificationCount, isOpen, onClose }: Dashboa
         </div>
       }
       navItems={NAV_ITEMS}
-      showHelpCard={true}
       customFooter={<ClientInfoFooter />}
     />
   );

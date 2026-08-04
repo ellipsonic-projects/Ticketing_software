@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
-
 import { authenticate, RouteContext } from '@/middleware/authenticate';
 
 import { TicketAttachmentService } from '@/services/ticket/ticket-attachment.service';
 import { ApiResponder } from '@/lib/api-response';
+import { isValidMimeType, isValidFileSize, MAX_FILE_SIZE_BYTES } from '@/lib/storage/file-validation';
 import { AppError } from '@/lib/errors/app-error';
 import { withErrorHandler } from '@/lib/errors/global-handler';
 import { ValidationError } from '@/lib/errors/validation-error';
@@ -33,6 +33,14 @@ async function createAttachmentHandler(req: NextRequest, ctx?: RouteContext) {
 
   if (!filename || !size || !mimeType || !url) {
     return ApiResponder.error('Missing required attachment fields', [], 400);
+  }
+
+  if (!isValidMimeType(mimeType)) {
+    return ApiResponder.error('Invalid file type', [], 400);
+  }
+
+  if (!isValidFileSize(size)) {
+    return ApiResponder.error(`File size must be less than ${MAX_FILE_SIZE_BYTES / (1024 * 1024)}MB`, [], 400);
   }
 
   const attachment = await TicketAttachmentService.createAttachment(

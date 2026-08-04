@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+
+import { cn, getStringColorGradient, getStringColorHover } from '@/lib/utils';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
@@ -16,6 +18,20 @@ import {
   Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { motion, Variants } from 'framer-motion';
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 }
+  }
+};
+
+const rowVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+};
 
 import { DataTableToolbar } from '@/components/shared/data-table/data-table-toolbar';
 import { EmptyState } from '@/components/shared/data-table/empty-state';
@@ -47,7 +63,6 @@ import { Input } from '@/components/ui/input';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { useCan } from '@/hooks/use-can';
 import { useArchiveProject, useProjects } from '@/hooks/use-projects';
-
 import { CreateProjectDialog } from './create-project-dialog';
 import { ProjectDashboardStats } from './project-dashboard-stats';
 
@@ -64,7 +79,8 @@ export function ProjectList({
 }: ProjectListProps = {}) {
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get('page') || '1', 10);
-  const limit = parseInt(searchParams.get('limit') || '10', 10);
+  
+  const limit = parseInt(searchParams.get('limit') || '6', 10);
   const search = searchParams.get('search') || undefined;
   const status = (searchParams.get('status') as any) || undefined;
   const supportStatus = (searchParams.get('supportStatus') as any) || undefined;
@@ -109,9 +125,9 @@ export function ProjectList({
   return (
     <div className="flex h-full flex-col">
       {/* Main Content Area */}
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white">
+      <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/60 bg-white/70 shadow-sm backdrop-blur-xl">
         {/* Toolbar */}
-        <div className="border-b border-slate-200 bg-slate-50/50 px-4">
+        <div className="border-b border-slate-200/60 bg-white/40 p-4">
           <DataTableToolbar>
             <SearchInput placeholder="Search projects by name, code or client..." />
             <StatusFilter
@@ -142,7 +158,7 @@ export function ProjectList({
         </div>
 
         {/* Table Area */}
-        <div className="flex-1 overflow-auto">
+        <div className="w-full overflow-x-auto overflow-y-hidden">
           {isLoading ? (
             <div className="flex h-full items-center justify-center">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
@@ -160,7 +176,7 @@ export function ProjectList({
             </div>
           ) : (
             <table className="w-full text-left text-sm">
-              <thead className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 text-xs font-semibold text-slate-500 backdrop-blur">
+              <thead className="bg-slate-50/40 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                 <tr>
                   <th className="px-6 py-4">Project</th>
                   <th className="px-6 py-4">Client</th>
@@ -168,26 +184,34 @@ export function ProjectList({
                   <th className="px-6 py-4">Status</th>
                   <th className="px-6 py-4">Support Since</th>
                   <th className="px-6 py-4">Created On</th>
-                  <th className="w-[80px] px-6 py-4">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 bg-white">
+              <motion.tbody 
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+                className="divide-y divide-slate-100/80"
+              >
                 {projects.map((project) => {
                   const isSelected = selectedProjectId === project.id;
                   return (
-                    <tr
+                    <motion.tr
+                      variants={rowVariants}
                       key={project.id}
                       onClick={() => onSelectProject?.(project.id)}
-                      className={`group cursor-pointer transition-colors duration-150 hover:bg-slate-50 ${
-                        isSelected
-                          ? 'border-l-2 border-indigo-600 bg-slate-50'
-                          : 'border-l-2 border-transparent'
-                      }`}
+                      data-selected={selectedProjectId === project.id}
+                      className={cn(
+                        'group cursor-pointer transition-colors',
+                        getStringColorHover(project.name)
+                      )}
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div
-                            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${isSelected ? 'bg-blue-100 text-blue-700' : 'bg-blue-50 text-blue-600'}`}
+                            className={cn(
+                              "flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-slate-200/60 bg-gradient-to-br shadow-sm ring-1",
+                              getStringColorGradient(project.name)
+                            )}
                           >
                             <Building2 className="h-5 w-5" />
                           </div>
@@ -214,26 +238,30 @@ export function ProjectList({
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${
-                            project.supportStatus === 'ENABLED'
-                              ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/10'
+                        <div className="flex items-center gap-2 font-bold text-[11px]">
+                          <span
+                            className={cn(
+                              "h-1.5 w-1.5 rounded-full shadow-sm",
+                              project.supportStatus === 'ENABLED'
+                                ? 'bg-emerald-500 ring-1 ring-emerald-500/30 shadow-emerald-500/50'
+                                : project.supportStatus === 'PAUSED'
+                                  ? 'bg-amber-500 ring-1 ring-amber-500/30 shadow-amber-500/50'
+                                  : 'bg-slate-400 ring-1 ring-slate-400/30'
+                            )}
+                          />
+                          <span className="text-slate-700 uppercase tracking-wide">
+                            {project.supportStatus === 'ENABLED'
+                              ? 'Enabled'
                               : project.supportStatus === 'PAUSED'
-                                ? 'bg-amber-50 text-amber-700 ring-amber-600/10'
-                                : 'bg-slate-50 text-slate-700 ring-slate-600/10'
-                          }`}
-                        >
-                          {project.supportStatus === 'ENABLED'
-                            ? 'Enabled'
-                            : project.supportStatus === 'PAUSED'
-                              ? 'Paused'
-                              : 'Disabled'}
-                        </span>
+                                ? 'Paused'
+                                : 'Disabled'}
+                          </span>
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <StatusBadge status={project.status} variant="ring" />
                       </td>
-                      <td className="px-6 py-4 text-slate-500">
+                      <td className="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">
                         {project.supportStartDate
                           ? new Date(project.supportStartDate).toLocaleDateString('en-US', {
                               month: 'short',
@@ -242,81 +270,24 @@ export function ProjectList({
                             })
                           : '—'}
                       </td>
-                      <td className="px-6 py-4 text-slate-500">
+                      <td className="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">
                         {new Date(project.createdAt).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric',
                         })}
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-slate-400 hover:text-slate-600"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-md text-slate-400 hover:text-slate-600 focus:outline-none">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-[160px] rounded-xl">
-                              <DropdownMenuGroup>
-                                <DropdownMenuLabel className="text-xs text-slate-500">
-                                  Actions
-                                </DropdownMenuLabel>
-                                <DropdownMenuItem
-                                  className="cursor-pointer"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    window.location.href = `/projects/${project.id}`;
-                                  }}
-                                >
-                                  <Eye className="mr-2 h-4 w-4 text-slate-400" /> View Details
-                                </DropdownMenuItem>
-                                {canUpdateProject && (
-                                  <DropdownMenuItem
-                                    className="cursor-pointer"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      window.location.href = `/projects/${project.id}/edit`;
-                                    }}
-                                  >
-                                    <Pencil className="mr-2 h-4 w-4 text-slate-400" /> Edit Project
-                                  </DropdownMenuItem>
-                                )}
-                                {canDeleteProject && (
-                                  <>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                      className="cursor-pointer text-amber-600 focus:bg-amber-50 focus:text-amber-700"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setProjectToArchive({ id: project.id, name: project.name });
-                                      }}
-                                    >
-                                      <Trash2 className="mr-2 h-4 w-4" /> Archive Project
-                                    </DropdownMenuItem>
-                                  </>
-                                )}
-                              </DropdownMenuGroup>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </td>
-                    </tr>
+                    </motion.tr>
                   );
                 })}
-              </tbody>
+              </motion.tbody>
             </table>
           )}
         </div>
 
         {/* Pagination Footer */}
         {!isLoading && (
-          <div className="border-t border-slate-200 bg-slate-50/50">
+          <div className="border-t border-slate-200/60 bg-white/40">
             <Pagination totalPages={totalPages} totalItems={totalProjects} />
           </div>
         )}
