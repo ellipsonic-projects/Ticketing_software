@@ -60,7 +60,7 @@ export class UserService {
 
     // 5. Send Email
     // Assume NEXT_PUBLIC_APP_URL is available
-    const appUrl = env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = env.NEXT_PUBLIC_APP_URL;
     try {
       await emailService.sendInvitation(user.email, rawToken, appUrl);
     } catch (emailError) {
