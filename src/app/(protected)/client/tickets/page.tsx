@@ -10,7 +10,7 @@ export default function ClientTicketsPage() {
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
 
   return (
-    <div className="flex h-[calc(100vh-80px)] flex-col gap-6 p-6 lg:p-8">
+    <div className="flex flex-col gap-6 p-6 lg:p-8">
       {/* Hero Stats */}
       <div className="shrink-0">
         <TicketsHero />
@@ -18,16 +18,16 @@ export default function ClientTicketsPage() {
 
       {/* Main Content Area */}
       <div
-        className={`grid min-h-0 flex-1 gap-6 transition-all duration-300 ease-in-out ${
+        className={`grid gap-6 transition-all duration-300 ease-in-out ${
           selectedTicketId ? 'grid-cols-[1fr_400px] xl:grid-cols-[1fr_500px]' : 'grid-cols-1'
         }`}
       >
-        <div className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm">
           <TicketList selectedTicketId={selectedTicketId} onSelectTicket={setSelectedTicketId} />
         </div>
 
         {selectedTicketId && (
-          <div className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm">
             <ClientTicketSidePanel
               ticketId={selectedTicketId}
               onClose={() => setSelectedTicketId(null)}

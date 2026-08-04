@@ -88,7 +88,7 @@ export function TicketList({ selectedTicketId, onSelectTicket }: TicketListProps
   const endItem = Math.min(currentPage * limit, totalItems);
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex flex-col">
       <div className="shrink-0">
         {/* Toolbar */}
         <div className="flex flex-col items-start justify-between gap-4 border-b border-slate-200 px-4 py-4 sm:flex-row sm:items-center lg:px-6">
@@ -151,7 +151,7 @@ export function TicketList({ selectedTicketId, onSelectTicket }: TicketListProps
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto p-4 lg:p-6">
+      <div className="p-4 lg:p-6">
         <div className="flex flex-col gap-4">
           {items.length === 0 ? (
             <div className="flex h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-slate-500">
