@@ -1,15 +1,16 @@
 import { TicketHistoryAction, TicketPriority, TicketStatus } from '@prisma/client';
 
-import { ticketHistoryRepository } from '@/repositories/ticket/ticket-history.repository';
 import { ticketRepository } from '@/repositories/ticket/ticket.repository';
 import {
   ClientDashboardResponse,
+  ClientDashboardTicketSort,
   DashboardSLA,
   DashboardSummary,
+  PaginatedProjectHealth,
   PaginatedTickets,
   ProjectHealthItem,
   TicketListItem,
-  TimelineItem,
+  TicketProjectFilter,
 } from '@/lib/client-dashboard/client-dashboard.types';
 import prisma from '@/lib/prisma';
 
@@ -32,16 +33,6 @@ interface TicketRaw {
   } | null;
 }
 
-interface HistoryRaw {
-  id: string;
-  action: TicketHistoryAction;
-  oldValue: string | null;
-  newValue: string | null;
-  createdAt: Date;
-  ticket: { number: number; title: string };
-  changedBy: { firstName: string; lastName: string } | null;
-}
-
 export class ClientDashboardService {
   static async getDashboardData(
     clientId: string,
@@ -49,6 +40,11 @@ export class ClientDashboardService {
     accountId: string,
     ticketPage: number,
     ticketLimit: number,
+    ticketSort: ClientDashboardTicketSort,
+    ticketOrder: 'asc' | 'desc',
+    ticketProjectId: string | undefined,
+    projectPage: number,
+    projectLimit: number,
   ): Promise<ClientDashboardResponse> {
     // Fire all queries in parallel
     const [
@@ -56,16 +52,24 @@ export class ClientDashboardService {
       recentTicketsRaw,
       slaRaw,
       projectHealthRaw,
-      timelineRaw,
       notificationCount,
+      ticketProjects,
     ] = await Promise.all([
       // @ts-ignore
       ticketRepository.getDashboardSummaryCounts(clientId, tenantId),
-      ticketRepository.findRecentForClient(clientId, tenantId, ticketPage, ticketLimit),
+      ticketRepository.findRecentForClient(
+        clientId,
+        tenantId,
+        ticketPage,
+        ticketLimit,
+        ticketSort,
+        ticketOrder,
+        ticketProjectId,
+      ),
       ticketRepository.getSLAStatsForClient(clientId, tenantId),
-      ticketRepository.getProjectHealthForClient(clientId, tenantId),
-      ticketHistoryRepository.getTimelineForClient(clientId, tenantId, 12),
+      ticketRepository.getProjectHealthForClient(clientId, tenantId, projectPage, projectLimit),
       prisma.notification.count({ where: { userId: accountId, isRead: false } }),
+      ticketRepository.getTicketProjectsForClient(clientId, tenantId),
     ]);
 
     // ---------------------------------------------------------------------------
@@ -119,32 +123,23 @@ export class ClientDashboardService {
     // ---------------------------------------------------------------------------
     // Project health
     // ---------------------------------------------------------------------------
-    const projectHealth: ProjectHealthItem[] = projectHealthRaw;
+    const projectHealth: PaginatedProjectHealth = {
+      items: projectHealthRaw.items as ProjectHealthItem[],
+      total: projectHealthRaw.total,
+      totalPages: Math.ceil(projectHealthRaw.total / projectLimit),
+      page: projectPage,
+      pageSize: projectLimit,
+    };
 
     // ---------------------------------------------------------------------------
     // Timeline
     // ---------------------------------------------------------------------------
-    const timeline: TimelineItem[] = (timelineRaw as HistoryRaw[]).map((h) => ({
-      id: h.id,
-      ticketNumber: h.ticket.number,
-      ticketTitle: h.ticket.title,
-      action: h.action,
-      description: ClientDashboardService.formatHistoryDescription(
-        h.action,
-        h.oldValue,
-        h.newValue,
-        h.ticket.title,
-      ),
-      actor: h.changedBy ? `${h.changedBy.firstName} ${h.changedBy.lastName}` : 'System',
-      occurredAt: h.createdAt.toISOString(),
-    }));
-
     return {
       summary,
       recentTickets,
+      ticketProjects: ticketProjects as TicketProjectFilter[],
       sla,
       projectHealth,
-      timeline,
       notificationCount,
     };
   }

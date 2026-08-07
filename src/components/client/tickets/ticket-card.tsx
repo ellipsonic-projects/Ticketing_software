@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 
 import { format, formatDistanceToNow } from 'date-fns';
 import { Clock, Folder, MessageSquare, Paperclip } from 'lucide-react';
@@ -105,21 +104,21 @@ export function TicketCard({ ticket, isSelected, onClick }: TicketCardProps) {
   return (
     <div
       onClick={onClick}
-      className={`group flex min-w-0 cursor-pointer flex-col gap-4 rounded-xl border-y border-r border-l-4 bg-white p-4 shadow-sm transition-all hover:shadow-md 2xl:flex-row 2xl:items-center ${BORDER_COLORS[ticket.priority]} ${
+      className={`group flex min-w-0 cursor-pointer flex-col gap-3 rounded-xl border-y border-r border-l-[3px] bg-white px-3 py-3 shadow-sm transition-all hover:border-slate-300 hover:shadow-md 2xl:flex-row 2xl:items-center ${BORDER_COLORS[ticket.priority]} ${
         isSelected
           ? 'border-r-indigo-600 bg-indigo-50/30 ring-1 ring-indigo-600/20'
           : 'border-r-slate-200'
       }`}
     >
       {/* Column 1: Meta */}
-      <div className="flex w-full shrink-0 flex-col gap-1 2xl:w-32">
-        <span className="font-semibold text-slate-900">TKT-{ticket.number}</span>
-        <span className="text-xs text-slate-500">
-          Created: {format(new Date(ticket.createdAt), 'MMM d, yyyy')}
+      <div className="flex w-full shrink-0 flex-row items-center gap-2 2xl:w-28 2xl:flex-col 2xl:items-start">
+        <span className="text-sm font-semibold text-slate-900">TKT-{ticket.number}</span>
+        <span className="hidden text-xs text-slate-500 2xl:inline">
+          {format(new Date(ticket.createdAt), 'MMM d, yyyy')}
         </span>
-        <div className="mt-1">
+        <div>
           <span
-            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${BADGE_COLORS[ticket.priority]}`}
+            className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium ${BADGE_COLORS[ticket.priority]}`}
           >
             {ticket.priority}
           </span>
@@ -129,31 +128,31 @@ export function TicketCard({ ticket, isSelected, onClick }: TicketCardProps) {
       {/* Column 2: Main Content */}
       <div className="flex-1 min-w-0 space-y-1">
         <h3 className="text-base font-semibold text-slate-900">{ticket.title}</h3>
-        <div className="flex items-center gap-2 text-sm text-slate-500">
-          <Folder className="h-4 w-4" />
+        <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <Folder className="h-3.5 w-3.5" />
           <span>{ticket.category?.name ?? ticket.project.name}</span>
         </div>
         <p className="line-clamp-1 text-sm text-slate-500">{ticket.description}</p>
       </div>
 
       {/* Column 3: Assignee */}
-      <div className="w-full shrink-0 2xl:w-40">
-        <span className="text-xs font-medium text-slate-500">Assigned Engineer</span>
-        <div className="mt-1 flex items-center gap-3">
+      <div className="w-full shrink-0 2xl:w-36">
+        <span className="text-[11px] font-medium text-slate-500">Engineer</span>
+        <div className="mt-1 flex items-center gap-2">
           {ticket.assignedTo?.avatarUrl ? (
             <Image
               src={ticket.assignedTo.avatarUrl}
               alt={ticket.assignedTo.firstName}
               width={32}
               height={32}
-              className="h-8 w-8 rounded-full object-cover"
+              className="h-7 w-7 rounded-full object-cover"
             />
           ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-xs font-medium text-slate-600">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-200 text-xs font-medium text-slate-600">
               {assigneeInitials}
             </div>
           )}
-          <span className="text-sm font-medium text-slate-900">
+          <span className="text-xs font-medium text-slate-900">
             {ticket.assignedTo
               ? `${ticket.assignedTo.firstName} ${ticket.assignedTo.lastName}`
               : 'Unassigned'}
@@ -162,19 +161,19 @@ export function TicketCard({ ticket, isSelected, onClick }: TicketCardProps) {
       </div>
 
       {/* Column 4: SLA */}
-      <div className="w-full shrink-0 2xl:w-32">
-        <span className="text-xs font-medium text-slate-500">SLA</span>
+      <div className="w-full shrink-0 2xl:w-28">
+        <span className="text-[11px] font-medium text-slate-500">SLA</span>
         <div className="mt-1 flex items-center gap-2">
-          <Clock className={`h-4 w-4 ${sla.iconColor}`} />
-          <span className={`text-sm ${sla.textColor}`}>{sla.text}</span>
+          <Clock className={`h-3.5 w-3.5 ${sla.iconColor}`} />
+          <span className={`text-xs ${sla.textColor}`}>{sla.text}</span>
         </div>
       </div>
 
       {/* Column 5: Activity & Action */}
-      <div className="flex w-full shrink-0 items-center justify-between gap-4 2xl:w-48">
+      <div className="flex w-full shrink-0 items-center justify-between gap-4 2xl:w-40">
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-slate-500">Last Updated</span>
-          <span className="text-sm font-medium text-slate-900">
+          <span className="text-[11px] font-medium text-slate-500">Updated</span>
+          <span className="text-xs font-medium text-slate-900">
             {formatDistanceToNow(new Date(ticket.updatedAt))} ago
           </span>
           <div className="flex items-center gap-3 text-xs text-slate-500">

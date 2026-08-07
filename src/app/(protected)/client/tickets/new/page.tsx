@@ -1,11 +1,5 @@
-'use client';
-
-import { CreateTicketForm } from '@/components/client/tickets/create-ticket-form';
+import { redirect } from 'next/navigation';
 
 export default function CreateClientTicketPage() {
-  return (
-    <div className="mx-auto max-w-[1200px]">
-      <CreateTicketForm />
-    </div>
-  );
+  redirect('/client/dashboard');
 }

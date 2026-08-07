@@ -1,5 +1,6 @@
 export type TicketStatusValue = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
 export type TicketPriorityValue = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+export type ClientDashboardTicketSort = 'title' | 'project' | 'status' | 'priority' | 'updatedAt';
 export type ProjectHealthStatus = 'Healthy' | 'At Risk' | 'Critical';
 
 export type TimelineAction =
@@ -55,6 +56,11 @@ export interface PaginatedTickets {
   pageSize: number;
 }
 
+export interface TicketProjectFilter {
+  id: string;
+  name: string;
+}
+
 // ---------------------------------------------------------------------------
 // SLA performance card
 // ---------------------------------------------------------------------------
@@ -86,6 +92,14 @@ export interface ProjectHealthItem {
   health: ProjectHealthStatus;
 }
 
+export interface PaginatedProjectHealth {
+  items: ProjectHealthItem[];
+  total: number;
+  totalPages: number;
+  page: number;
+  pageSize: number;
+}
+
 // ---------------------------------------------------------------------------
 // Timeline (TicketHistory feed)
 // ---------------------------------------------------------------------------
@@ -109,9 +123,9 @@ export interface TimelineItem {
 export interface ClientDashboardResponse {
   summary: DashboardSummary;
   recentTickets: PaginatedTickets;
+  ticketProjects: TicketProjectFilter[];
   sla: DashboardSLA;
-  projectHealth: ProjectHealthItem[];
-  timeline: TimelineItem[];
+  projectHealth: PaginatedProjectHealth;
   notificationCount: number;
 }
 

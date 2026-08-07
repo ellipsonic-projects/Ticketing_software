@@ -1,13 +1,10 @@
 'use client';
 
 import {
-  Bell,
   Building2,
   ChevronRight,
   FolderOpen,
   LayoutDashboard,
-  PlusCircle,
-  Ticket,
   User,
   ClipboardList,
 } from 'lucide-react';
@@ -25,8 +22,6 @@ export interface DashboardSidebarProps {
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '/client/dashboard', icon: LayoutDashboard },
   { label: 'My Projects', href: '/client/projects', icon: FolderOpen },
-  { label: 'My Tickets', href: '/client/tickets', icon: Ticket },
-  { label: 'Create Ticket', href: '/client/tickets/new', icon: PlusCircle },
   { label: 'Profile', href: '/client/profile', icon: User },
   { label: 'Audit Logs', href: '/client/audit-logs', icon: ClipboardList },
 ] as const;
@@ -74,7 +69,7 @@ function ClientInfoFooter() {
   );
 }
 
-export function DashboardSidebar({ notificationCount, isOpen, onClose }: DashboardSidebarProps) {
+export function DashboardSidebar({ notificationCount: _notificationCount, isOpen, onClose }: DashboardSidebarProps) {
   return (
     <BaseSidebar
       isOpen={isOpen}

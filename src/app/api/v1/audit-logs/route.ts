@@ -52,15 +52,9 @@ async function getAuditLogsHandler(req: NextRequest, ctx?: RouteContext) {
     if (!user.tenantId) throw new ForbiddenError('Tenant ID is required');
     whereClause.tenantId = user.tenantId;
     if (user.clientId) {
-      const clientTickets = await prisma.ticket.findMany({
-        where: { clientId: user.clientId },
-        select: { id: true }
-      });
-      const ticketIds = clientTickets.map(t => t.id);
-      whereClause.entity = 'Ticket';
-      whereClause.entityId = { in: ticketIds };
+      whereClause.clientId = user.clientId;
     } else {
-      whereClause.entityId = 'none'; 
+      whereClause.id = 'none';
     }
   }
 

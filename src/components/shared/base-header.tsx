@@ -3,10 +3,12 @@
 import { useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import { formatDistanceToNow } from 'date-fns';
-import { Bell, CalendarDays, Check, ChevronDown, LogOut, Menu, Settings, User } from 'lucide-react';
+import { Bell, CalendarDays, Check, ChevronDown, LogOut, Menu, Plus, User } from 'lucide-react';
 
+import { CommandPalette } from '@/components/shared/command-palette';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -83,6 +85,12 @@ export function BaseHeader({
   profileHref,
 }: BaseHeaderProps) {
   const { accessToken, logout } = useAuth();
+  const pathname = usePathname();
+  const createTicketHref = pathname.startsWith('/client') ? '/client/tickets/new' : '/tickets/new';
+  const canCreateTicket =
+    !pathname.startsWith('/client') &&
+    !pathname.startsWith('/platform') &&
+    !pathname.startsWith('/engineer');
 
   // Notification API Integration
   const { data: notificationsResponse } = useNotifications(accessToken ?? '');
@@ -95,8 +103,6 @@ export function BaseHeader({
   // Theme classes
   const accentText = themeColor === 'violet' ? 'text-violet-600' : 'text-blue-600';
   const avatarBg = themeColor === 'violet' ? 'bg-violet-600' : 'bg-blue-600';
-  const focusBorder = themeColor === 'violet' ? 'focus:border-violet-500' : 'focus:border-blue-500';
-  const focusRing = themeColor === 'violet' ? 'focus:ring-violet-100' : 'focus:ring-blue-100';
   const notificationLinkHover =
     themeColor === 'violet'
       ? 'text-violet-600 hover:text-violet-700'
@@ -104,8 +110,8 @@ export function BaseHeader({
   const notificationDot = themeColor === 'violet' ? 'bg-violet-500' : 'bg-blue-500';
 
   return (
-    <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto flex h-16 items-center justify-between px-4 sm:h-20 sm:px-6 lg:h-24 lg:px-8">
+    <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:h-[76px] lg:px-8">
         {/* LEFT — Hamburger + Greeting */}
         <div className="flex items-center gap-3">
           {onMenuClick && (
@@ -120,7 +126,7 @@ export function BaseHeader({
           )}
 
           <div className="flex flex-col">
-            <h1 className="text-lg font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-3xl">
+            <h1 className="text-base font-semibold tracking-tight text-slate-900 sm:text-xl">
               {getGreeting()},<span className={accentText}> {firstName}</span> 👋
             </h1>
             <div className="mt-0.5 hidden items-center gap-2 text-sm text-slate-500 sm:flex">
@@ -131,7 +137,17 @@ export function BaseHeader({
         </div>
 
         {/* RIGHT — Notifications, Profile */}
-        <div className="flex items-center gap-2 sm:gap-3 lg:gap-5">
+        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
+          <CommandPalette />
+          {canCreateTicket && (
+            <Link
+              href={createTicketHref}
+              className="hidden h-10 items-center gap-2 rounded-xl bg-slate-900 px-3.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-700 sm:flex"
+            >
+              <Plus className="h-4 w-4" />
+              New ticket
+            </Link>
+          )}
           {/* NOTIFICATIONS */}
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -147,7 +163,7 @@ export function BaseHeader({
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="mt-2 w-72 rounded-xl border-slate-100 p-0 shadow-lg sm:w-96"
+              className="mt-2 w-72 overflow-y-hidden rounded-xl border-slate-100 p-0 shadow-lg sm:w-96"
             >
               <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
                 <span className="font-semibold text-slate-800">Notifications</span>
@@ -161,7 +177,7 @@ export function BaseHeader({
                   </button>
                 )}
               </div>
-              <div className="flex max-h-[400px] flex-col overflow-y-auto">
+              <div className="flex h-[min(20rem,calc(100vh-12rem))] [scrollbar-width:thin] [scrollbar-color:#cbd5e1_transparent] flex-col overflow-y-scroll overscroll-contain pr-1">
                 {notifications.length === 0 ? (
                   <div className="px-4 py-8 text-center text-sm text-slate-500">
                     You have no new notifications.
@@ -205,11 +221,6 @@ export function BaseHeader({
                     </div>
                   ))
                 )}
-              </div>
-              <div className="border-t border-slate-100 p-2 text-center">
-                <button className="text-xs font-semibold text-slate-500 hover:text-slate-700">
-                  View all notifications
-                </button>
               </div>
             </DropdownMenuContent>
           </DropdownMenu>

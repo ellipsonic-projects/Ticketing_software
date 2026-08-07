@@ -54,6 +54,8 @@ export class TicketAttachmentService {
       entityId: attachment.id,
       action: 'TICKET_ATTACHMENT_ADDED',
       actorId: uploaderId,
+      tenantId,
+      clientId: ticket.clientId,
       after: { filename: data.filename, ticketId },
     });
 

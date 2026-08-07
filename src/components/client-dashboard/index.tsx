@@ -3,20 +3,35 @@
 import { useState } from 'react';
 
 import { useClientDashboard } from '@/hooks/use-client-dashboard';
-import { mapDashboardSla, mapProjectHealth, mapTimeline } from '@/lib/client-dashboard/mappers';
+import { ClientDashboardTicketSort } from '@/lib/client-dashboard/client-dashboard.types';
+import { mapDashboardSla, mapProjectHealth } from '@/lib/client-dashboard/mappers';
 
+import { CreateTicketModal } from './create-ticket-modal';
 import { ProjectHealthCard } from './project-health-card';
-import { RecentTicketsTable } from './recent-tickets-table';
+import { RecentTicketsTable, TicketSortKey } from './recent-tickets-table';
 import { DashboardSkeleton } from './skeletons';
 import { SlaPerformanceCard } from './sla-performance-card';
 import { SummaryCards } from './summary-cards';
-import { SupportTimelineCard } from './support-timeline-card';
 
-const TICKETS_PER_PAGE = 6;
+const TICKETS_PER_PAGE = 7;
+const PROJECTS_PER_PAGE = 3;
 
 export function ClientDashboard() {
   const [ticketPage, setTicketPage] = useState(1);
-  const { data, isLoading, isError, refetch } = useClientDashboard(ticketPage, TICKETS_PER_PAGE);
+  const [ticketSort, setTicketSort] = useState<ClientDashboardTicketSort>('updatedAt');
+  const [ticketSortDirection, setTicketSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [ticketProjectId, setTicketProjectId] = useState<string | undefined>();
+  const [projectPage, setProjectPage] = useState(1);
+  const [createTicketOpen, setCreateTicketOpen] = useState(false);
+  const { data, isLoading, isFetching, isError, refetch } = useClientDashboard(
+    ticketPage,
+    TICKETS_PER_PAGE,
+    ticketSort,
+    ticketSortDirection,
+    ticketProjectId,
+    projectPage,
+    PROJECTS_PER_PAGE,
+  );
 
   if (isLoading && !data) {
     return <DashboardSkeleton />;
@@ -42,33 +57,62 @@ export function ClientDashboard() {
     );
   }
 
-  const { summary, recentTickets, sla, projectHealth, timeline } = data;
+  const { summary, recentTickets, ticketProjects, sla, projectHealth } = data;
+
+  const handleTicketSort = (sort: TicketSortKey, direction: 'asc' | 'desc') => {
+    setTicketSort(sort);
+    setTicketSortDirection(direction);
+    setTicketPage(1);
+  };
+
+  const handleProjectFilterChange = (projectId: string | undefined) => {
+    setTicketProjectId(projectId);
+    setTicketPage(1);
+  };
 
   // NOTE: The sidebar + header shell is provided by ClientPortalLayout (layout.tsx).
   // This component renders only the scrollable page content that lives inside <main>.
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-6">
+    <div className="mx-auto flex max-w-[1400px] flex-col gap-4 py-5">
       {/* Row 1 — KPI summary cards */}
       <SummaryCards summary={summary} />
 
       {/* Row 2 — Recent tickets + SLA performance */}
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="xl:col-span-2">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div>
           <RecentTicketsTable
             data={recentTickets}
             page={ticketPage}
             onPageChange={setTicketPage}
-            isLoading={isLoading}
+            sortKey={ticketSort}
+            sortDirection={ticketSortDirection}
+            onSort={handleTicketSort}
+            projectFilterId={ticketProjectId}
+            projectOptions={ticketProjects}
+            onProjectFilterChange={handleProjectFilterChange}
+            isLoading={isFetching}
+            onCreateTicket={() => setCreateTicketOpen(true)}
           />
         </div>
-        <SlaPerformanceCard sla={mapDashboardSla(sla)} />
+        <div className="space-y-4">
+          <SlaPerformanceCard sla={mapDashboardSla(sla)} />
+          <ProjectHealthCard
+            projects={mapProjectHealth(projectHealth.items)}
+            page={projectHealth.page}
+            total={projectHealth.total}
+            totalPages={projectHealth.totalPages}
+            onPageChange={setProjectPage}
+            isLoading={isFetching}
+          />
+        </div>
       </div>
 
       {/* Row 3 — Project health + Support timeline */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <ProjectHealthCard projects={mapProjectHealth(projectHealth)} />
-        <SupportTimelineCard events={mapTimeline(timeline)} />
-      </div>
+      <CreateTicketModal
+        open={createTicketOpen}
+        onOpenChange={setCreateTicketOpen}
+        onCreated={() => refetch()}
+      />
     </div>
   );
 }

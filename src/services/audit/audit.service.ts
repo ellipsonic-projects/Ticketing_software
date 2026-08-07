@@ -10,6 +10,9 @@ export class AuditService {
       action: string;
       actorId?: string;
       tenantId?: string;
+      clientId?: string;
+      sourceType?: string;
+      sourceId?: string;
       before?: unknown;
       after?: unknown;
     },
@@ -37,6 +40,9 @@ export class AuditService {
         action: data.action,
         actorId: data.actorId,
         tenantId: tenantIdToSave,
+        clientId: data.clientId,
+        sourceType: data.sourceType,
+        sourceId: data.sourceId,
         before: data.before ? JSON.parse(JSON.stringify(data.before)) : null,
         after: data.after ? JSON.parse(JSON.stringify(data.after)) : null,
       },

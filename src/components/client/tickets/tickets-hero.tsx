@@ -36,14 +36,16 @@ function StatPill({
 }: StatPillConfig) {
   return (
     <div
-      className={`flex flex-col items-center justify-center rounded-2xl ${cardBg} p-4 text-center shadow-sm`}
+      className={`flex items-center gap-3 rounded-xl ${cardBg} px-3 py-2.5`}
     >
-      <div className={`mb-2 flex h-8 w-8 items-center justify-center rounded-full ${iconBg}`}>
+      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${iconBg}`}>
         <Icon className={`h-4 w-4 ${iconColor}`} />
       </div>
-      <span className="text-2xl font-bold text-slate-900">{value}</span>
-      <span className="mt-1 text-sm font-semibold text-slate-800">{label}</span>
-      <span className={`mt-1 text-xs font-semibold ${sublabelColor}`}>{sublabel}</span>
+      <div className="min-w-0 text-left">
+        <span className="block text-lg font-semibold leading-none text-slate-900">{value}</span>
+        <span className="mt-1 block text-xs font-medium text-slate-700">{label}</span>
+      </div>
+      <span className={`ml-auto hidden text-[11px] font-medium xl:block ${sublabelColor}`}>{sublabel}</span>
     </div>
   );
 }
@@ -58,7 +60,7 @@ export function TicketsHero() {
 
   if (isLoading) {
     return (
-      <section className="animate-pulse space-y-6">
+      <section className="animate-pulse space-y-4">
         <div className="flex items-center gap-4">
           <div className="h-12 w-12 rounded-xl bg-slate-200" />
           <div className="space-y-2">
@@ -68,7 +70,7 @@ export function TicketsHero() {
         </div>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-[100px] rounded-2xl bg-slate-200" />
+            <div key={i} className="h-[68px] rounded-xl bg-slate-200" />
           ))}
         </div>
       </section>
@@ -119,22 +121,22 @@ export function TicketsHero() {
   ];
 
   return (
-    <section className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:p-6">
+    <section className="space-y-4">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50">
-          <Ticket className="h-6 w-6 text-blue-600" />
+      <div className="flex items-center gap-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50">
+          <Ticket className="h-4 w-4 text-blue-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">My Tickets</h1>
-          <p className="mt-0.5 text-sm text-slate-500">
+          <h1 className="text-xl font-semibold tracking-tight text-slate-900">My tickets</h1>
+          <p className="mt-0.5 text-xs text-slate-500">
             Track and collaborate on your support requests.
           </p>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         {statPills.map((pill) => (
           <StatPill key={pill.label} {...pill} />
         ))}

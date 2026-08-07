@@ -2,11 +2,10 @@ import { tenantDashboardRepository } from '@/repositories/tenant/tenant-dashboar
 
 export class TenantDashboardService {
   static async getDashboardStats(tenantId: string) {
-    const [summary, sla, trends, recent] = await Promise.all([
+    const [summary, sla, trends] = await Promise.all([
       tenantDashboardRepository.getSummaryCounts(tenantId),
       tenantDashboardRepository.getSLACompliance(tenantId),
       tenantDashboardRepository.getTicketTrends(tenantId),
-      tenantDashboardRepository.getRecentActivity(tenantId),
     ]);
 
     // Calculate percentage changes vs last month safely
@@ -49,34 +48,6 @@ export class TenantDashboardService {
         breached: sla.breached,
       },
       ticketTrends: trends,
-      recentTickets: recent.recentTickets.map((t) => ({
-        id: t.id,
-        number: t.number,
-        title: t.title,
-        status: t.status,
-        priority: t.priority,
-        projectName: t.project?.name || 'Unknown',
-        assignedTo: t.assignedTo
-          ? `${t.assignedTo.firstName} ${t.assignedTo.lastName}`
-          : 'Unassigned',
-        assignedToAvatar: t.assignedTo?.avatarUrl || null,
-        updatedAt: t.updatedAt,
-      })),
-      recentClients: recent.recentClients.map((c) => ({
-        id: c.id,
-        name: c.name,
-        projectsCount: c._count.projects,
-        ticketsCount: c._count.tickets,
-        createdAt: c.createdAt,
-      })),
-      recentLogs: recent.recentLogs.map((l) => ({
-        id: l.id,
-        action: l.action,
-        ticketNumber: l.ticket?.number ?? null,
-        ticketTitle: l.ticket?.title ?? null,
-        changedBy: l.changedBy ? `${l.changedBy.firstName} ${l.changedBy.lastName}` : 'System',
-        createdAt: l.createdAt,
-      })),
     };
   }
 }

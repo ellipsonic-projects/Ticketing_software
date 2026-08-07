@@ -11,32 +11,6 @@ export interface TenantDashboardStatsResponse {
   };
   slaCompliance: { withinSLA: number; atRisk: number; breached: number };
   ticketTrends: Array<{ date: string; opened: number; resolved: number; closed: number }>;
-  recentTickets: Array<{
-    id: string;
-    number: number;
-    title: string;
-    status: string;
-    priority: string;
-    projectName: string;
-    assignedTo: string;
-    assignedToAvatar: string | null;
-    updatedAt: Date;
-  }>;
-  recentClients: Array<{
-    id: string;
-    name: string;
-    projectsCount: number;
-    ticketsCount: number;
-    createdAt: Date;
-  }>;
-  recentLogs: Array<{
-    id: string;
-    action: string;
-    ticketNumber: number | null;
-    ticketTitle: string | null;
-    changedBy: string;
-    createdAt: Date;
-  }>;
 }
 
 export const tenantDashboardApi = {

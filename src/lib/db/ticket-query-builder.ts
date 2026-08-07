@@ -119,18 +119,18 @@ export class TicketQueryBuilder {
     if (query.sort && query.order) {
       switch (query.sort) {
         case 'number':
+        case 'title':
         case 'createdAt':
         case 'updatedAt':
         case 'priority':
         case 'status':
+          orderBy = { [query.sort]: query.order };
+          break;
         case 'resolutionBreachAt':
+          orderBy = { sla: { resolutionBreachAt: query.order } };
+          break;
         case 'responseBreachAt':
-          // responseBreachAt in query might map to firstResponseBreachAt in DB schema, but let's check schema.
-          // The schema has firstResponseBreachAt and resolutionBreachAt.
-          // Let's assume responseBreachAt means firstResponseBreachAt.
-          const dbField =
-            query.sort === 'responseBreachAt' ? 'firstResponseBreachAt' : 'resolutionBreachAt';
-          orderBy = { sla: { [dbField]: query.order } };
+          orderBy = { sla: { firstResponseBreachAt: query.order } };
           break;
         case 'project':
           orderBy = { project: { name: query.order } };

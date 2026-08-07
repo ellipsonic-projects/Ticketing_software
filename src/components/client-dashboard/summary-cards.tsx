@@ -60,25 +60,25 @@ function TrendBadge({ delta }: { delta?: number }) {
 
 function StatCard({ title, value, icon, iconBg, valueColor, delta, suffix }: StatCardProps) {
   return (
-    <motion.div 
-      variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
-      className="group rounded-3xl border border-slate-200/60 bg-white/70 backdrop-blur-xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:bg-white/90"
+    <motion.div
+      variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
+      className="group rounded-2xl border border-slate-200/70 bg-white px-4 py-3.5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
     >
-      <div className="flex items-start justify-between">
-        <div className={cn('flex h-14 w-14 items-center justify-center rounded-2xl', iconBg)}>
+      <div className="flex items-center justify-between gap-3">
+        <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-xl', iconBg)}>
           {icon}
         </div>
 
         <TrendBadge delta={delta} />
       </div>
 
-      <div className="mt-8">
-        <p className={cn('text-4xl font-bold tracking-tight', valueColor)}>
+      <div className="mt-3">
+        <p className={cn('text-2xl font-semibold tracking-tight', valueColor)}>
           {value}
           {suffix}
         </p>
 
-        <p className="mt-2 text-sm font-medium text-slate-500">{title}</p>
+        <p className="mt-0.5 text-xs font-medium text-slate-500">{title}</p>
       </div>
     </motion.div>
   );
@@ -90,7 +90,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
       variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } }}
       initial="hidden"
       animate="show"
-      className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5"
+      className="grid grid-cols-2 gap-3 lg:grid-cols-5"
     >
       <StatCard
         title="Open Requests"
@@ -98,7 +98,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
         delta={summary.openRequestsDelta}
         valueColor="text-slate-900"
         iconBg="bg-blue-50"
-        icon={<Inbox className="h-7 w-7 text-blue-600" />}
+        icon={<Inbox className="h-4 w-4 text-blue-600" />}
       />
 
       <StatCard
@@ -107,7 +107,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
         delta={summary.inProgressDelta}
         valueColor="text-slate-900"
         iconBg="bg-amber-50"
-        icon={<Clock3 className="h-7 w-7 text-amber-500" />}
+        icon={<Clock3 className="h-4 w-4 text-amber-500" />}
       />
       <StatCard
         title="Resolved This Week"
@@ -115,7 +115,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
         delta={summary.resolvedThisWeekDelta}
         valueColor="text-slate-900"
         iconBg="bg-emerald-50"
-        icon={<CheckCircle2 className="h-7 w-7 text-emerald-600" />}
+        icon={<CheckCircle2 className="h-4 w-4 text-emerald-600" />}
       />
 
       <StatCard
@@ -124,7 +124,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
         delta={summary.closedThisWeekDelta}
         valueColor="text-slate-900"
         iconBg="bg-slate-100"
-        icon={<Archive className="h-7 w-7 text-slate-600" />}
+        icon={<Archive className="h-4 w-4 text-slate-600" />}
       />
 
       <StatCard
@@ -133,7 +133,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
         suffix="%"
         valueColor="text-blue-600"
         iconBg="bg-indigo-50"
-        icon={<ShieldCheck className="h-7 w-7 text-indigo-600" />}
+        icon={<ShieldCheck className="h-4 w-4 text-indigo-600" />}
       />
     </motion.section>
   );

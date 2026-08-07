@@ -30,11 +30,11 @@ model Tenant {
   businessHours BusinessHours[]
   holidays      Holiday[]
 
-  tickets              Ticket[]
-  ticketCategories     TicketCategory[]
-  ticketTags           TicketTag[]
-  ticketHistories      TicketHistory[]
-  notifications        Notification[]
+  tickets          Ticket[]
+  ticketCategories TicketCategory[]
+  ticketTags       TicketTag[]
+  ticketHistories  TicketHistory[]
+  notifications    Notification[]
 
   @@index([status])
   @@index([name])
@@ -65,14 +65,14 @@ model User {
   sessions            Session[]
   clientId            String?
 
-  assignedTickets   Ticket[]        @relation("AssignedTickets")
-  reportedTickets   Ticket[]        @relation("ReportedTickets")
+  assignedTickets   Ticket[]           @relation("AssignedTickets")
+  reportedTickets   Ticket[]           @relation("ReportedTickets")
   ticketComments    TicketComment[]
   ticketAttachments TicketAttachment[]
   ticketHistories   TicketHistory[]
   notifications     Notification[]
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   client Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
 
   @@index([deletedAt])
@@ -111,20 +111,25 @@ model PasswordResetToken {
 }
 
 model AuditLog {
-  id        String   @id @default(cuid())
-  entity    String
-  entityId  String
-  action    String
-  actorId   String?
-  tenantId  String?
-  before    Json?
-  after     Json?
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  entity     String
+  entityId   String
+  action     String
+  actorId    String?
+  tenantId   String?
+  clientId   String?
+  sourceType String?
+  sourceId   String?
+  before     Json?
+  after      Json?
+  createdAt  DateTime @default(now())
 
+  @@unique([sourceType, sourceId])
   @@index([entity, entityId])
   @@index([action])
   @@index([createdAt])
   @@index([tenantId])
+  @@index([tenantId, clientId, createdAt])
 }
 
 enum TenantStatus {
@@ -161,8 +166,8 @@ model Client {
   name String
   code String?
 
-  email String?
-  phone String?
+  email    String?
+  phone    String?
   industry String?
 
   website String?
@@ -261,23 +266,23 @@ model Project {
 }
 
 model SLAPolicy {
-  id        String @id @default(cuid())
-  tenantId  String @unique
+  id       String @id @default(cuid())
+  tenantId String @unique
 
-  businessHoursEnabled  Boolean @default(true)
+  businessHoursEnabled Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  tiers   SLATier[]
+  tenant Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tiers  SLATier[]
 }
 
 model SLATier {
-  id        String @id @default(cuid())
-  policyId  String
-  priority  TicketPriority
-  
+  id       String         @id @default(cuid())
+  policyId String
+  priority TicketPriority
+
   responseTimeMinutes   Int
   resolutionTimeMinutes Int
 
@@ -326,7 +331,7 @@ model Holiday {
 }
 
 model TicketCategory {
-  id       String @id @default(cuid())
+  id       String  @id @default(cuid())
   tenantId String
   name     String
   color    String?
@@ -340,7 +345,7 @@ model TicketCategory {
 }
 
 model TicketTag {
-  id       String @id @default(cuid())
+  id       String  @id @default(cuid())
   tenantId String
   name     String
   color    String?
@@ -383,11 +388,11 @@ model Ticket {
   assignedTo User?           @relation("AssignedTickets", fields: [assignedToId], references: [id])
   reportedBy User            @relation("ReportedTickets", fields: [reportedById], references: [id])
 
-  tags        TicketTag[]
-  comments    TicketComment[]
-  attachments TicketAttachment[]
-  sla         TicketSLA?
-  history     TicketHistory[]
+  tags          TicketTag[]
+  comments      TicketComment[]
+  attachments   TicketAttachment[]
+  sla           TicketSLA?
+  history       TicketHistory[]
   notifications Notification[]
 
   @@unique([tenantId, number])
@@ -401,8 +406,8 @@ model Ticket {
 }
 
 model TicketSLA {
-  id                    String    @id @default(cuid())
-  ticketId              String    @unique
+  id                    String  @id @default(cuid())
+  ticketId              String  @unique
   firstResponseTimeMins Int
   resolutionTimeMins    Int
   businessHoursEnabled  Boolean
@@ -416,11 +421,11 @@ model TicketSLA {
 }
 
 model TicketComment {
-  id         String   @id @default(cuid())
+  id         String  @id @default(cuid())
   ticketId   String
   authorId   String
   body       String
-  isInternal Boolean  @default(false)
+  isInternal Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -503,9 +508,9 @@ model Notification {
   readAt    DateTime?
   createdAt DateTime  @default(now())
 
-  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ticket  Ticket? @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  tenant Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ticket Ticket? @relation(fields: [ticketId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([isRead])

@@ -37,6 +37,8 @@ export class TicketCommentService {
           entityId: ticket.id,
           action: data.isInternal ? 'TICKET_INTERNAL_NOTE_ADDED' : 'TICKET_COMMENT_ADDED',
           actorId: authorId,
+          tenantId,
+          clientId: ticket.clientId,
           after: { commentId: newComment.id },
         },
         tx,

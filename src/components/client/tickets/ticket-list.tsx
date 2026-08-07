@@ -66,7 +66,7 @@ export function TicketList({ selectedTicketId, onSelectTicket }: TicketListProps
     return (
       <div className="space-y-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-32 w-full animate-pulse rounded-2xl bg-slate-200" />
+          <div key={i} className="h-24 w-full animate-pulse rounded-xl bg-slate-200" />
         ))}
       </div>
     );
@@ -91,12 +91,13 @@ export function TicketList({ selectedTicketId, onSelectTicket }: TicketListProps
     <div className="flex flex-col">
       <div className="shrink-0">
         {/* Toolbar */}
-        <div className="flex flex-col items-start justify-between gap-4 border-b border-slate-200 px-4 py-4 sm:flex-row sm:items-center lg:px-6">
-          <h2 className="text-lg font-semibold text-slate-900">
-            Total Tickets <span className="ml-2 font-bold">{totalItems}</span>
+        <div className="flex flex-col items-start justify-between gap-3 border-b border-slate-200 px-4 py-3 sm:flex-row sm:items-center lg:px-5">
+          <h2 className="text-sm font-semibold text-slate-900">
+            All tickets <span className="ml-1.5 text-slate-400">{totalItems}</span>
           </h2>
           <Button
-            className="rounded-lg bg-blue-600 text-white shadow-sm hover:bg-blue-700"
+            size="sm"
+            className="bg-slate-900 text-white shadow-sm hover:bg-slate-700"
             onClick={() => router.push('/client/tickets/new')}
           >
             <Plus className="mr-2 h-4 w-4" />
@@ -105,7 +106,7 @@ export function TicketList({ selectedTicketId, onSelectTicket }: TicketListProps
         </div>
 
         {/* Filters Row */}
-        <div className="flex flex-col gap-3 border-b border-slate-200 px-4 pb-4 sm:flex-row lg:px-6">
+        <div className="flex flex-col gap-2 border-b border-slate-200 px-4 pb-3 sm:flex-row lg:px-5">
           <form
             onSubmit={handleSearchSubmit}
             className="relative flex w-full shrink-0 items-center sm:max-w-sm"
@@ -114,7 +115,7 @@ export function TicketList({ selectedTicketId, onSelectTicket }: TicketListProps
             <input
               type="text"
               placeholder="Search tickets..."
-              className="h-10 w-full rounded-lg border border-slate-200 bg-white pr-4 pl-9 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+              className="h-9 w-full rounded-lg border border-slate-200 bg-white pr-4 pl-9 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
@@ -122,7 +123,7 @@ export function TicketList({ selectedTicketId, onSelectTicket }: TicketListProps
 
           <div className="flex flex-1 flex-wrap items-center gap-3">
             <select
-              className="h-10 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              className="h-9 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               value={searchParams.get('status') || 'all'}
               onChange={(e) => updateQuery('status', e.target.value)}
             >
@@ -135,7 +136,7 @@ export function TicketList({ selectedTicketId, onSelectTicket }: TicketListProps
             </select>
 
             <select
-              className="h-10 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              className="h-9 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               value={searchParams.get('priority') || 'all'}
               onChange={(e) => updateQuery('priority', e.target.value)}
             >
@@ -151,8 +152,8 @@ export function TicketList({ selectedTicketId, onSelectTicket }: TicketListProps
       </div>
 
       {/* List */}
-      <div className="p-4 lg:p-6">
-        <div className="flex flex-col gap-4">
+      <div className="p-3 lg:p-4">
+        <div className="flex flex-col gap-2">
           {items.length === 0 ? (
             <div className="flex h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-slate-500">
               <p>No tickets found.</p>
@@ -172,8 +173,8 @@ export function TicketList({ selectedTicketId, onSelectTicket }: TicketListProps
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex shrink-0 flex-col items-center justify-between gap-4 border-t border-slate-200 bg-white px-4 py-4 sm:flex-row lg:px-6">
-          <span className="text-sm text-slate-600">
+        <div className="flex shrink-0 flex-col items-center justify-between gap-3 border-t border-slate-200 bg-slate-50/50 px-4 py-3 sm:flex-row lg:px-5">
+          <span className="text-xs text-slate-600">
             Showing {startItem} to {endItem} of {totalItems} tickets
           </span>
 

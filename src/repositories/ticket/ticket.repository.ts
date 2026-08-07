@@ -1,5 +1,6 @@
 import { Prisma, Ticket } from '@prisma/client';
 
+import { ClientDashboardTicketSort } from '@/lib/client-dashboard/client-dashboard.types';
 import prisma from '@/lib/prisma';
 
 export class TicketRepository {
@@ -122,22 +123,54 @@ export class TicketRepository {
     };
   }
 
-  async findRecentForClient(clientId: string, tenantId: string, page: number, limit: number) {
+  async findRecentForClient(
+    clientId: string,
+    tenantId: string,
+    page: number,
+    limit: number,
+    sort: ClientDashboardTicketSort,
+    order: Prisma.SortOrder,
+    projectId?: string,
+  ) {
     const skip = (page - 1) * limit;
+    const where: Prisma.TicketWhereInput = {
+      clientId,
+      tenantId,
+      ...(projectId ? { projectId } : {}),
+    };
+    const orderBy: Prisma.TicketOrderByWithRelationInput =
+      sort === 'project'
+        ? { project: { name: order } }
+        : sort === 'title'
+          ? { title: order }
+          : sort === 'status'
+            ? { status: order }
+            : sort === 'priority'
+              ? { priority: order }
+              : { updatedAt: order };
+
     const [items, total] = await Promise.all([
       prisma.ticket.findMany({
-        where: { clientId, tenantId },
+        where,
         include: {
           project: { select: { name: true } },
           assignedTo: { select: { firstName: true, lastName: true, avatarUrl: true } },
         },
-        orderBy: { updatedAt: 'desc' },
+        orderBy,
         skip,
         take: limit,
       }),
-      prisma.ticket.count({ where: { clientId, tenantId } }),
+      prisma.ticket.count({ where }),
     ]);
     return { items, total };
+  }
+
+  async getTicketProjectsForClient(clientId: string, tenantId: string) {
+    return prisma.project.findMany({
+      where: { clientId, tenantId, archivedAt: null },
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    });
   }
 
   async getSLAStatsForClient(clientId: string, tenantId: string) {
@@ -220,53 +253,63 @@ export class TicketRepository {
     };
   }
 
-  async getProjectHealthForClient(clientId: string, tenantId: string) {
+  async getProjectHealthForClient(clientId: string, tenantId: string, page: number, limit: number) {
     // Only fetch OPEN/IN_PROGRESS tickets for project health calculations
     // Since resolved/closed tickets no longer put a project "at risk"
-    const projects = await prisma.project.findMany({
-      where: { clientId, tenantId },
-      include: {
-        tickets: {
-          where: { status: { in: ['OPEN', 'IN_PROGRESS'] } },
-          include: { sla: true },
+    const where = { clientId, tenantId };
+    const [projects, total] = await Promise.all([
+      prisma.project.findMany({
+        where,
+        orderBy: { name: 'asc' },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: {
+          tickets: {
+            where: { status: { in: ['OPEN', 'IN_PROGRESS'] } },
+            include: { sla: true },
+          },
         },
-      },
-    });
+      }),
+      prisma.project.count({ where }),
+    ]);
 
     const now = new Date();
 
-    return projects.map((project) => {
-      const tickets = project.tickets;
-      const openCount = tickets.length;
+    return {
+      items: projects.map((project) => {
+        const tickets = project.tickets;
+        const openCount = tickets.length;
 
-      let atRiskCount = 0,
-        breachedCount = 0;
-      for (const ticket of tickets) {
-        if (!ticket.sla?.resolutionBreachAt) continue;
-        if (now > ticket.sla.resolutionBreachAt) {
-          breachedCount++;
-        } else {
-          const hoursLeft = (ticket.sla.resolutionBreachAt.getTime() - now.getTime()) / 3_600_000;
-          if (hoursLeft < 2) atRiskCount++;
+        let atRiskCount = 0,
+          breachedCount = 0;
+        for (const ticket of tickets) {
+          if (!ticket.sla?.resolutionBreachAt) continue;
+          if (now > ticket.sla.resolutionBreachAt) {
+            breachedCount++;
+          } else {
+            const hoursLeft = (ticket.sla.resolutionBreachAt.getTime() - now.getTime()) / 3_600_000;
+            if (hoursLeft < 2) atRiskCount++;
+          }
         }
-      }
 
-      const health: 'Healthy' | 'At Risk' | 'Critical' =
-        breachedCount >= 3
-          ? 'Critical'
-          : atRiskCount > 0 || breachedCount > 0
-            ? 'At Risk'
-            : 'Healthy';
+        const health: 'Healthy' | 'At Risk' | 'Critical' =
+          breachedCount >= 3
+            ? 'Critical'
+            : atRiskCount > 0 || breachedCount > 0
+              ? 'At Risk'
+              : 'Healthy';
 
-      return {
-        id: project.id,
-        name: project.name,
-        color: project.color,
-        openCount,
-        atRiskCount,
-        health,
-      };
-    });
+        return {
+          id: project.id,
+          name: project.name,
+          color: project.color,
+          openCount,
+          atRiskCount,
+          health,
+        };
+      }),
+      total,
+    };
   }
 
   async getProjectStatsForClient(clientId: string, tenantId: string) {
