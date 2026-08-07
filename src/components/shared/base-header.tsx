@@ -6,7 +6,21 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { formatDistanceToNow } from 'date-fns';
-import { Bell, CalendarDays, Check, ChevronDown, LogOut, Menu, Plus, User } from 'lucide-react';
+import {
+  Bell,
+  BriefcaseBusiness,
+  Building2,
+  CalendarDays,
+  Check,
+  ChevronDown,
+  HardHat,
+  LogOut,
+  Menu,
+  Plus,
+  ShieldCheck,
+  Sparkles,
+  User,
+} from 'lucide-react';
 
 import { CommandPalette } from '@/components/shared/command-palette';
 import {
@@ -55,6 +69,15 @@ function getCurrentDate(): string {
     day: 'numeric',
     year: 'numeric',
   }).format(new Date());
+}
+
+function getRoleIcon(roleLabel?: string) {
+  const role = roleLabel?.toLowerCase() ?? '';
+  if (role.includes('platform')) return ShieldCheck;
+  if (role.includes('tenant')) return Building2;
+  if (role.includes('engineer')) return HardHat;
+  if (role.includes('client')) return BriefcaseBusiness;
+  return Sparkles;
 }
 
 // ---------------------------------------------------------------------------
@@ -108,6 +131,7 @@ export function BaseHeader({
       ? 'text-violet-600 hover:text-violet-700'
       : 'text-blue-600 hover:text-blue-700';
   const notificationDot = themeColor === 'violet' ? 'bg-violet-500' : 'bg-blue-500';
+  const RoleIcon = getRoleIcon(roleLabel);
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl">
@@ -126,8 +150,11 @@ export function BaseHeader({
           )}
 
           <div className="flex flex-col">
-            <h1 className="text-base font-semibold tracking-tight text-slate-900 sm:text-xl">
-              {getGreeting()},<span className={accentText}> {firstName}</span> 👋
+            <h1 className="flex items-center gap-2 text-base font-semibold tracking-tight text-slate-900 sm:text-xl">
+              <RoleIcon className={`h-5 w-5 shrink-0 ${accentText}`} aria-hidden="true" />
+              <span>
+                {getGreeting()},<span className={accentText}> {firstName}</span>
+              </span>
             </h1>
             <div className="mt-0.5 hidden items-center gap-2 text-sm text-slate-500 sm:flex">
               <CalendarDays className="h-4 w-4 shrink-0" />

@@ -38,18 +38,35 @@ export function ForgotPasswordForm() {
 
   if (success) {
     return (
-      <AuthCard title="Check your email">
-        <Alert className="border-primary/50 bg-primary/10">
-          <CheckCircle2 className="text-primary h-4 w-4" />
-          <AlertTitle>Success</AlertTitle>
+      <AuthCard
+        title="Forgot Password"
+        description="Check your inbox for a password reset link."
+        footer={
+          <div className="w-full text-center text-sm text-slate-500">
+            Remember your password?{' '}
+            <Link href="/auth/login" className="font-semibold text-indigo-600 hover:underline">
+              Sign in
+            </Link>
+          </div>
+        }
+      >
+        <Alert className="border-indigo-200 bg-indigo-50 text-slate-700">
+          <CheckCircle2 className="h-4 w-4 text-indigo-600" />
+          <AlertTitle className="text-slate-900">Email sent</AlertTitle>
           <AlertDescription>
             If an account exists for {email}, you will receive a password reset link shortly.
           </AlertDescription>
         </Alert>
-        <div className="mt-6 text-center">
-          <AuthButton type="button" onClick={() => (window.location.href = '/auth/login')}>
-            Return to login
+        <div className="mt-6 flex flex-col gap-3">
+          <AuthButton type="button" onClick={() => setSuccess(false)}>
+            Try another email
           </AuthButton>
+          <Link
+            href="/auth/login"
+            className="text-center text-sm font-semibold text-indigo-600 hover:underline"
+          >
+            Return to Login
+          </Link>
         </div>
       </AuthCard>
     );

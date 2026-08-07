@@ -60,8 +60,8 @@ export function CommandPalette() {
           keywords: ['projects', 'project'],
         },
         {
-          label: 'Open activity history',
-          description: 'Review ticket audit logs',
+          label: 'Open logs',
+          description: 'Review ticket and account activity',
           href: '/client/audit-logs',
           icon: ClipboardList,
           keywords: ['audit', 'logs', 'activity', 'history'],

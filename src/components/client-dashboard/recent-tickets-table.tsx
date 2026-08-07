@@ -93,6 +93,8 @@ interface RecentTicketsTableProps {
   projectFilterId?: string;
   projectOptions: TicketProjectFilter[];
   onProjectFilterChange: (projectId: string | undefined) => void;
+  reporterFilter: 'all' | 'mine';
+  onReporterFilterChange: (filter: 'all' | 'mine') => void;
   isLoading?: boolean;
   onCreateTicket: () => void;
 }
@@ -141,7 +143,7 @@ function TableHeader({
   sortDirection: 'asc' | 'desc';
   onOpenSort: (key: TicketSortKey) => void;
 }) {
-  const cols = ['Ticket', 'Project', 'Status', 'Priority', 'Engineer', 'Updated'];
+  const cols = ['Ticket', 'Project', 'Raised by', 'Status', 'Priority', 'Engineer', 'Updated'];
   const sortableColumns: Partial<Record<string, TicketSortKey>> = {
     Ticket: 'title',
     Project: 'project',
@@ -202,6 +204,8 @@ export function RecentTicketsTable({
   projectFilterId,
   projectOptions,
   onProjectFilterChange,
+  reporterFilter,
+  onReporterFilterChange,
   isLoading,
   onCreateTicket,
 }: RecentTicketsTableProps) {
@@ -233,8 +237,10 @@ export function RecentTicketsTable({
             <Ticket className="h-5 w-5 text-indigo-600" />
           </div>
           <div>
-            <h2 className="text-base font-semibold text-slate-900">My tickets</h2>
-            <p className="mt-0.5 text-xs text-slate-500">Track and manage your support requests</p>
+            <h2 className="text-base font-semibold text-slate-900">Tickets</h2>
+            <p className="mt-0.5 text-xs text-slate-500">
+              Track support requests across your organization
+            </p>
           </div>
         </div>
         <button
@@ -266,6 +272,15 @@ export function RecentTicketsTable({
                 {project.name}
               </option>
             ))}
+          </select>
+          <select
+            aria-label="Filter tickets by requester"
+            value={reporterFilter}
+            onChange={(event) => onReporterFilterChange(event.target.value as 'all' | 'mine')}
+            className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs text-slate-700 outline-none hover:border-slate-300 focus:border-blue-500"
+          >
+            <option value="all">All organization tickets</option>
+            <option value="mine">Raised by me</option>
           </select>
           <select
             aria-label="Filter tickets by status"
@@ -301,11 +316,15 @@ export function RecentTicketsTable({
             <ArrowDownUp className="h-3.5 w-3.5 text-slate-500" />
             Sort
           </button>
-          {(projectFilterId || statusFilter !== 'ALL' || priorityFilter !== 'ALL') && (
+          {(projectFilterId ||
+            reporterFilter === 'mine' ||
+            statusFilter !== 'ALL' ||
+            priorityFilter !== 'ALL') && (
             <button
               type="button"
               onClick={() => {
                 onProjectFilterChange(undefined);
+                onReporterFilterChange('all');
                 setStatusFilter('ALL');
                 setPriorityFilter('ALL');
               }}
@@ -334,13 +353,13 @@ export function RecentTicketsTable({
           >
             {isLoading ? (
               <tr>
-                <td colSpan={6} className="py-16 text-center">
+                <td colSpan={7} className="py-16 text-center">
                   <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
                 </td>
               </tr>
             ) : visibleTickets.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-16 text-center">
+                <td colSpan={7} className="py-16 text-center">
                   <FolderOpen className="mx-auto h-10 w-10 text-slate-300" />
                   <p className="mt-4 font-medium text-slate-500">No Tickets Found</p>
                 </td>
@@ -384,9 +403,16 @@ export function RecentTicketsTable({
                   </td>
 
                   <td className="px-3 py-3.5">
+                    <div className="flex items-center gap-1.5 text-xs font-medium text-slate-700">
+                      <UserRound className="h-3.5 w-3.5 text-slate-400" />
+                      <span>{ticket.reportedByName}</span>
+                    </div>
+                  </td>
+
+                  <td className="px-3 py-3.5">
                     <span
                       className={cn(
-                        'inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold',
+                        'inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap',
                         STATUS_STYLES[ticket.status],
                       )}
                     >

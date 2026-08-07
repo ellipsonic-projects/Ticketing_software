@@ -44,6 +44,7 @@ export interface TicketListItem {
   status: TicketStatusValue;
   priority: TicketPriorityValue;
   updatedAt: string; // ISO 8601
+  reportedByName: string;
   assignedEngineerName: string | null;
   assignedEngineerAvatar: string | null;
 }

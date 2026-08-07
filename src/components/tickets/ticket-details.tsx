@@ -15,7 +15,6 @@ import {
   ChevronRight,
   Clock,
   FileIcon,
-  History,
   Info,
   MessageSquare,
   Monitor,
@@ -26,8 +25,8 @@ import {
   User,
   XCircle,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
-import { ActivityTimeline } from '@/components/shared/activity-timeline';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -45,12 +44,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/hooks/use-auth';
 import { useTicketAttachments, useUploadAttachment } from '@/hooks/use-ticket-attachments';
 import { useCreateComment, useTicketComments } from '@/hooks/use-ticket-comments';
-import { useTicketTimeline } from '@/hooks/use-ticket-timeline';
 import { useAssignTicket, useTicket, useUpdateTicket } from '@/hooks/use-tickets';
 import { useUsers } from '@/hooks/use-users';
-import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 import { isValidMimeType, MAX_FILE_SIZE_BYTES } from '@/lib/storage/file-validation';
+import { cn } from '@/lib/utils';
 
 export function TicketDetails({ id }: { id: string }) {
   const { user } = useAuth();
@@ -60,8 +57,6 @@ export function TicketDetails({ id }: { id: string }) {
 
   const { data: comments, isLoading: isLoadingComments } = useTicketComments(id);
   const { mutate: createComment, isPending: isCommenting } = useCreateComment(id);
-
-  const { data: timeline, isLoading: isLoadingTimeline } = useTicketTimeline(id);
 
   const { data: attachments, isLoading: isLoadingAttachments } = useTicketAttachments(id);
   const { mutate: uploadAttachment, isPending: isUploading } = useUploadAttachment(id);
@@ -141,13 +136,13 @@ export function TicketDetails({ id }: { id: string }) {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     if (file.size > MAX_FILE_SIZE_BYTES) {
       toast.error(`${file.name} exceeds 5MB limit`);
       e.target.value = '';
       return;
     }
-    
+
     if (!isValidMimeType(file.type)) {
       toast.error(`${file.name} has an unsupported file type`);
       e.target.value = '';
@@ -353,13 +348,6 @@ export function TicketDetails({ id }: { id: string }) {
                   </Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger
-                value="timeline"
-                className="rounded-none border-b-2 border-transparent px-1 py-4 text-sm font-bold text-slate-500 shadow-none transition-colors hover:text-slate-900 data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent data-[state=active]:text-indigo-600"
-              >
-                <History className="mr-2 h-4 w-4" />
-                Timeline
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="conversation" className="space-y-6 outline-none">
@@ -547,23 +535,6 @@ export function TicketDetails({ id }: { id: string }) {
                   ))}
                 </div>
               )}
-            </TabsContent>
-
-            <TabsContent value="timeline" className="outline-none">
-              <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                {isLoadingTimeline ? (
-                  <div className="space-y-6">
-                    <Skeleton className="h-16 w-full rounded-xl" />
-                    <Skeleton className="h-16 w-full rounded-xl" />
-                  </div>
-                ) : timeline?.length === 0 ? (
-                  <p className="py-8 text-center text-sm font-medium text-slate-500">
-                    No activity history available.
-                  </p>
-                ) : (
-                  <ActivityTimeline events={timeline} />
-                )}
-              </div>
             </TabsContent>
           </Tabs>
         </div>

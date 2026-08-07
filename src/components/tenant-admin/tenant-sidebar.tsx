@@ -2,13 +2,13 @@
 
 import {
   Building2,
+  ClipboardList,
   FolderOpen,
   LayoutDashboard,
   Settings2,
   Ticket,
   UserCog,
   Users,
-  ClipboardList,
 } from 'lucide-react';
 
 import { BaseSidebar } from '@/components/shared/base-sidebar';
@@ -27,7 +27,7 @@ const NAV_ITEMS = [
   { label: 'Tickets', href: '/tickets', icon: Ticket },
   { label: 'Engineers', href: '/users', icon: UserCog },
   { label: 'SLA Policies', href: '/sla', icon: Settings2 },
-  { label: 'Audit Logs', href: '/audit-logs', icon: ClipboardList },
+  { label: 'Logs', href: '/audit-logs', icon: ClipboardList },
 ];
 
 export function TenantSidebar({ notificationCount, isOpen, onClose }: TenantSidebarProps) {

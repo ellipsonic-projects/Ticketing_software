@@ -1,6 +1,6 @@
 'use client';
 
-import { Building2, LayoutDashboard, PlusSquare, Shield, ClipboardList } from 'lucide-react';
+import { Building2, ClipboardList, LayoutDashboard, PlusSquare, Shield } from 'lucide-react';
 
 import { BaseSidebar } from '@/components/shared/base-sidebar';
 
@@ -12,7 +12,7 @@ export interface PlatformSidebarProps {
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '/platform/dashboard', icon: LayoutDashboard },
   { label: 'Create Tenants', href: '/platform/tenants', icon: Building2 },
-  { label: 'Audit Logs', href: '/platform/audit-logs', icon: ClipboardList },
+  { label: 'Logs', href: '/platform/audit-logs', icon: ClipboardList },
 ] as const;
 
 export function PlatformSidebar({ isOpen, onClose }: PlatformSidebarProps) {

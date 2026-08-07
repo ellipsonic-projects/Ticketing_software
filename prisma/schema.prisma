@@ -191,7 +191,6 @@ model Client {
   tickets  Ticket[]
   users    User[]
 
-  @@unique([tenantId, name])
   @@index([tenantId])
   @@index([status])
   @@index([name])

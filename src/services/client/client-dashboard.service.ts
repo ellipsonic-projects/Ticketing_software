@@ -31,6 +31,10 @@ interface TicketRaw {
     lastName: string;
     avatarUrl: string | null;
   } | null;
+  reportedBy: {
+    firstName: string;
+    lastName: string;
+  };
 }
 
 export class ClientDashboardService {
@@ -43,6 +47,7 @@ export class ClientDashboardService {
     ticketSort: ClientDashboardTicketSort,
     ticketOrder: 'asc' | 'desc',
     ticketProjectId: string | undefined,
+    ticketReportedByMe: boolean,
     projectPage: number,
     projectLimit: number,
   ): Promise<ClientDashboardResponse> {
@@ -65,6 +70,7 @@ export class ClientDashboardService {
         ticketSort,
         ticketOrder,
         ticketProjectId,
+        ticketReportedByMe ? accountId : undefined,
       ),
       ticketRepository.getSLAStatsForClient(clientId, tenantId),
       ticketRepository.getProjectHealthForClient(clientId, tenantId, projectPage, projectLimit),
@@ -98,6 +104,7 @@ export class ClientDashboardService {
       status: t.status,
       priority: t.priority,
       updatedAt: t.updatedAt.toISOString(),
+      reportedByName: `${t.reportedBy.firstName} ${t.reportedBy.lastName}`,
       assignedEngineerName: t.assignedTo
         ? `${t.assignedTo.firstName} ${t.assignedTo.lastName}`
         : null,

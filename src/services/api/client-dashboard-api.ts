@@ -12,6 +12,7 @@ export const clientDashboardApi = {
     ticketSort: ClientDashboardTicketSort = 'updatedAt',
     ticketOrder: 'asc' | 'desc' = 'desc',
     ticketProjectId?: string,
+    ticketReportedByMe = false,
     projectPage = 1,
     projectLimit = 6,
   ): Promise<ClientDashboardResponse> => {
@@ -25,6 +26,9 @@ export const clientDashboardApi = {
     });
     if (ticketProjectId) {
       params.set('ticketProjectId', ticketProjectId);
+    }
+    if (ticketReportedByMe) {
+      params.set('ticketReportedByMe', 'true');
     }
     const response = await apiClient<{ data: ClientDashboardResponse }>(
       `/client/dashboard?${params}`,

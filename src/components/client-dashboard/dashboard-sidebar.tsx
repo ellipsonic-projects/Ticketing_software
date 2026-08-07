@@ -3,10 +3,10 @@
 import {
   Building2,
   ChevronRight,
+  ClipboardList,
   FolderOpen,
   LayoutDashboard,
   User,
-  ClipboardList,
 } from 'lucide-react';
 
 import { BaseSidebar } from '@/components/shared/base-sidebar';
@@ -23,7 +23,7 @@ const NAV_ITEMS = [
   { label: 'Dashboard', href: '/client/dashboard', icon: LayoutDashboard },
   { label: 'My Projects', href: '/client/projects', icon: FolderOpen },
   { label: 'Profile', href: '/client/profile', icon: User },
-  { label: 'Audit Logs', href: '/client/audit-logs', icon: ClipboardList },
+  { label: 'Logs', href: '/client/audit-logs', icon: ClipboardList },
 ] as const;
 
 function ClientInfoFooter() {
@@ -69,7 +69,11 @@ function ClientInfoFooter() {
   );
 }
 
-export function DashboardSidebar({ notificationCount: _notificationCount, isOpen, onClose }: DashboardSidebarProps) {
+export function DashboardSidebar({
+  notificationCount: _notificationCount,
+  isOpen,
+  onClose,
+}: DashboardSidebarProps) {
   return (
     <BaseSidebar
       isOpen={isOpen}

@@ -131,12 +131,14 @@ export class TicketRepository {
     sort: ClientDashboardTicketSort,
     order: Prisma.SortOrder,
     projectId?: string,
+    reportedById?: string,
   ) {
     const skip = (page - 1) * limit;
     const where: Prisma.TicketWhereInput = {
       clientId,
       tenantId,
       ...(projectId ? { projectId } : {}),
+      ...(reportedById ? { reportedById } : {}),
     };
     const orderBy: Prisma.TicketOrderByWithRelationInput =
       sort === 'project'
@@ -155,6 +157,7 @@ export class TicketRepository {
         include: {
           project: { select: { name: true } },
           assignedTo: { select: { firstName: true, lastName: true, avatarUrl: true } },
+          reportedBy: { select: { firstName: true, lastName: true } },
         },
         orderBy,
         skip,

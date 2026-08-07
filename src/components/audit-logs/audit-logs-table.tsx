@@ -36,6 +36,14 @@ export interface AuditLogItem {
   entityId: string;
   action: string;
   actor: { name: string; avatarUrl: string | null; role: string } | null;
+  ticket: {
+    number: number;
+    title: string;
+    clientName: string;
+    projectName: string;
+    reportedByName: string;
+    assignedToName: string | null;
+  } | null;
   before: any;
   after: any;
   createdAt: string;
@@ -101,6 +109,43 @@ function getEntityIcon(entity: string) {
   }
 }
 
+function getRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function formatValue(value: unknown) {
+  if (value === null || value === undefined || value === '') return 'None';
+  if (typeof value !== 'string') return String(value);
+  return value
+    .replace(/_/g, ' ')
+    .toLowerCase()
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
+function getChangeSummary(log: AuditLogItem) {
+  if (log.action === 'TICKET_CREATED') return 'Ticket created';
+
+  const before = getRecord(log.before);
+  const after = getRecord(log.after);
+  if (!before || !after) return formatActionLabel(log.action);
+
+  const changedFields = [
+    ['status', 'Status'],
+    ['priority', 'Priority'],
+    ['title', 'Title'],
+    ['categoryId', 'Category'],
+  ] as const;
+  const changes = changedFields
+    .filter(([field]) => before[field] !== after[field])
+    .map(
+      ([field, label]) => `${label}: ${formatValue(before[field])} → ${formatValue(after[field])}`,
+    );
+
+  return changes.length ? changes.join(' · ') : formatActionLabel(log.action);
+}
+
 export function AuditLogsTable() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(15);
@@ -127,8 +172,10 @@ export function AuditLogsTable() {
             <Activity className="h-5 w-5 text-indigo-600" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Audit Logs</h2>
-            <p className="text-sm text-slate-500">Track and monitor all system activities</p>
+            <h2 className="text-lg font-semibold text-slate-900">Logs</h2>
+            <p className="text-sm text-slate-500">
+              Track ticket and account activity with full context
+            </p>
           </div>
         </div>
 
@@ -150,8 +197,11 @@ export function AuditLogsTable() {
               <TableHead className="min-w-[200px] text-xs font-semibold tracking-wider text-slate-500 uppercase">
                 Action
               </TableHead>
-              <TableHead className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
-                Entity / Resource
+              <TableHead className="min-w-[280px] text-xs font-semibold tracking-wider text-slate-500 uppercase">
+                Ticket / Resource
+              </TableHead>
+              <TableHead className="min-w-[260px] text-xs font-semibold tracking-wider text-slate-500 uppercase">
+                Details
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -163,15 +213,15 @@ export function AuditLogsTable() {
           >
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={4} className="h-48 text-center text-slate-500">
+                <TableCell colSpan={5} className="h-48 text-center text-slate-500">
                   <RefreshCcw className="mx-auto mb-2 h-6 w-6 animate-spin text-indigo-500" />
-                  Loading audit logs...
+                  Loading logs...
                 </TableCell>
               </TableRow>
             ) : !data || data.items.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="h-48 text-center text-slate-500">
-                  No activity found.
+                <TableCell colSpan={5} className="h-48 text-center text-slate-500">
+                  No logs found.
                 </TableCell>
               </TableRow>
             ) : (
@@ -243,19 +293,39 @@ export function AuditLogsTable() {
                     </TableCell>
 
                     <TableCell>
-                      <div className="flex items-center gap-2.5">
+                      <div className="flex items-start gap-2.5">
                         <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100 shadow-sm ring-1 ring-slate-200/50">
                           {getEntityIcon(log.entity)}
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[15px] font-medium text-slate-900">
-                            {log.entity}
+                            {log.ticket
+                              ? `#${log.ticket.number} · ${log.ticket.title}`
+                              : log.entity}
                           </span>
-                          <span className="font-mono text-xs text-slate-500">
-                            ID: {log.entityId.substring(0, 8)}...
-                          </span>
+                          {log.ticket ? (
+                            <>
+                              <span className="text-xs text-slate-500">
+                                {log.ticket.clientName} · {log.ticket.projectName}
+                              </span>
+                              <span className="text-xs text-slate-500">
+                                Raised by {log.ticket.reportedByName}
+                                {log.ticket.assignedToName
+                                  ? ` · Assigned to ${log.ticket.assignedToName}`
+                                  : ''}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="font-mono text-xs text-slate-500">
+                              ID: {log.entityId.substring(0, 8)}...
+                            </span>
+                          )}
                         </div>
                       </div>
+                    </TableCell>
+
+                    <TableCell className="text-sm text-slate-600">
+                      {getChangeSummary(log)}
                     </TableCell>
                   </motion.tr>
                 );

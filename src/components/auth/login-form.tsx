@@ -5,13 +5,11 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, ArrowRight, Mail, MessageCircleQuestion, Shield } from 'lucide-react';
+import { AlertCircle, ArrowRight, Mail, Shield } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/use-auth';
 import { ROLE_DEFAULT_ROUTE } from '@/lib/auth/constants';
 
@@ -24,7 +22,6 @@ import { PasswordField } from './password-field';
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(1, 'Password is required'),
-  rememberMe: z.boolean().optional(),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -49,7 +46,6 @@ export function LoginForm() {
     defaultValues: {
       email: '',
       password: '',
-      rememberMe: false,
     },
   });
 
@@ -76,7 +72,7 @@ export function LoginForm() {
       title="Welcome Back"
       description="Sign in to manage your support operations and collaborate with your team."
       footer={
-        <div className="w-full space-y-5 pt-4">
+        <div className="login-footer w-full space-y-5 pt-4">
           {/* Trust indicators — pulsing badges */}
           <div className="flex items-center justify-center gap-6 text-sm">
             {/* SOC 2 badge with pulse */}
@@ -132,7 +128,7 @@ export function LoginForm() {
         </div>
       }
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="login-form space-y-5">
         {error && (
           <Alert
             variant="destructive"
@@ -163,22 +159,8 @@ export function LoginForm() {
           {...register('password')}
         />
 
-        {/* Remember Me + Forgot Password row */}
-        <div className="flex items-center justify-between pt-1">
-          <div className="flex items-center space-x-2.5">
-            <Checkbox
-              id="rememberMe"
-              {...register('rememberMe')}
-              disabled={isSubmitting}
-              className="h-[18px] w-[18px] rounded-full border-2 border-slate-300 transition-all duration-200 data-[state=checked]:border-indigo-600 data-[state=checked]:bg-indigo-600"
-            />
-            <Label
-              htmlFor="rememberMe"
-              className="cursor-pointer text-[14px] font-medium text-slate-600 transition-colors select-none hover:text-slate-900"
-            >
-              Remember me for 30 days
-            </Label>
-          </div>
+        {/* Forgot Password link */}
+        <div className="flex items-center justify-end pt-1">
           <Link
             href="/auth/forgot-password"
             className="text-[14px] font-semibold text-indigo-600 decoration-2 underline-offset-2 transition-all duration-200 hover:text-indigo-700 hover:underline"
@@ -194,16 +176,6 @@ export function LoginForm() {
           )}
         </AuthButton>
 
-        {/* Need help signing in? link */}
-        <div className="flex items-center justify-center pt-1">
-          <Link
-            href="/help/sign-in"
-            className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500 transition-colors duration-200 hover:text-indigo-600"
-          >
-            <MessageCircleQuestion className="h-3.5 w-3.5" />
-            Need help signing in?
-          </Link>
-        </div>
       </form>
 
       {features.oauth && (

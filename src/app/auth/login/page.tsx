@@ -16,7 +16,7 @@ export default function LoginPage() {
      * The CompositionBridge SVG lives here at z-[6], spanning the full width
      * so its curves bridge illustration → login card as one continuous scene.
      */
-    <div className="relative flex min-h-screen w-full flex-col overflow-hidden lg:flex-row">
+    <div className="login-page relative flex min-h-screen w-full flex-col overflow-hidden lg:flex-row">
       {/* Layer 1 — composition bridge: flows from illustration into the card */}
       <CompositionBridge />
 
@@ -26,7 +26,7 @@ export default function LoginPage() {
        * the column boundary, creating natural overlap with the bridge curves.
        * flex-[1.05] gives a hair more space to the illustration side.
        */}
-      <div className="z-10 hidden flex-[1.2] flex-col items-center justify-center gap-8 overflow-visible py-12 pr-2 pl-10 lg:flex xl:pr-4 xl:pl-16 2xl:pl-24">
+      <div className="login-hero z-10 hidden flex-[1.2] flex-col items-center justify-center gap-8 overflow-visible py-12 pr-2 pl-10 lg:flex xl:pr-4 xl:pl-16 2xl:pl-24">
         {/* Marketing headline */}
         <div className="w-full max-w-2xl space-y-4 text-center">
           <h1
@@ -62,7 +62,7 @@ export default function LoginPage() {
        * z-[15] keeps the card above the bridge curves (z-[6]) so curves
        * appear to flow *behind* the card — like they lead the eye to it.
        */}
-      <div className="relative z-[15] flex min-w-0 flex-col items-center justify-center py-12 pr-6 pl-6 sm:pr-8 sm:pl-8 lg:flex-1 lg:py-10 lg:pr-16 lg:pl-4 xl:pr-24 xl:pl-8 2xl:pr-32">
+      <div className="login-panel relative z-[15] flex min-w-0 flex-col items-center justify-center py-12 pr-6 pl-6 sm:pr-8 sm:pl-8 lg:flex-1 lg:py-10 lg:pr-16 lg:pl-4 xl:pr-24 xl:pl-8 2xl:pr-32">
         {/* Shared-lighting halo: a soft glow that bleeds leftward, tying
             the card into the same light source as the illustration */}
         <div className="pointer-events-none absolute top-0 left-0 h-full w-full" aria-hidden="true">

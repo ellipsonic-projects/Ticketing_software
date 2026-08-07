@@ -315,16 +315,35 @@ export class TicketService {
 
       const updatedTicket = await ticketRepository.update(id, tenantId, updatedData, tx);
 
+      const action =
+        data.status && data.status !== ticket.status
+          ? 'TICKET_STATUS_CHANGED'
+          : data.priority && data.priority !== ticket.priority
+            ? 'TICKET_PRIORITY_CHANGED'
+            : 'TICKET_UPDATED';
+
       await AuditService.log(
         {
           entity: 'Ticket',
           entityId: ticket.id,
-          action: 'TICKET_UPDATED',
+          action,
           actorId: actor.id,
           tenantId,
           clientId: ticket.clientId,
-          before: data as unknown as Record<string, unknown>,
-          after: updatedTicket as unknown as Record<string, unknown>,
+          before: {
+            title: ticket.title,
+            description: ticket.description,
+            status: ticket.status,
+            priority: ticket.priority,
+            categoryId: ticket.categoryId,
+          },
+          after: {
+            title: updatedTicket.title,
+            description: updatedTicket.description,
+            status: updatedTicket.status,
+            priority: updatedTicket.priority,
+            categoryId: updatedTicket.categoryId,
+          },
         },
         tx,
       );

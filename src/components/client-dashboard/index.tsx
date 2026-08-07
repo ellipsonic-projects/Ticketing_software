@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import { useClientDashboard } from '@/hooks/use-client-dashboard';
 import { ClientDashboardTicketSort } from '@/lib/client-dashboard/client-dashboard.types';
@@ -15,13 +16,18 @@ import { SummaryCards } from './summary-cards';
 
 const TICKETS_PER_PAGE = 7;
 const PROJECTS_PER_PAGE = 3;
+type DashboardSection = 'tickets' | 'projects';
 
 export function ClientDashboard() {
+  const searchParams = useSearchParams();
+  const projectFilterFromUrl = searchParams.get('ticketProjectId') ?? undefined;
   const [ticketPage, setTicketPage] = useState(1);
   const [ticketSort, setTicketSort] = useState<ClientDashboardTicketSort>('updatedAt');
   const [ticketSortDirection, setTicketSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [ticketProjectId, setTicketProjectId] = useState<string | undefined>();
+  const [ticketProjectId, setTicketProjectId] = useState<string | undefined>(projectFilterFromUrl);
+  const [ticketReportedByMe, setTicketReportedByMe] = useState(false);
   const [projectPage, setProjectPage] = useState(1);
+  const [loadingSection, setLoadingSection] = useState<DashboardSection | null>(null);
   const [createTicketOpen, setCreateTicketOpen] = useState(false);
   const { data, isLoading, isFetching, isError, refetch } = useClientDashboard(
     ticketPage,
@@ -29,6 +35,7 @@ export function ClientDashboard() {
     ticketSort,
     ticketSortDirection,
     ticketProjectId,
+    ticketReportedByMe,
     projectPage,
     PROJECTS_PER_PAGE,
   );
@@ -60,14 +67,32 @@ export function ClientDashboard() {
   const { summary, recentTickets, ticketProjects, sla, projectHealth } = data;
 
   const handleTicketSort = (sort: TicketSortKey, direction: 'asc' | 'desc') => {
+    setLoadingSection('tickets');
     setTicketSort(sort);
     setTicketSortDirection(direction);
     setTicketPage(1);
   };
 
   const handleProjectFilterChange = (projectId: string | undefined) => {
+    setLoadingSection('tickets');
     setTicketProjectId(projectId);
     setTicketPage(1);
+  };
+
+  const handleReporterFilterChange = (reportedByMe: boolean) => {
+    setLoadingSection('tickets');
+    setTicketReportedByMe(reportedByMe);
+    setTicketPage(1);
+  };
+
+  const handleTicketPageChange = (page: number) => {
+    setLoadingSection('tickets');
+    setTicketPage(page);
+  };
+
+  const handleProjectPageChange = (page: number) => {
+    setLoadingSection('projects');
+    setProjectPage(page);
   };
 
   // NOTE: The sidebar + header shell is provided by ClientPortalLayout (layout.tsx).
@@ -83,14 +108,16 @@ export function ClientDashboard() {
           <RecentTicketsTable
             data={recentTickets}
             page={ticketPage}
-            onPageChange={setTicketPage}
+            onPageChange={handleTicketPageChange}
             sortKey={ticketSort}
             sortDirection={ticketSortDirection}
             onSort={handleTicketSort}
             projectFilterId={ticketProjectId}
             projectOptions={ticketProjects}
             onProjectFilterChange={handleProjectFilterChange}
-            isLoading={isFetching}
+            reporterFilter={ticketReportedByMe ? 'mine' : 'all'}
+            onReporterFilterChange={(filter) => handleReporterFilterChange(filter === 'mine')}
+            isLoading={isFetching && loadingSection === 'tickets'}
             onCreateTicket={() => setCreateTicketOpen(true)}
           />
         </div>
@@ -101,8 +128,8 @@ export function ClientDashboard() {
             page={projectHealth.page}
             total={projectHealth.total}
             totalPages={projectHealth.totalPages}
-            onPageChange={setProjectPage}
-            isLoading={isFetching}
+            onPageChange={handleProjectPageChange}
+            isLoading={isFetching && loadingSection === 'projects'}
           />
         </div>
       </div>

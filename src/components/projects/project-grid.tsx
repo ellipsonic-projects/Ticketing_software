@@ -46,22 +46,22 @@ export function ProjectGrid({ clientId }: ProjectGridProps) {
 
       {/* Loading */}
       {isLoading && (
-        <div className="grid gap-6 md:grid-cols-2 2xl:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
           {Array.from({ length: limit }).map((_, index) => (
             <div
               key={index}
-              className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
+              className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
             >
-              <div className="animate-pulse p-6">
+              <div className="animate-pulse p-4">
                 <div className="h-6 w-40 rounded bg-slate-200" />
-                <div className="mt-4 h-4 w-full rounded bg-slate-100" />
+                <div className="mt-3 h-4 w-full rounded bg-slate-100" />
                 <div className="mt-2 h-4 w-4/5 rounded bg-slate-100" />
-                <div className="mt-8 grid grid-cols-4 gap-3">
+                <div className="mt-5 grid grid-cols-4 gap-2">
                   {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="h-20 rounded-xl bg-slate-100" />
+                    <div key={i} className="h-16 rounded-lg bg-slate-100" />
                   ))}
                 </div>
-                <div className="mt-8 h-10 rounded bg-slate-100" />
+                <div className="mt-5 h-8 rounded bg-slate-100" />
               </div>
             </div>
           ))}
@@ -86,7 +86,7 @@ export function ProjectGrid({ clientId }: ProjectGridProps) {
       {/* Grid */}
       {!isLoading && projects.length > 0 && (
         <>
-          <div className="grid gap-6 md:grid-cols-2 2xl:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
             {projects.map((project) => (
               <ProjectCard key={project.id} project={project} />
             ))}

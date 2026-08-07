@@ -38,12 +38,12 @@ export function EngineerDonutChart() {
   ].filter((d) => d.value > 0);
 
   return (
-    <div className="flex h-full flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:h-[420px]">
-      <div className="mb-4">
+    <div className="flex min-w-0 flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm xl:h-[390px]">
+      <div className="mb-3">
         <h3 className="font-semibold text-slate-900">My Tickets by Status</h3>
       </div>
 
-      <div className="flex flex-1 flex-col items-center justify-center gap-8 md:flex-row md:justify-around">
+      <div className="flex flex-1 flex-col items-center justify-center gap-4 xl:flex-row xl:justify-around xl:gap-6">
         <div className="relative h-[220px] w-[220px] shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -79,14 +79,14 @@ export function EngineerDonutChart() {
         </div>
 
         {/* Legend */}
-        <div className="flex flex-col justify-center space-y-4 md:w-48">
+        <div className="w-full max-w-[220px] space-y-2.5 xl:w-48 xl:max-w-none xl:shrink-0 xl:space-y-3">
           {data.map((item) => (
-            <div key={item.name} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+            <div key={item.name} className="flex min-w-0 items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2">
                 <div className={`h-2.5 w-2.5 rounded-full ${item.bg}`} />
-                <span className="text-sm font-medium text-slate-700">{item.name}</span>
+                <span className="truncate text-sm font-medium text-slate-700">{item.name}</span>
               </div>
-              <div className="flex gap-2">
+              <div className="flex shrink-0 gap-2">
                 <span className="text-sm font-semibold text-slate-900">{item.value}</span>
                 <span className="w-12 text-right text-xs text-slate-500">
                   {Math.round((item.value / total) * 100)}%
@@ -97,7 +97,7 @@ export function EngineerDonutChart() {
         </div>
       </div>
 
-      <div className="mt-4 border-t border-slate-100 pt-4">
+      <div className="mt-3 border-t border-slate-100 pt-3">
         <Link
           href="/engineer/tickets"
           className="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-700"

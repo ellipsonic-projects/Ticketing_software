@@ -3,7 +3,7 @@
 import Image from 'next/image';
 
 import { format, formatDistanceToNow } from 'date-fns';
-import { Clock, Folder, MessageSquare, Paperclip } from 'lucide-react';
+import { Clock, Folder, MessageSquare, Paperclip, UserRound } from 'lucide-react';
 
 import { TicketWithDetails } from '@/lib/ticket/ticket.types';
 
@@ -126,11 +126,17 @@ export function TicketCard({ ticket, isSelected, onClick }: TicketCardProps) {
       </div>
 
       {/* Column 2: Main Content */}
-      <div className="flex-1 min-w-0 space-y-1">
+      <div className="min-w-0 flex-1 space-y-1">
         <h3 className="text-base font-semibold text-slate-900">{ticket.title}</h3>
         <div className="flex items-center gap-1.5 text-xs text-slate-500">
           <Folder className="h-3.5 w-3.5" />
           <span>{ticket.category?.name ?? ticket.project.name}</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <UserRound className="h-3.5 w-3.5" />
+          <span>
+            Raised by {ticket.reportedBy.firstName} {ticket.reportedBy.lastName}
+          </span>
         </div>
         <p className="line-clamp-1 text-sm text-slate-500">{ticket.description}</p>
       </div>
@@ -187,7 +193,6 @@ export function TicketCard({ ticket, isSelected, onClick }: TicketCardProps) {
             </span>
           </div>
         </div>
-
       </div>
     </div>
   );

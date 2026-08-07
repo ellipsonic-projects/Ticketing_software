@@ -46,12 +46,6 @@ export class ClientService {
     let emailPayload: { email: string; rawToken: string } | null = null;
 
     const createdClient = await runInTransaction(async (db) => {
-      // Validate unique name within tenant
-      const existingClient = await clientRepository.findByName(tenantId, data.name, db);
-      if (existingClient) {
-        throw new ConflictError('A client with this name already exists in your tenant.');
-      }
-
       const client = await clientRepository.create(
         {
           tenantId,
@@ -162,12 +156,6 @@ export class ClientService {
     let emailPayload: { email: string; rawToken: string } | null = null;
 
     const result = await runInTransaction(async (db) => {
-      // Validate unique client name within tenant
-      const existingClient = await clientRepository.findByName(tenantId, data.name, db);
-      if (existingClient) {
-        throw new ConflictError('A client with this name already exists in your tenant.');
-      }
-
       // Create Client
       const client = await clientRepository.create(
         {
@@ -381,13 +369,6 @@ export class ClientService {
   ): Promise<Client> {
     return runInTransaction(async (db) => {
       const client = await this.getClientById(tenantId, id);
-
-      if (data.name && data.name !== client.name) {
-        const existingClient = await clientRepository.findByName(tenantId, data.name, db);
-        if (existingClient && existingClient.id !== id) {
-          throw new ConflictError('A client with this name already exists in your tenant.');
-        }
-      }
 
       return clientRepository.update(
         id,

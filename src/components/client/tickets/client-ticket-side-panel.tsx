@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import { TicketPriority, TicketStatus } from '@prisma/client';
 import { format, formatDistanceToNow } from 'date-fns';
 import {
@@ -10,13 +12,17 @@ import {
   Folder,
   MessageSquare,
   Paperclip,
+  Send,
   Ticket as TicketIcon,
   X,
 } from 'lucide-react';
 
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { useCreateComment, useTicketComments } from '@/hooks/use-ticket-comments';
 import { useTicket } from '@/hooks/use-tickets';
 
 interface ClientTicketSidePanelProps {
@@ -33,6 +39,19 @@ const BADGE_COLORS: Record<string, string> = {
 
 export function ClientTicketSidePanel({ ticketId, onClose }: ClientTicketSidePanelProps) {
   const { data: ticket, isLoading } = useTicket(ticketId);
+  const { data: comments, isLoading: isLoadingComments } = useTicketComments(ticketId);
+  const { mutate: createComment, isPending: isCommenting } = useCreateComment(ticketId);
+  const [commentBody, setCommentBody] = useState('');
+
+  const submitComment = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!commentBody.trim()) return;
+
+    createComment(
+      { body: commentBody.trim(), isInternal: false },
+      { onSuccess: () => setCommentBody('') },
+    );
+  };
 
   if (isLoading) {
     return (
@@ -162,11 +181,76 @@ export function ClientTicketSidePanel({ ticketId, onClose }: ClientTicketSidePan
             </div>
           </TabsContent>
 
-          <TabsContent value="comments" className="m-0 text-sm text-slate-500">
-            <div className="rounded-xl border border-slate-200 bg-white p-5 text-center shadow-sm">
-              <MessageSquare className="mx-auto mb-2 h-8 w-8 text-slate-300" />
-              <p>Ticket comments and replies will be available here soon.</p>
+          <TabsContent value="comments" className="m-0 space-y-4">
+            <div className="space-y-3">
+              {isLoadingComments ? (
+                <div className="space-y-3">
+                  <div className="h-20 animate-pulse rounded-xl bg-slate-200" />
+                  <div className="h-20 animate-pulse rounded-xl bg-slate-200" />
+                </div>
+              ) : comments?.length ? (
+                comments.map((comment: any) => (
+                  <div
+                    key={comment.id}
+                    className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                  >
+                    <div className="mb-2 flex items-center gap-2.5">
+                      <Avatar className="h-7 w-7">
+                        <AvatarFallback className="bg-indigo-100 text-[10px] font-bold text-indigo-700">
+                          {comment.author?.firstName?.[0] ?? '?'}
+                          {comment.author?.lastName?.[0] ?? ''}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-slate-900">
+                          {comment.author
+                            ? `${comment.author.firstName} ${comment.author.lastName}`
+                            : 'Support team'}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap text-slate-700">
+                      {comment.body}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center shadow-sm">
+                  <MessageSquare className="mx-auto mb-2 h-8 w-8 text-slate-300" />
+                  <p className="text-sm text-slate-500">
+                    No conversation yet. Start the discussion below.
+                  </p>
+                </div>
+              )}
             </div>
+
+            {ticket.status !== TicketStatus.CLOSED && (
+              <form
+                onSubmit={submitComment}
+                className="rounded-xl border border-slate-200 bg-white shadow-sm"
+              >
+                <Textarea
+                  value={commentBody}
+                  onChange={(event) => setCommentBody(event.target.value)}
+                  placeholder="Write a reply..."
+                  className="min-h-24 resize-y border-0 p-4 text-sm focus-visible:ring-0"
+                />
+                <div className="flex justify-end border-t border-slate-100 p-3">
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={isCommenting || !commentBody.trim()}
+                    className="bg-indigo-600 text-white hover:bg-indigo-700"
+                  >
+                    <Send className="mr-2 h-4 w-4" />
+                    {isCommenting ? 'Sending...' : 'Send reply'}
+                  </Button>
+                </div>
+              </form>
+            )}
           </TabsContent>
         </div>
       </Tabs>

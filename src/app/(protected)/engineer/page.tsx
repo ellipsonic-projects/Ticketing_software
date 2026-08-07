@@ -1,15 +1,13 @@
 import { Metadata } from 'next';
 
-import { EngineerDashboardTickets } from '@/components/engineer/dashboard/engineer-dashboard-tickets';
 import { EngineerDonutChart } from '@/components/engineer/dashboard/engineer-donut-chart';
 import { EngineerKpiCards } from '@/components/engineer/dashboard/engineer-kpi-cards';
-import { EngineerRecentActivity } from '@/components/engineer/dashboard/engineer-recent-activity';
 import { EngineerSlaOverview } from '@/components/engineer/dashboard/engineer-sla-overview';
 import { EngineerUpcomingDeadlines } from '@/components/engineer/dashboard/engineer-upcoming-deadlines';
 
 export const metadata: Metadata = {
   title: 'Engineer Dashboard | Elipdesk',
-  description: 'View assigned tickets, SLAs, and recent activity.',
+  description: 'View assigned tickets and SLAs.',
 };
 
 export default function EngineerDashboardPage() {
@@ -19,25 +17,15 @@ export default function EngineerDashboardPage() {
       <EngineerKpiCards />
 
       {/* Middle Row: Charts and Deadlines */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-1">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2 2xl:grid-cols-3">
+        <div className="min-w-0">
           <EngineerDonutChart />
         </div>
-        <div className="lg:col-span-1">
+        <div className="min-w-0">
           <EngineerSlaOverview />
         </div>
-        <div className="lg:col-span-1">
+        <div className="min-w-0 xl:col-span-2 2xl:col-span-1">
           <EngineerUpcomingDeadlines />
-        </div>
-      </div>
-
-      {/* Bottom Row: Tickets Table & Activity Feed */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <EngineerDashboardTickets />
-        </div>
-        <div className="lg:col-span-1">
-          <EngineerRecentActivity />
         </div>
       </div>
     </div>

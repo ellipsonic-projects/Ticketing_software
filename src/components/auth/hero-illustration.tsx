@@ -15,7 +15,7 @@ import { WorkflowCard } from './workflow-card';
 export function HeroIllustration() {
   return (
     <SimulationProvider>
-      <div className="relative flex h-full min-h-[600px] w-full items-center justify-center">
+      <div className="login-illustration relative flex h-full min-h-[600px] w-full items-center justify-center">
         {/* Core workflow in center */}
         <WorkflowCard />
 

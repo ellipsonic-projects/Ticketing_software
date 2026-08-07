@@ -40,31 +40,31 @@ export function EngineerSlaOverview() {
   ];
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:h-[420px]">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="flex min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm xl:h-[390px]">
+      <div className="mb-4 flex flex-col gap-2 xl:flex-row xl:items-center xl:justify-between">
         <h3 className="font-semibold text-slate-900">SLA Overview</h3>
         <Link
           href="/engineer/tickets?sort=resolutionBreachAt"
-          className="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-700"
+          className="inline-flex w-fit items-center text-sm font-semibold text-blue-600 hover:text-blue-700"
         >
           View all SLAs
           <ArrowRight className="ml-1 h-4 w-4" />
         </Link>
       </div>
 
-      <div className="flex flex-1 flex-col justify-center space-y-5">
+      <div className="flex flex-1 flex-col justify-center space-y-4">
         {slaStats.map((stat) => (
           <div key={stat.label}>
-            <div className="mb-2 flex items-center justify-between">
-              <div className="flex items-center gap-3">
+            <div className="mb-2 flex min-w-0 items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-3">
                 <div
                   className={cn('flex h-8 w-8 items-center justify-center rounded-full', stat.bg)}
                 >
                   <stat.icon className={cn('h-4 w-4', stat.color)} />
                 </div>
-                <span className="font-semibold text-slate-900">{stat.label}</span>
+                <span className="truncate font-semibold text-slate-900">{stat.label}</span>
               </div>
-              <div className="flex items-baseline gap-4">
+              <div className="flex shrink-0 items-baseline gap-4">
                 <span className="text-xl font-bold text-slate-900">{stat.count}</span>
                 <span className="w-12 text-right text-sm font-medium text-slate-500">
                   {stat.percentage}%

@@ -1,5 +1,6 @@
 import { AuditService } from '@/services/audit/audit.service';
 import { ticketCommentRepository } from '@/repositories/ticket/ticket-comment.repository';
+import { ServerAuthIdentity as Identity } from '@/lib/auth/auth-context';
 import { eventDispatcher } from '@/lib/events/dispatcher';
 import { TicketCommentAddedEvent } from '@/lib/events/types';
 import prisma from '@/lib/prisma';
@@ -16,9 +17,10 @@ export class TicketCommentService {
     tenantId: string,
     authorId: string,
     data: CreateCommentInput,
+    user: Identity,
   ) {
     // Validate ticket exists and tenant access
-    const ticket = await TicketService.getTicketById(ticketId, tenantId);
+    const ticket = await TicketService.getTicketById(ticketId, tenantId, user);
 
     const comment = await prisma.$transaction(async (tx) => {
       const newComment = await ticketCommentRepository.create(
@@ -65,14 +67,14 @@ export class TicketCommentService {
   /**
    * Retrieves comments for a ticket
    */
-  static async getComments(ticketId: string, tenantId: string, userRole: string) {
+  static async getComments(ticketId: string, tenantId: string, user: Identity) {
     // Validate ticket access
-    await TicketService.getTicketById(ticketId, tenantId);
+    await TicketService.getTicketById(ticketId, tenantId, user);
 
     const comments = await ticketCommentRepository.findByTicketId(ticketId);
 
     // If client, filter out internal notes
-    if (userRole === 'CLIENT') {
+    if (user.role === 'CLIENT') {
       return comments.filter((c) => !c.isInternal);
     }
 

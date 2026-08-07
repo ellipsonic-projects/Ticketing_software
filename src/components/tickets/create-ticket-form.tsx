@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { TicketPriority } from '@prisma/client';
 import { Loader2 } from 'lucide-react';
@@ -24,6 +24,8 @@ import { CreateTicketInput, CreateTicketSchema } from '@/lib/ticket/ticket.schem
 
 export function CreateTicketForm() {
   const router = useRouter();
+  const pathname = usePathname();
+  const ticketPath = pathname.startsWith('/engineer') ? '/engineer/tickets' : '/tickets';
   // @ts-ignore
   const { data: projectsData, isLoading: isLoadingProjects } = useProjects(new URLSearchParams());
   // @ts-ignore
@@ -55,7 +57,7 @@ export function CreateTicketForm() {
     createTicket(result.data, {
       onSuccess: (res) => {
         // @ts-ignore
-        router.push(`/tickets/${res.data.ticket.id}`);
+        router.push(`${ticketPath}/${res.data.ticket.id}`);
       },
       onError: (error) => {
         setErrors({ root: (error as Error).message });

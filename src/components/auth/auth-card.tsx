@@ -21,7 +21,7 @@ interface AuthCardProps {
 export function AuthCard({ title, description, children, footer }: AuthCardProps) {
   return (
     <Card
-      className="relative w-full max-w-[540px] overflow-hidden rounded-[28px] border-0 p-10"
+      className="login-card relative w-full max-w-[540px] overflow-hidden rounded-[28px] border-0 p-10"
       style={{
         background: 'rgba(255, 255, 255, 0.95)',
         backdropFilter: 'blur(40px)',

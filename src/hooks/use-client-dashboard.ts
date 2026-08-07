@@ -9,6 +9,7 @@ export function useClientDashboard(
   ticketSort: ClientDashboardTicketSort = 'updatedAt',
   ticketOrder: 'asc' | 'desc' = 'desc',
   ticketProjectId?: string,
+  ticketReportedByMe = false,
   projectPage = 1,
   projectLimit = 6,
 ) {
@@ -20,6 +21,7 @@ export function useClientDashboard(
       ticketSort,
       ticketOrder,
       ticketProjectId,
+      ticketReportedByMe,
       projectPage,
       projectLimit,
     ],
@@ -30,6 +32,7 @@ export function useClientDashboard(
         ticketSort,
         ticketOrder,
         ticketProjectId,
+        ticketReportedByMe,
         projectPage,
         projectLimit,
       ),

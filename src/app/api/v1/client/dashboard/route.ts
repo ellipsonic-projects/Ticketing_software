@@ -13,6 +13,7 @@ const QuerySchema = z.object({
   ticketSort: z.enum(['title', 'project', 'status', 'priority', 'updatedAt']).default('updatedAt'),
   ticketOrder: z.enum(['asc', 'desc']).default('desc'),
   ticketProjectId: z.string().min(1).optional(),
+  ticketReportedByMe: z.coerce.boolean().default(false),
   projectPage: z.coerce.number().min(1).default(1),
   projectLimit: z.coerce.number().min(1).max(50).default(6),
 });
@@ -30,16 +31,25 @@ export const GET = withErrorHandler(
     }
 
     const { searchParams } = new URL(req.url);
-    const { page, limit, ticketSort, ticketOrder, ticketProjectId, projectPage, projectLimit } =
-      QuerySchema.parse({
-        page: searchParams.get('page'),
-        limit: searchParams.get('limit'),
-        ticketSort: searchParams.get('ticketSort'),
-        ticketOrder: searchParams.get('ticketOrder'),
-        ticketProjectId: searchParams.get('ticketProjectId') || undefined,
-        projectPage: searchParams.get('projectPage'),
-        projectLimit: searchParams.get('projectLimit'),
-      });
+    const {
+      page,
+      limit,
+      ticketSort,
+      ticketOrder,
+      ticketProjectId,
+      ticketReportedByMe,
+      projectPage,
+      projectLimit,
+    } = QuerySchema.parse({
+      page: searchParams.get('page'),
+      limit: searchParams.get('limit'),
+      ticketSort: searchParams.get('ticketSort'),
+      ticketOrder: searchParams.get('ticketOrder'),
+      ticketProjectId: searchParams.get('ticketProjectId') || undefined,
+      ticketReportedByMe: searchParams.get('ticketReportedByMe') === 'true',
+      projectPage: searchParams.get('projectPage'),
+      projectLimit: searchParams.get('projectLimit'),
+    });
 
     const data = await ClientDashboardService.getDashboardData(
       identity.clientId,
@@ -50,6 +60,7 @@ export const GET = withErrorHandler(
       ticketSort,
       ticketOrder,
       ticketProjectId,
+      ticketReportedByMe,
       projectPage,
       projectLimit,
     );

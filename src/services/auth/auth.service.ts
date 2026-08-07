@@ -173,9 +173,6 @@ export class AuthService {
       actorId: user.id,
     });
 
-    if (process.env.NODE_ENV !== 'production') {
-      return `${APP_URL}/auth/reset-password?token=${rawToken}`;
-    }
   }
 
   async acceptInvitation(rawToken: string, newPass: string) {

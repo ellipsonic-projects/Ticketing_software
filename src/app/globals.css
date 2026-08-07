@@ -164,3 +164,91 @@
     @apply rounded-2xl border border-slate-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.03),0_12px_28px_rgba(15,23,42,0.04)];
   }
 }
+
+/* Keep the split login experience usable on shorter laptop screens. */
+@media (min-width: 1024px) and (max-height: 850px) {
+  .login-page .login-panel {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .login-page .login-hero {
+    gap: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .login-page .login-hero > div:last-child {
+    min-height: 25rem;
+    margin-top: -1rem;
+  }
+
+  .login-page .login-illustration {
+    min-height: 25rem;
+  }
+
+  .login-page .login-card {
+    padding: 1.75rem;
+    border-radius: 1.5rem;
+  }
+
+  .login-page .login-card [data-slot='card-header'] {
+    gap: 0.5rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .login-page .login-card [data-slot='card-header'] > :not(:first-child) {
+    margin-top: 0.5rem;
+  }
+
+  .login-page .login-card [data-slot='card-header'] > div:first-child {
+    margin-bottom: 0.25rem;
+  }
+
+  .login-page .login-card [data-slot='card-header'] > div:first-child > div:first-child {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .login-page .login-card [data-slot='card-title'] {
+    font-size: 2.25rem !important;
+  }
+
+  .login-page .login-card [data-slot='card-footer'] {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+  }
+
+  .login-page .login-form {
+    row-gap: 0;
+  }
+
+  .login-page .login-form > :not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+
+  .login-page .login-form > .w-full > :not(:last-child) {
+    margin-bottom: 0.375rem;
+  }
+
+  .login-page .login-form input {
+    height: 3rem;
+  }
+
+  .login-page .login-form > button {
+    height: 3rem;
+    margin-top: 0.75rem;
+  }
+
+  .login-page .login-card [data-slot='card-footer'] {
+    padding-top: 0.75rem;
+  }
+
+  .login-page .login-footer > :not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+
+  .login-page .login-footer > div {
+    gap: 0.5rem;
+  }
+}

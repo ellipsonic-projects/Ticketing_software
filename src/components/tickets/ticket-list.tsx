@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { TicketStatus } from '@prisma/client';
 import { format } from 'date-fns';
@@ -96,8 +96,10 @@ const SORT_OPTIONS = [
 // ---------------------------------------------------------------------------
 export function TicketList() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user } = useAuth();
+  const ticketPath = pathname.startsWith('/engineer') ? '/engineer/tickets' : '/tickets';
 
   const [searchValue, setSearchValue] = useState(searchParams.get('search') || '');
   const [selectedTicketToAssign, setSelectedTicketToAssign] = useState<any | null>(null);
@@ -340,6 +342,9 @@ export function TicketList() {
               <TableHead className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
                 Client
               </TableHead>
+              <TableHead className="min-w-[150px] text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
+                Raised By
+              </TableHead>
               <TableHead className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
                 Project
               </TableHead>
@@ -368,14 +373,14 @@ export function TicketList() {
           >
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={10} className="h-48 text-center text-slate-500">
+                <TableCell colSpan={11} className="h-48 text-center text-slate-500">
                   <RefreshCcw className="mx-auto mb-2 h-6 w-6 animate-spin text-indigo-500" />
                   Loading tickets...
                 </TableCell>
               </TableRow>
             ) : !data || data.items.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={10} className="h-48 text-center text-slate-500">
+                <TableCell colSpan={11} className="h-48 text-center text-slate-500">
                   No tickets found.
                 </TableCell>
               </TableRow>
@@ -400,7 +405,7 @@ export function TicketList() {
                     </TableCell>
 
                     <TableCell className="font-medium text-indigo-600">
-                      <Link href={`/tickets/${ticket.id}`} className="hover:underline">
+                      <Link href={`${ticketPath}/${ticket.id}`} className="hover:underline">
                         TKT-{new Date(ticket.createdAt).getFullYear()}-
                         {ticket.number.toString().padStart(5, '0')}
                       </Link>
@@ -408,7 +413,7 @@ export function TicketList() {
 
                     <TableCell>
                       <Link
-                        href={`/tickets/${ticket.id}`}
+                        href={`${ticketPath}/${ticket.id}`}
                         className="line-clamp-2 pr-4 text-slate-700 hover:text-indigo-600"
                       >
                         {ticket.title}
@@ -416,6 +421,30 @@ export function TicketList() {
                     </TableCell>
 
                     <TableCell className="text-slate-600">{ticket.client?.name}</TableCell>
+
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-7 w-7 border-0">
+                          <AvatarFallback
+                            className={cn(
+                              'bg-gradient-to-br text-[10px] font-bold shadow-sm ring-1 ring-inset',
+                              getStringColorGradient(ticket.reportedBy?.firstName || 'requester'),
+                            )}
+                          >
+                            {ticket.reportedBy?.firstName?.[0] ?? '?'}
+                            {ticket.reportedBy?.lastName?.[0] ?? ''}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-slate-900">
+                            {ticket.reportedBy
+                              ? `${ticket.reportedBy.firstName} ${ticket.reportedBy.lastName}`
+                              : 'Unknown requester'}
+                          </p>
+                          <p className="text-[11px] text-slate-500">Requester</p>
+                        </div>
+                      </div>
+                    </TableCell>
 
                     <TableCell className="text-slate-600">{ticket.project?.name}</TableCell>
 

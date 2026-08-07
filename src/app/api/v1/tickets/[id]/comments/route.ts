@@ -16,7 +16,7 @@ async function getCommentsHandler(req: NextRequest, ctx?: RouteContext) {
   if (!tenantId) throw new ForbiddenError('Tenant context required');
   const params = await ctx!.params;
 
-  const comments = await TicketCommentService.getComments(params.id, tenantId, user.role);
+  const comments = await TicketCommentService.getComments(params.id, tenantId, user);
   return ApiResponder.success({ comments });
 }
 
@@ -35,7 +35,7 @@ async function createCommentHandler(req: NextRequest, ctx?: RouteContext) {
     data.isInternal = false;
   }
 
-  const comment = await TicketCommentService.addComment(params.id, tenantId, user.id, data);
+  const comment = await TicketCommentService.addComment(params.id, tenantId, user.id, data, user);
 
   return ApiResponder.success({ comment }, 'Comment created', 201);
 }

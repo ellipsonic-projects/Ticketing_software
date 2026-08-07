@@ -59,34 +59,45 @@ export function AnalyticsCard() {
           <span>0</span>
         </div>
 
-        {/* Bars Container */}
-        <div className="relative flex h-full flex-1 items-end justify-between gap-1.5 border-b border-slate-100 pb-5">
-          {data.map((val, i) => {
-            const isHighest = val === Math.max(...data);
-            return (
-              <div key={i} className="group flex flex-1 flex-col items-center gap-1">
-                <motion.div
-                  className={`w-full rounded-t-lg ${
-                    isHighest
-                      ? 'bg-gradient-to-t from-violet-500 to-purple-600'
-                      : 'bg-gradient-to-t from-violet-400 to-purple-500'
-                  } relative overflow-hidden shadow-md`}
-                  style={{ height: `${(val / maxValue) * 100}%`, transformOrigin: 'bottom' }}
-                  initial={{ scaleY: 0 }}
-                  animate={{ scaleY: 1 }}
+        {/* Animated SVG bars */}
+        <div className="relative h-full flex-1 border-b border-slate-100 pb-5">
+          <svg
+            className="h-full w-full overflow-visible"
+            viewBox="0 0 220 100"
+            preserveAspectRatio="none"
+            role="img"
+            aria-label="Weekly response time chart"
+          >
+            <defs>
+              <linearGradient id="analytics-bar-gradient" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stopColor="#8b5cf6" />
+                <stop offset="100%" stopColor="#c084fc" />
+              </linearGradient>
+              <linearGradient id="analytics-bar-highlight" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stopColor="#7c3aed" />
+                <stop offset="100%" stopColor="#a855f7" />
+              </linearGradient>
+            </defs>
+            {data.map((val, i) => {
+              const isHighest = val === Math.max(...data);
+              const height = (val / maxValue) * 92;
+              const x = i * 32 + 4;
+
+              return (
+                <motion.rect
+                  key={i}
+                  x={x}
+                  width="20"
+                  rx="4"
+                  fill={`url(#${isHighest ? 'analytics-bar-highlight' : 'analytics-bar-gradient'})`}
+                  initial={{ y: 100, height: 0 }}
+                  animate={{ y: 100 - height, height }}
                   transition={{ duration: 0.8, delay: 0.8 + i * 0.1, ease: 'easeOut' }}
-                  whileHover={{ scaleY: 1.1, transition: { duration: 0.2 } }}
-                >
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-transparent to-white/20" />
-                </motion.div>
-                {/* Value tooltip on hover */}
-                <span className="absolute -top-6 rounded bg-slate-800 px-1.5 py-0.5 text-[9px] font-bold text-slate-700 text-white opacity-0 transition-opacity group-hover:opacity-100">
-                  {val}
-                </span>
-              </div>
-            );
-          })}
+                  whileHover={{ opacity: 0.75 }}
+                />
+              );
+            })}
+          </svg>
         </div>
       </div>
 

@@ -154,7 +154,7 @@ export class TicketQueryBuilder {
         project: { select: { id: true, name: true, code: true } },
         client: { select: { id: true, name: true } },
         assignedTo: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
-        reportedBy: { select: { id: true, firstName: true, lastName: true } },
+        reportedBy: { select: { id: true, firstName: true, lastName: true, role: true } },
         category: { select: { id: true, name: true } },
         sla: true,
         _count: { select: { comments: true, attachments: true } },
