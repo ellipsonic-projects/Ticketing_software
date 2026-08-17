@@ -111,19 +111,23 @@ async function main() {
   // ---------------------------------------------------------------------------
   // 3. Client (Acme Corporation)
   // ---------------------------------------------------------------------------
-  const client = await prisma.client.upsert({
-    where: { tenantId_name: { tenantId: tenant.id, name: 'Acme Corporation' } },
-    update: {},
-    create: {
-      tenantId: tenant.id,
-      name: 'Acme Corporation',
-      code: 'ACME',
-      email: 'contact@acme.com',
-      phone: '+91-9876543210',
-      contactName: 'Priya Sharma',
-      status: 'ACTIVE',
-    },
+  const existingClient = await prisma.client.findFirst({
+    where: { tenantId: tenant.id, name: 'Acme Corporation' },
+    orderBy: { createdAt: 'asc' },
   });
+  const client =
+    existingClient ??
+    (await prisma.client.create({
+      data: {
+        tenantId: tenant.id,
+        name: 'Acme Corporation',
+        code: 'ACME',
+        email: 'contact@acme.com',
+        phone: '+91-9876543210',
+        contactName: 'Priya Sharma',
+        status: 'ACTIVE',
+      },
+    }));
   console.log('✅ Client created:', client.name);
 
   // ---------------------------------------------------------------------------
