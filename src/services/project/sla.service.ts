@@ -54,8 +54,9 @@ export class SLAService {
         {
           entity: 'SLAPolicy',
           entityId: policy.id,
-          action: 'SLA_CREATED',
+          action: 'SLA_POLICY_CREATED',
           actorId,
+          tenantId,
           before: null,
           after: policy,
         },
@@ -110,8 +111,9 @@ export class SLAService {
         {
           entity: 'SLAPolicy',
           entityId: policy.id,
-          action: 'SLA_UPDATED',
+          action: 'SLA_POLICY_UPDATED',
           actorId,
+          tenantId,
           before: tier,
           after: updatedTier,
         },
@@ -147,8 +149,9 @@ export class SLAService {
         {
           entity: 'SLAPolicy',
           entityId: policy.id,
-          action: 'SLA_UPDATED',
+          action: 'SLA_POLICY_UPDATED',
           actorId,
+          tenantId,
           before: { businessHoursEnabled: policy.businessHoursEnabled },
           after: data,
         },

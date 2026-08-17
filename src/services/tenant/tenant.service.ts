@@ -88,7 +88,8 @@ export class TenantService {
       }
     }
 
-    let emailPayload: { email: string; rawToken: string } | null = null;
+    let emailPayload: { userId: string; tenantId: string; email: string; rawToken: string } | null =
+      null;
 
     const createdTenant = await prisma.$transaction(async (tx) => {
       // 1. Create the tenant
@@ -113,8 +114,9 @@ export class TenantService {
         {
           entity: 'Tenant',
           entityId: tenant.id,
-          action: 'Created',
+          action: 'TENANT_ONBOARDING_STARTED',
           actorId,
+          tenantId: tenant.id,
           after: tenant,
         },
         tx,
@@ -155,16 +157,25 @@ export class TenantService {
           });
 
           // Store email details to send AFTER transaction completes
-          emailPayload = { email: user.email, rawToken };
+          emailPayload = { userId: user.id, tenantId: tenant.id, email: user.email, rawToken };
 
-          // 4. Audit log for user creation
+          // 4. Record the invitation as pending until email delivery succeeds.
           await AuditService.log(
             {
               entity: 'User',
               entityId: user.id,
-              action: 'Created',
+              action: 'ADMIN_INVITATION_PENDING',
               actorId,
-              after: user,
+              tenantId: tenant.id,
+              after: {
+                id: user.id,
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                role: Role.TENANT_ADMIN,
+                status: 'INVITED',
+                invitationExpiresAt: expiresAt,
+              },
             },
             tx,
           );
@@ -185,7 +196,7 @@ export class TenantService {
 
     // Send email safely outside the transaction to prevent timeout
     if (emailPayload !== null) {
-      const { email: recipientEmail, rawToken: inviteToken } = emailPayload;
+      const { userId, tenantId, email: recipientEmail, rawToken: inviteToken } = emailPayload;
       try {
         await emailService.sendInvitation(recipientEmail, inviteToken, APP_URL);
       } catch (emailError) {
@@ -199,6 +210,15 @@ export class TenantService {
 
         throw new EmailDeliveryError('Failed to send invitation email.', { cause: emailError });
       }
+
+      await AuditService.log({
+        entity: 'User',
+        entityId: userId,
+        action: 'ADMIN_INVITATION_SENT',
+        actorId,
+        tenantId,
+        after: { email: recipientEmail, status: 'INVITED' },
+      });
     }
 
     return createdTenant;
@@ -221,8 +241,9 @@ export class TenantService {
     await AuditService.log({
       entity: 'Tenant',
       entityId: tenant.id,
-      action: 'Updated',
+      action: 'TENANT_UPDATED',
       actorId,
+      tenantId: tenant.id,
       before: existing,
       after: tenant,
     });
@@ -237,10 +258,10 @@ export class TenantService {
     const tenant = await tenantRepository.updateStatus(id, status, actorId);
 
     const actionMap: Record<TenantStatus, string> = {
-      ACTIVE: 'Activated',
-      SUSPENDED: 'Suspended',
-      INACTIVE: 'Deactivated',
-      PENDING_ACTIVATION: 'PendingActivation',
+      ACTIVE: 'TENANT_ACTIVATED',
+      SUSPENDED: 'TENANT_SUSPENDED',
+      INACTIVE: 'TENANT_DEACTIVATED',
+      PENDING_ACTIVATION: 'TENANT_PENDING_ACTIVATION',
     };
 
     await AuditService.log({
@@ -248,6 +269,7 @@ export class TenantService {
       entityId: tenant.id,
       action: actionMap[status],
       actorId,
+      tenantId: tenant.id,
       before: existing,
       after: tenant,
     });
@@ -264,8 +286,9 @@ export class TenantService {
     await AuditService.log({
       entity: 'Tenant',
       entityId: tenant.id,
-      action: 'Deleted',
+      action: 'TENANT_DELETED',
       actorId,
+      tenantId: tenant.id,
       before: existing,
       after: tenant,
     });

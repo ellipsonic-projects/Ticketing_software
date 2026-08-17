@@ -69,6 +69,19 @@ function formatActionLabel(action: string) {
     TICKET_UNASSIGNED: 'Ticket unassigned',
     TICKET_COMMENT_ADDED: 'Ticket comment added',
     TICKET_INTERNAL_NOTE_ADDED: 'Internal note added',
+    TENANT_ONBOARDING_STARTED: 'Tenant onboarding started',
+    ADMIN_INVITATION_PENDING: 'Admin invitation pending',
+    ADMIN_INVITATION_SENT: 'Admin invitation sent',
+    INVITATION_ACCEPTED: 'Invitation accepted',
+    TENANT_ONBOARDING_COMPLETED: 'Tenant onboarding completed',
+    TENANT_UPDATED: 'Tenant edited',
+    TENANT_DELETED: 'Tenant deleted',
+    TENANT_ACTIVATED: 'Tenant activated',
+    TENANT_SUSPENDED: 'Tenant suspended',
+    TENANT_DEACTIVATED: 'Tenant deactivated',
+    TENANT_PENDING_ACTIVATION: 'Tenant pending activation',
+    SLA_POLICY_CREATED: 'Default SLA policy created',
+    SLA_POLICY_UPDATED: 'SLA policy updated',
   };
 
   if (labels[action]) return labels[action];
@@ -81,6 +94,10 @@ function formatActionLabel(action: string) {
 
 function getActionColor(action: string) {
   const upper = action.toUpperCase();
+  if (upper.includes('INVITATION') || upper.includes('PENDING'))
+    return 'bg-amber-50 text-amber-700 ring-amber-600/20';
+  if (upper.includes('ONBOARDING_COMPLETED') || upper.includes('ACTIVATED'))
+    return 'bg-teal-50 text-teal-700 ring-teal-600/20';
   if (upper.includes('CREATED')) return 'bg-emerald-50 text-emerald-700 ring-emerald-600/20';
   if (upper.includes('UPDATED') || upper.includes('CHANGED'))
     return 'bg-blue-50 text-blue-700 ring-blue-600/20';
@@ -102,6 +119,8 @@ function getEntityIcon(entity: string) {
       return <User className="h-3.5 w-3.5 text-cyan-500" />;
     case 'client':
       return <Building2 className="h-3.5 w-3.5 text-fuchsia-500" />;
+    case 'tenant':
+      return <Building2 className="h-3.5 w-3.5 text-violet-500" />;
     case 'project':
       return <Folder className="h-3.5 w-3.5 text-orange-500" />;
     default:
@@ -129,6 +148,19 @@ function getChangeSummary(log: AuditLogItem) {
 
   const before = getRecord(log.before);
   const after = getRecord(log.after);
+  if (log.action === 'ADMIN_INVITATION_PENDING') {
+    return `Invitation for ${String(after?.email || 'tenant administrator')} is awaiting delivery.`;
+  }
+  if (log.action === 'ADMIN_INVITATION_SENT') {
+    return `Invitation sent to ${String(after?.email || 'tenant administrator')}.`;
+  }
+  if (log.action === 'TENANT_ONBOARDING_STARTED') {
+    return 'Tenant created with pending activation status.';
+  }
+  if (log.action === 'TENANT_ONBOARDING_COMPLETED') {
+    return 'Administrator accepted the invitation and activated the tenant.';
+  }
+  if (log.action === 'SLA_POLICY_CREATED') return 'Default SLA policy and priority tiers created.';
   if (!before || !after) return formatActionLabel(log.action);
 
   const changedFields = [

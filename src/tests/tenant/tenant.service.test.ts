@@ -76,7 +76,7 @@ describe('TenantService', () => {
         expect.anything(),
       );
       expect(AuditService.log).toHaveBeenCalledWith(
-        expect.objectContaining({ action: 'Created' }),
+        expect.objectContaining({ action: 'TENANT_ONBOARDING_STARTED', tenantId: 't1' }),
         expect.anything(),
       );
     });
@@ -97,7 +97,7 @@ describe('TenantService', () => {
 
       expect(tenantRepository.updateStatus).toHaveBeenCalledWith('t1', 'SUSPENDED', undefined);
       expect(AuditService.log).toHaveBeenCalledWith(
-        expect.objectContaining({ action: 'Suspended' }),
+        expect.objectContaining({ action: 'TENANT_SUSPENDED', tenantId: 't1' }),
       );
     });
   });

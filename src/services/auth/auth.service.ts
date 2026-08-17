@@ -172,7 +172,6 @@ export class AuthService {
       action: 'PASSWORD_RESET_REQUESTED',
       actorId: user.id,
     });
-
   }
 
   async acceptInvitation(rawToken: string, newPass: string) {
@@ -235,7 +234,19 @@ export class AuthService {
       entityId: user.id,
       action: 'INVITATION_ACCEPTED',
       actorId: user.id,
+      tenantId: user.tenantId,
     });
+
+    if (user.role === 'TENANT_ADMIN') {
+      await AuditService.log({
+        entity: 'Tenant',
+        entityId: user.tenantId,
+        action: 'TENANT_ONBOARDING_COMPLETED',
+        actorId: user.id,
+        tenantId: user.tenantId,
+        after: { status: 'ACTIVE', adminEmail: user.email },
+      });
+    }
 
     await emailService.sendWelcome(user.email, APP_URL);
   }
