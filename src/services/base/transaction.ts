@@ -18,7 +18,8 @@ export async function runInTransaction<T>(
     return callback(existingTx);
   }
 
-  return prisma.$transaction(async (tx) => {
-    return callback(tx);
+  return prisma.$transaction(async (tx) => callback(tx), {
+    maxWait: 10_000,
+    timeout: 30_000,
   });
 }

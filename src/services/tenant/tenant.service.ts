@@ -91,108 +91,114 @@ export class TenantService {
     let emailPayload: { userId: string; tenantId: string; email: string; rawToken: string } | null =
       null;
 
-    const createdTenant = await prisma.$transaction(async (tx) => {
-      // 1. Create the tenant
-      const tenant = await tenantRepository.create(
-        {
-          name: input.name,
-          slug,
-          domain: input.domain,
-          status: 'PENDING_ACTIVATION',
-          contactEmail: input.contactEmail,
-          contactPhone: input.contactPhone,
-          timezone: input.timezone,
-          currency: input.currency,
-          createdBy: actorId,
-          updatedBy: actorId,
-        },
-        tx,
-      );
+    const createdTenant = await prisma.$transaction(
+      async (tx) => {
+        // 1. Create the tenant
+        const tenant = await tenantRepository.create(
+          {
+            name: input.name,
+            slug,
+            domain: input.domain,
+            status: 'PENDING_ACTIVATION',
+            contactEmail: input.contactEmail,
+            contactPhone: input.contactPhone,
+            timezone: input.timezone,
+            currency: input.currency,
+            createdBy: actorId,
+            updatedBy: actorId,
+          },
+          tx,
+        );
 
-      // 2. Audit log for tenant creation
-      await AuditService.log(
-        {
-          entity: 'Tenant',
-          entityId: tenant.id,
-          action: 'TENANT_ONBOARDING_STARTED',
-          actorId,
-          tenantId: tenant.id,
-          after: tenant,
-        },
-        tx,
-      );
-
-      // 3. Create the first TENANT_ADMIN user
-      if (input.admin) {
-        // Generate invitation token
-        const rawToken = crypto.randomBytes(32).toString('hex');
-        const tokenHash = hashToken(rawToken);
-        const expiresAt = new Date(Date.now() + INVITATION_TTL_MS);
-        const placeholderPassword = crypto.randomBytes(16).toString('hex');
-
-        try {
-          const user = await userRepository.create(
-            tenant.id,
-            {
-              firstName: input.admin.firstName,
-              lastName: input.admin.lastName,
-              email: input.admin.email,
-              password: placeholderPassword,
-              role: Role.TENANT_ADMIN,
-              mustChangePassword: false,
-            },
+        // 2. Audit log for tenant creation
+        await AuditService.log(
+          {
+            entity: 'Tenant',
+            entityId: tenant.id,
+            action: 'TENANT_ONBOARDING_STARTED',
             actorId,
-            tx,
-          );
+            tenantId: tenant.id,
+            after: tenant,
+          },
+          tx,
+        );
 
-          // Manually update status and token fields since repository might not have them yet
-          await tx.user.update({
-            where: { id: user.id },
-            data: {
-              status: 'INVITED',
-              invitationTokenHash: tokenHash,
-              invitationExpiresAt: expiresAt,
-              invitedAt: new Date(),
-            },
-          });
+        // 3. Create the first TENANT_ADMIN user
+        if (input.admin) {
+          // Generate invitation token
+          const rawToken = crypto.randomBytes(32).toString('hex');
+          const tokenHash = hashToken(rawToken);
+          const expiresAt = new Date(Date.now() + INVITATION_TTL_MS);
+          const placeholderPassword = crypto.randomBytes(16).toString('hex');
 
-          // Store email details to send AFTER transaction completes
-          emailPayload = { userId: user.id, tenantId: tenant.id, email: user.email, rawToken };
-
-          // 4. Record the invitation as pending until email delivery succeeds.
-          await AuditService.log(
-            {
-              entity: 'User',
-              entityId: user.id,
-              action: 'ADMIN_INVITATION_PENDING',
-              actorId,
-              tenantId: tenant.id,
-              after: {
-                id: user.id,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
+          try {
+            const user = await userRepository.create(
+              tenant.id,
+              {
+                firstName: input.admin.firstName,
+                lastName: input.admin.lastName,
+                email: input.admin.email,
+                password: placeholderPassword,
                 role: Role.TENANT_ADMIN,
-                status: 'INVITED',
-                invitationExpiresAt: expiresAt,
+                mustChangePassword: false,
               },
-            },
-            tx,
-          );
-        } catch (error: unknown) {
-          // Catch Prisma unique constraint violation (P2002) on race conditions
-          if (isPrismaUniqueConstraintError(error) && error.meta?.target?.includes('email')) {
-            throw new ConflictError('Email address is already in use');
+              actorId,
+              tx,
+            );
+
+            // Manually update status and token fields since repository might not have them yet
+            await tx.user.update({
+              where: { id: user.id },
+              data: {
+                status: 'INVITED',
+                invitationTokenHash: tokenHash,
+                invitationExpiresAt: expiresAt,
+                invitedAt: new Date(),
+              },
+            });
+
+            // Store email details to send AFTER transaction completes
+            emailPayload = { userId: user.id, tenantId: tenant.id, email: user.email, rawToken };
+
+            // 4. Record the invitation as pending until email delivery succeeds.
+            await AuditService.log(
+              {
+                entity: 'User',
+                entityId: user.id,
+                action: 'ADMIN_INVITATION_PENDING',
+                actorId,
+                tenantId: tenant.id,
+                after: {
+                  id: user.id,
+                  email: user.email,
+                  firstName: user.firstName,
+                  lastName: user.lastName,
+                  role: Role.TENANT_ADMIN,
+                  status: 'INVITED',
+                  invitationExpiresAt: expiresAt,
+                },
+              },
+              tx,
+            );
+          } catch (error: unknown) {
+            // Catch Prisma unique constraint violation (P2002) on race conditions
+            if (isPrismaUniqueConstraintError(error) && error.meta?.target?.includes('email')) {
+              throw new ConflictError('Email address is already in use');
+            }
+            throw error;
           }
-          throw error;
         }
-      }
 
-      // 5. Provision Default SLA Policy for the Tenant
-      await slaService.provisionDefaultPolicy(tenant.id, actorId || 'SYSTEM', tx as any);
+        // 5. Provision Default SLA Policy for the Tenant
+        await slaService.provisionDefaultPolicy(tenant.id, actorId || 'SYSTEM', tx);
 
-      return tenant;
-    });
+        return tenant;
+      },
+      {
+        maxWait: 10_000,
+        timeout: 30_000,
+      },
+    );
 
     // Send email safely outside the transaction to prevent timeout
     if (emailPayload !== null) {
