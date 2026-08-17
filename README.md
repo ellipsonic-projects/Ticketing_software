@@ -1,4 +1,4 @@
-# Multi-Tenant Ticketing System
+# Multi-Tenant Ticketing System.......
 
 An enterprise-style support ticketing platform for managing multiple tenants, clients, projects, engineers, SLAs, and ticket workflows from one application.
 
@@ -77,33 +77,33 @@ Open [http://localhost:3000](http://localhost:3000).
 
 The seed script creates these local development accounts:
 
-| Role | Email | Password |
-| --- | --- | --- |
-| Platform admin | `platform@elipdesk.com` | `Admin@1234` |
-| Tenant admin | `admin@elipdesk.com` | `Admin@1234` |
-| Engineer | `john.doe@elipdesk.com` | `Engineer@1234` |
-| Client portal | `priya@acme.com` | `Client@1234` |
+| Role           | Email                   | Password        |
+| -------------- | ----------------------- | --------------- |
+| Platform admin | `platform@elipdesk.com` | `Admin@1234`    |
+| Tenant admin   | `admin@elipdesk.com`    | `Admin@1234`    |
+| Engineer       | `john.doe@elipdesk.com` | `Engineer@1234` |
+| Client portal  | `priya@acme.com`        | `Client@1234`   |
 
 These credentials are for development only. Change or remove them before deploying to a shared or production environment.
 
 ## Useful commands
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Start the development server |
-| `npm run build` | Create a production build |
-| `npm run start` | Start the production server |
-| `npm run type-check` | Run strict TypeScript checks |
-| `npm run lint` | Run ESLint |
-| `npm run test` | Run the test suite once |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run test:coverage` | Generate test coverage |
-| `npm run format` | Format the project with Prettier |
-| `npm run ci` | Run type-checking, linting, tests, and build |
-| `npx prisma studio` | Browse the database locally |
-| `npx prisma migrate dev` | Create and apply a development migration |
-| `npx prisma migrate deploy` | Apply committed migrations in deployment |
-| `npx prisma db seed` | Seed the development database |
+| Command                     | Purpose                                      |
+| --------------------------- | -------------------------------------------- |
+| `npm run dev`               | Start the development server                 |
+| `npm run build`             | Create a production build                    |
+| `npm run start`             | Start the production server                  |
+| `npm run type-check`        | Run strict TypeScript checks                 |
+| `npm run lint`              | Run ESLint                                   |
+| `npm run test`              | Run the test suite once                      |
+| `npm run test:watch`        | Run tests in watch mode                      |
+| `npm run test:coverage`     | Generate test coverage                       |
+| `npm run format`            | Format the project with Prettier             |
+| `npm run ci`                | Run type-checking, linting, tests, and build |
+| `npx prisma studio`         | Browse the database locally                  |
+| `npx prisma migrate dev`    | Create and apply a development migration     |
+| `npx prisma migrate deploy` | Apply committed migrations in deployment     |
+| `npx prisma db seed`        | Seed the development database                |
 
 ## Project layout
 
