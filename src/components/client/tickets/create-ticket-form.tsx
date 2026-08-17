@@ -46,8 +46,8 @@ import { useAuth } from '@/hooks/use-auth';
 import { useProjects } from '@/hooks/use-projects';
 import { apiClient } from '@/services/api/api-client';
 import { ProjectWithClient } from '@/lib/project/project.types';
-import { TicketWithDetails } from '@/lib/ticket/ticket.types';
 import { isValidMimeType } from '@/lib/storage/file-validation';
+import { TicketWithDetails } from '@/lib/ticket/ticket.types';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -260,7 +260,14 @@ export function CreateTicketForm() {
                       Project <span className="text-red-500">*</span>
                     </FormLabel>
 
-                    <Select onValueChange={field.onChange} value={field.value || ''}>
+                    <Select
+                      items={projects.map((project) => ({
+                        value: project.id,
+                        label: project.name,
+                      }))}
+                      onValueChange={field.onChange}
+                      value={field.value || ''}
+                    >
                       <FormControl>
                         <SelectTrigger className="h-12 rounded-xl border-slate-200/40 bg-slate-50/50 shadow-sm transition-all hover:bg-slate-50 focus:ring-2 focus:ring-blue-500/20">
                           <SelectValue placeholder="Select a project" />
