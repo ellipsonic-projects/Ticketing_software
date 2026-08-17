@@ -21,7 +21,13 @@ export class SmtpProvider implements EmailProvider {
         },
       });
     } else {
-      console.warn('⚠️ SMTP configuration is missing or incomplete in environment variables.');
+      console.error('[SMTP] Configuration is missing or incomplete.', {
+        hostConfigured: Boolean(env.SMTP_HOST),
+        portConfigured: Boolean(env.SMTP_PORT),
+        userConfigured: Boolean(env.SMTP_USER),
+        passwordConfigured: Boolean(env.SMTP_PASS),
+        fromConfigured: Boolean(env.SMTP_FROM),
+      });
     }
   }
 
@@ -34,6 +40,11 @@ export class SmtpProvider implements EmailProvider {
       const to = Array.isArray(options.to) ? options.to.join(', ') : options.to;
 
       if (!this.transporter) {
+        if (env.NODE_ENV === 'production') {
+          console.error('[SMTP] Email delivery unavailable because SMTP is not configured.');
+          throw new Error('SMTP configuration is missing or incomplete');
+        }
+
         console.log(`\n📧 [DEV MODE] Simulated Email to: ${to}`);
         console.log(`Subject: ${options.subject}`);
         console.log(`From: ${from}`);
@@ -41,14 +52,35 @@ export class SmtpProvider implements EmailProvider {
         return;
       }
 
-      await this.transporter.sendMail({
+      const result = await this.transporter.sendMail({
         from,
         to,
         subject: options.subject,
         html,
       });
+
+      console.info('[SMTP] Email delivered successfully.', {
+        messageId: result.messageId,
+        acceptedCount: Array.isArray(result.accepted) ? result.accepted.length : 0,
+        rejectedCount: Array.isArray(result.rejected) ? result.rejected.length : 0,
+      });
     } catch (error) {
-      console.error('❌ Error sending email via SMTP:', error);
+      const smtpError = error as {
+        code?: string;
+        command?: string;
+        responseCode?: number;
+        message?: string;
+      };
+
+      console.error('[SMTP] Email delivery failed.', {
+        host: env.SMTP_HOST,
+        port: env.SMTP_PORT,
+        secure: env.SMTP_PORT === 465,
+        code: smtpError.code,
+        command: smtpError.command,
+        responseCode: smtpError.responseCode,
+        message: smtpError.message || 'Unknown SMTP error',
+      });
       throw error;
     }
   }
