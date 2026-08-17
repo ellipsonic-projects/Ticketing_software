@@ -1,6 +1,6 @@
-import { Prisma, PrismaClient, SLAPolicy, SLATier } from '@prisma/client';
+import { Prisma, SLAPolicy, SLATier } from '@prisma/client';
 
-const prisma = new PrismaClient();
+import prisma from '@/lib/prisma';
 
 export type SLAPolicyWithTiers = SLAPolicy & { tiers: SLATier[] };
 
@@ -8,8 +8,11 @@ export class SLARepository {
   /**
    * Get SLA Policy by Tenant ID (with tiers)
    */
-  static async getByTenant(tenantId: string): Promise<SLAPolicyWithTiers | null> {
-    return prisma.sLAPolicy.findUnique({
+  static async getByTenant(
+    tenantId: string,
+    db: Prisma.TransactionClient | typeof prisma = prisma,
+  ): Promise<SLAPolicyWithTiers | null> {
+    return db.sLAPolicy.findUnique({
       where: { tenantId },
       include: {
         tiers: {
@@ -24,7 +27,7 @@ export class SLARepository {
    */
   static async create(
     data: Prisma.SLAPolicyUncheckedCreateInput,
-    db: Prisma.TransactionClient | PrismaClient = prisma,
+    db: Prisma.TransactionClient | typeof prisma = prisma,
   ): Promise<SLAPolicyWithTiers> {
     return db.sLAPolicy.create({
       data,
@@ -42,7 +45,7 @@ export class SLARepository {
   static async updatePolicy(
     tenantId: string,
     data: Prisma.SLAPolicyUncheckedUpdateInput,
-    db: Prisma.TransactionClient | PrismaClient = prisma,
+    db: Prisma.TransactionClient | typeof prisma = prisma,
   ): Promise<SLAPolicy> {
     return db.sLAPolicy.update({
       where: { tenantId },
@@ -56,7 +59,7 @@ export class SLARepository {
   static async updateTier(
     tierId: string,
     data: Prisma.SLATierUncheckedUpdateInput,
-    db: Prisma.TransactionClient | PrismaClient = prisma,
+    db: Prisma.TransactionClient | typeof prisma = prisma,
   ): Promise<SLATier> {
     return db.sLATier.update({
       where: { id: tierId },
@@ -69,7 +72,7 @@ export class SLARepository {
    */
   static async delete(
     tenantId: string,
-    db: Prisma.TransactionClient | PrismaClient = prisma,
+    db: Prisma.TransactionClient | typeof prisma = prisma,
   ): Promise<void> {
     await db.sLAPolicy.delete({
       where: { tenantId },

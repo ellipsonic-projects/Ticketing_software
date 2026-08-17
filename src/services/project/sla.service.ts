@@ -30,7 +30,7 @@ export class SLAService {
    */
   async provisionDefaultPolicy(tenantId: string, actorId: string, tx?: DbClient) {
     return runInTransaction(async (db) => {
-      const existingPolicy = await SLARepository.getByTenant(tenantId);
+      const existingPolicy = await SLARepository.getByTenant(tenantId, db);
       if (existingPolicy) {
         return existingPolicy;
       }
@@ -77,7 +77,7 @@ export class SLAService {
     tx?: DbClient,
   ) {
     return runInTransaction(async (db) => {
-      const policy = await SLARepository.getByTenant(tenantId);
+      const policy = await SLARepository.getByTenant(tenantId, db);
       if (!policy) {
         throw new NotFoundError('SLA Policy not found for tenant');
       }
@@ -132,7 +132,7 @@ export class SLAService {
     tx?: DbClient,
   ) {
     return runInTransaction(async (db) => {
-      const policy = await SLARepository.getByTenant(tenantId);
+      const policy = await SLARepository.getByTenant(tenantId, db);
       if (!policy) {
         throw new NotFoundError('SLA Policy not found for tenant');
       }
