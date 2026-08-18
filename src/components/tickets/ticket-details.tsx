@@ -53,7 +53,7 @@ export function TicketDetails({ id }: { id: string }) {
   const { user } = useAuth();
   const { data: ticket, isLoading, isError, error } = useTicket(id);
   const { mutate: updateTicket, isPending: isUpdatingTicket } = useUpdateTicket(id);
-  const { mutate: assignTicket } = useAssignTicket(id);
+  const { mutate: assignTicket, isPending: isAssigningTicket } = useAssignTicket(id);
 
   const { data: comments, isLoading: isLoadingComments } = useTicketComments(id);
   const { mutate: createComment, isPending: isCommenting } = useCreateComment(id);
@@ -135,9 +135,18 @@ export function TicketDetails({ id }: { id: string }) {
   };
 
   const handleAssign = (userId: string | null) => {
-    if (userId) {
-      assignTicket({ assignedToId: userId === 'unassigned' ? null : userId });
-    }
+    if (!userId || isAssigningTicket || userId === ticket.assignedToId) return;
+
+    assignTicket(
+      { assignedToId: userId === 'unassigned' ? null : userId },
+      {
+        onSuccess: () => toast.success('Ticket assignee updated'),
+        onError: (assignError) =>
+          toast.error(
+            assignError instanceof Error ? assignError.message : 'Failed to update ticket assignee',
+          ),
+      },
+    );
   };
 
   const submitComment = (e: React.FormEvent) => {
@@ -657,7 +666,7 @@ export function TicketDetails({ id }: { id: string }) {
                   <Select
                     value={ticket.assignedToId || 'unassigned'}
                     onValueChange={handleAssign}
-                    disabled={!canAssign || ticket.status === 'CLOSED'}
+                    disabled={!canAssign || ticket.status === 'CLOSED' || isAssigningTicket}
                   >
                     <SelectTrigger className="!h-auto w-full rounded-lg border-slate-200 bg-white px-3 py-2 text-left shadow-sm transition-colors hover:border-slate-300 [&>span]:line-clamp-none [&>span]:flex [&>span]:w-full">
                       <SelectValue placeholder="Unassigned">
