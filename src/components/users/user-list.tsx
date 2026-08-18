@@ -62,7 +62,7 @@ export function UserList({ selectedUserId, onSelectUser }: UserListProps) {
   const queryParams = new URLSearchParams(searchParams.toString());
   if (!queryParams.has('limit')) queryParams.set('limit', '6');
 
-  const { data, isLoading } = useUsers({
+  const { data, error, isError, isLoading } = useUsers({
     page,
     pageSize: limit,
     search,
@@ -118,6 +118,16 @@ export function UserList({ selectedUserId, onSelectUser }: UserListProps) {
           {isLoading ? (
             <div className="flex h-[400px] items-center justify-center">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+            </div>
+          ) : isError ? (
+            <div className="flex h-[400px] flex-col items-center justify-center px-6 text-center">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
+                <Search className="h-6 w-6 text-red-500" />
+              </div>
+              <h3 className="text-sm font-semibold text-slate-900">Unable to load users</h3>
+              <p className="mt-1 max-w-md text-sm text-slate-500">
+                {error instanceof Error ? error.message : 'Please try again in a moment.'}
+              </p>
             </div>
           ) : users.length === 0 ? (
             <div className="flex h-[400px] flex-col items-center justify-center text-center">
