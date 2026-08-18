@@ -1,15 +1,8 @@
-import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { formatDistanceToNow } from 'date-fns';
-import { AlertCircle, MoreVertical, ShieldCheck, Ticket, Users } from 'lucide-react';
+import { AlertCircle, ShieldCheck, Ticket, Users } from 'lucide-react';
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { ProjectWithClient } from '@/lib/project/project.types';
 
@@ -51,8 +44,7 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
       className="group flex h-full cursor-pointer flex-col rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"
       role="link"
       tabIndex={0}
-      onClick={(event) => {
-        if ((event.target as HTMLElement).closest('button, a')) return;
+      onClick={() => {
         if (onOpen) onOpen(project);
         else router.push(dashboardHref);
       }}
@@ -81,21 +73,6 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
             {project.description ?? 'No description has been provided for this project.'}
           </p>
         </div>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            className="ml-3 flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <MoreVertical className="h-4 w-4" />
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent align="end" className="w-44 rounded-xl">
-            <DropdownMenuItem>
-              <Link href={`/projects/${project.id}/edit`}>Edit Project</Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
 
       {/* ================= METRICS ================= */}

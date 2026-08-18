@@ -22,7 +22,6 @@ import {
   User,
 } from 'lucide-react';
 
-import { CommandPalette } from '@/components/shared/command-palette';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -167,7 +166,6 @@ export function BaseHeader({
 
         {/* RIGHT — Notifications, Profile */}
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
-          <CommandPalette />
           {canCreateTicket && (
             <Link
               href={createTicketHref}
