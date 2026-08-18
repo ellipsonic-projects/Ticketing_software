@@ -1,9 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-import { useState } from 'react';
 
 import { ChevronRight, Headphones, PanelLeftClose, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -82,7 +81,13 @@ function NavItem({
         active ? activeBg : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
       )}
     >
-      <Icon className={cn('h-4 w-4 shrink-0', !collapsed && 'mr-3', active ? activeIconColor : 'text-slate-500')} />
+      <Icon
+        className={cn(
+          'h-4 w-4 shrink-0',
+          !collapsed && 'mr-3',
+          active ? activeIconColor : 'text-slate-500',
+        )}
+      />
       {!collapsed && <span className="flex-1">{label}</span>}
 
       {!collapsed && badge !== undefined && badge > 0 && (
@@ -120,16 +125,27 @@ export function BaseSidebar({
   const textColor = themeColor === 'violet' ? 'text-violet-600' : 'text-blue-600';
 
   const sidebarContent = (
-    <aside className={cn('relative flex h-full shrink-0 flex-col border-r border-slate-200/80 bg-white/90 backdrop-blur-xl transition-[width] duration-200', collapsed ? 'w-[76px]' : 'w-[260px]')}>
+    <aside
+      className={cn(
+        'relative flex h-full shrink-0 flex-col border-r border-slate-200/80 bg-white transition-[width] duration-200',
+        collapsed ? 'w-[76px]' : 'w-[260px]',
+      )}
+    >
       {/* 1. Header / Logo */}
-      <div className={cn('flex items-center justify-between px-4 pt-5 pb-5', collapsed && 'justify-center')}>
+      <div
+        className={cn(
+          'flex items-center justify-between px-4 pt-5 pb-5',
+          collapsed && 'justify-center',
+        )}
+      >
         <div className="flex items-center gap-3 overflow-hidden">
           {logoIcon}
-          {!collapsed && <div>
-            <h2 className="text-lg font-semibold tracking-tight text-slate-900">{logoTitle}</h2>
-            <p className="text-xs text-slate-500">{logoSubtitle}</p>
-          </div>
-          }
+          {!collapsed && (
+            <div>
+              <h2 className="text-lg font-semibold tracking-tight text-slate-900">{logoTitle}</h2>
+              <p className="text-xs text-slate-500">{logoSubtitle}</p>
+            </div>
+          )}
         </div>
 
         {/* Close button — mobile only */}
@@ -143,13 +159,34 @@ export function BaseSidebar({
             <X className="h-5 w-5" />
           </button>
         )}
-        {!collapsed && <button type="button" onClick={() => setCollapsed(true)} className="hidden h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 lg:flex" aria-label="Collapse sidebar"><PanelLeftClose className="h-4 w-4" /></button>}
+        {!collapsed && (
+          <button
+            type="button"
+            onClick={() => setCollapsed(true)}
+            className="hidden h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 lg:flex"
+            aria-label="Collapse sidebar"
+          >
+            <PanelLeftClose className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
-      {collapsed && <button type="button" onClick={() => setCollapsed(false)} className="absolute -right-3 top-7 z-10 hidden h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:text-slate-900 lg:flex" aria-label="Expand sidebar"><ChevronRight className="h-3.5 w-3.5" /></button>}
+      {collapsed && (
+        <button
+          type="button"
+          onClick={() => setCollapsed(false)}
+          className="absolute top-7 -right-3 z-10 hidden h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:text-slate-900 lg:flex"
+          aria-label="Expand sidebar"
+        >
+          <ChevronRight className="h-3.5 w-3.5" />
+        </button>
+      )}
 
       {/* 2. Navigation */}
-      <nav className={cn('flex-1 overflow-y-auto px-3', collapsed && 'px-3')} aria-label="Sidebar navigation">
+      <nav
+        className={cn('flex-1 overflow-y-auto px-3', collapsed && 'px-3')}
+        aria-label="Sidebar navigation"
+      >
         <div className="space-y-1 sm:space-y-2">
           {navItems.map((item) => {
             // Find the most specific match (longest href) to prevent parent items
@@ -216,16 +253,21 @@ export function BaseSidebar({
 
       {/* 4. Footer */}
       {customFooter ? (
-        collapsed ? <div className="border-t border-slate-200 p-3" /> : customFooter
+        collapsed ? (
+          <div className="border-t border-slate-200 p-3" />
+        ) : (
+          customFooter
+        )
       ) : (
         <div className={cn('border-t border-slate-200 p-4', collapsed && 'p-3')}>
           <div className={cn('flex items-center gap-3', collapsed && 'justify-center')}>
             {footerIcon}
-            {!collapsed && <div className="flex-1 overflow-hidden">
-              <p className="truncate font-medium text-slate-900">{footerTitle}</p>
-              <p className="truncate text-xs text-slate-500">{footerSubtitle}</p>
-            </div>
-            }
+            {!collapsed && (
+              <div className="flex-1 overflow-hidden">
+                <p className="truncate font-medium text-slate-900">{footerTitle}</p>
+                <p className="truncate text-xs text-slate-500">{footerSubtitle}</p>
+              </div>
+            )}
             {!collapsed && <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" />}
           </div>
         </div>

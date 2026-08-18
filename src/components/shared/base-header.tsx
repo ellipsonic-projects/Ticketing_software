@@ -71,13 +71,14 @@ function getCurrentDate(): string {
   }).format(new Date());
 }
 
-function getRoleIcon(roleLabel?: string) {
+function RoleIcon({ roleLabel, className }: { roleLabel?: string; className: string }) {
   const role = roleLabel?.toLowerCase() ?? '';
-  if (role.includes('platform')) return ShieldCheck;
-  if (role.includes('tenant')) return Building2;
-  if (role.includes('engineer')) return HardHat;
-  if (role.includes('client')) return BriefcaseBusiness;
-  return Sparkles;
+  if (role.includes('platform')) return <ShieldCheck className={className} aria-hidden="true" />;
+  if (role.includes('tenant')) return <Building2 className={className} aria-hidden="true" />;
+  if (role.includes('engineer')) return <HardHat className={className} aria-hidden="true" />;
+  if (role.includes('client'))
+    return <BriefcaseBusiness className={className} aria-hidden="true" />;
+  return <Sparkles className={className} aria-hidden="true" />;
 }
 
 // ---------------------------------------------------------------------------
@@ -131,10 +132,8 @@ export function BaseHeader({
       ? 'text-violet-600 hover:text-violet-700'
       : 'text-blue-600 hover:text-blue-700';
   const notificationDot = themeColor === 'violet' ? 'bg-violet-500' : 'bg-blue-500';
-  const RoleIcon = getRoleIcon(roleLabel);
-
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white">
       <div className="mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:h-[76px] lg:px-8">
         {/* LEFT — Hamburger + Greeting */}
         <div className="flex items-center gap-3">
@@ -151,7 +150,7 @@ export function BaseHeader({
 
           <div className="flex flex-col">
             <h1 className="flex items-center gap-2 text-base font-semibold tracking-tight text-slate-900 sm:text-xl">
-              <RoleIcon className={`h-5 w-5 shrink-0 ${accentText}`} aria-hidden="true" />
+              <RoleIcon roleLabel={roleLabel} className={`h-5 w-5 shrink-0 ${accentText}`} />
               <span>
                 {getGreeting()},<span className={accentText}> {firstName}</span>
               </span>
