@@ -22,9 +22,10 @@ interface ProjectCardProps {
       slaHealthPercent: number;
     };
   };
+  onOpen?: (project: ProjectCardProps['project']) => void;
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, onOpen }: ProjectCardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const dashboardHref = pathname.startsWith('/client')
@@ -52,15 +53,17 @@ export function ProjectCard({ project }: ProjectCardProps) {
       tabIndex={0}
       onClick={(event) => {
         if ((event.target as HTMLElement).closest('button, a')) return;
-        router.push(dashboardHref);
+        if (onOpen) onOpen(project);
+        else router.push(dashboardHref);
       }}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
-          router.push(dashboardHref);
+          if (onOpen) onOpen(project);
+          else router.push(dashboardHref);
         }
       }}
-      aria-label={`Open dashboard filtered by ${project.name}`}
+      aria-label={`Open ${project.name} project details`}
     >
       {/* ================= HEADER ================= */}
 

@@ -13,7 +13,7 @@ export default function ClientProjectsPage() {
   return (
     <div className="space-y-6">
       <ClientHero clientId={clientId} />
-      <ProjectGrid clientId={clientId} />
+      <ProjectGrid clientId={clientId} openProjectsInModal />
     </div>
   );
 }

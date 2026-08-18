@@ -1,11 +1,20 @@
 'use client';
 
+import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { ProjectStatus } from '@prisma/client';
-import { FolderOpen } from 'lucide-react';
+import { FolderOpen, ShieldCheck, Ticket, Users } from 'lucide-react';
 
 import { Pagination } from '@/components/shared/data-table/pagination';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { useProjects } from '@/hooks/use-projects';
 import { ProjectWithClient } from '@/lib/project/project.types';
 
@@ -14,9 +23,19 @@ import { ProjectToolbar } from './project-toolbar';
 
 interface ProjectGridProps {
   clientId: string;
+  openProjectsInModal?: boolean;
 }
 
-export function ProjectGrid({ clientId }: ProjectGridProps) {
+type ProjectWithStats = ProjectWithClient & {
+  stats?: {
+    totalTickets: number;
+    openTickets: number;
+    engineersCount: number;
+    slaHealthPercent: number;
+  };
+};
+
+export function ProjectGrid({ clientId, openProjectsInModal = false }: ProjectGridProps) {
   const searchParams = useSearchParams();
 
   const page = Number(searchParams.get('page') ?? 1);
@@ -36,9 +55,10 @@ export function ProjectGrid({ clientId }: ProjectGridProps) {
     withStats: true,
   });
 
-  const projects: ProjectWithClient[] = data?.data ?? [];
+  const projects: ProjectWithStats[] = data?.data ?? [];
   const totalProjects = data?.total ?? 0;
   const totalPages = data?.pages ?? 1;
+  const [selectedProject, setSelectedProject] = useState<ProjectWithStats | null>(null);
 
   return (
     <section className="space-y-8">
@@ -88,7 +108,11 @@ export function ProjectGrid({ clientId }: ProjectGridProps) {
         <>
           <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
             {projects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+              <ProjectCard
+                key={project.id}
+                project={project}
+                onOpen={openProjectsInModal ? setSelectedProject : undefined}
+              />
             ))}
           </div>
 
@@ -108,6 +132,78 @@ export function ProjectGrid({ clientId }: ProjectGridProps) {
           </div>
         </>
       )}
+
+      <Dialog
+        open={selectedProject !== null}
+        onOpenChange={(open) => !open && setSelectedProject(null)}
+      >
+        <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto p-0 sm:max-w-2xl">
+          {selectedProject && (
+            <>
+              <DialogHeader className="border-b border-slate-100 px-6 pt-6 pr-14 pb-5">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
+                    <FolderOpen className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div className="min-w-0">
+                    <DialogTitle className="truncate text-xl font-bold text-slate-900">
+                      {selectedProject.name}
+                    </DialogTitle>
+                    <DialogDescription className="mt-1">
+                      {selectedProject.client.name}
+                    </DialogDescription>
+                  </div>
+                  <StatusBadge status={selectedProject.status} className="ml-auto shrink-0" />
+                </div>
+              </DialogHeader>
+
+              <div className="space-y-6 p-6">
+                <p className="text-sm leading-6 text-slate-600">
+                  {selectedProject.description ||
+                    'No description has been provided for this project.'}
+                </p>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {[
+                    {
+                      label: 'Tickets',
+                      value: selectedProject.stats?.totalTickets ?? 0,
+                      icon: Ticket,
+                      color: 'text-blue-600 bg-blue-50',
+                    },
+                    {
+                      label: 'Open',
+                      value: selectedProject.stats?.openTickets ?? 0,
+                      icon: Ticket,
+                      color: 'text-red-600 bg-red-50',
+                    },
+                    {
+                      label: 'Engineers',
+                      value: selectedProject.stats?.engineersCount ?? 0,
+                      icon: Users,
+                      color: 'text-violet-600 bg-violet-50',
+                    },
+                    {
+                      label: 'SLA Health',
+                      value: `${selectedProject.stats?.slaHealthPercent ?? 100}%`,
+                      icon: ShieldCheck,
+                      color: 'text-emerald-600 bg-emerald-50',
+                    },
+                  ].map((stat) => (
+                    <div
+                      key={stat.label}
+                      className="rounded-xl border border-slate-100 bg-slate-50 p-3"
+                    >
+                      <stat.icon className={`mb-3 h-4 w-4 ${stat.color.split(' ')[0]}`} />
+                      <p className="text-xl font-bold text-slate-900">{stat.value}</p>
+                      <p className="mt-1 text-xs font-medium text-slate-500">{stat.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
