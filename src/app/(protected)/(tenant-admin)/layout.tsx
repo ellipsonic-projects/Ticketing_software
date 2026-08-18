@@ -44,7 +44,7 @@ interface TenantAdminLayoutProps {
 }
 
 export default function TenantAdminLayout({ children }: TenantAdminLayoutProps) {
-  const { user, isLoading } = useAuthRedirect([Role.TENANT_ADMIN, Role.ENGINEER]);
+  const { user, isLoading } = useAuthRedirect([Role.TENANT_ADMIN]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Wait for auth to resolve (redirect fires inside the hook if needed)
@@ -74,7 +74,7 @@ export default function TenantAdminLayout({ children }: TenantAdminLayoutProps) 
         />
 
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1600px] px-4 pb-4 pt-0 sm:px-6 sm:pb-6 sm:pt-0 lg:px-8 lg:pb-8 lg:pt-0 xl:px-10">
+          <div className="mx-auto w-full max-w-[1600px] px-4 pt-0 pb-4 sm:px-6 sm:pt-0 sm:pb-6 lg:px-8 lg:pt-0 lg:pb-8 xl:px-10">
             {children}
           </div>
         </main>

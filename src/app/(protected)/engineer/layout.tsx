@@ -1,30 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
+import { Role } from '@prisma/client';
 import { Loader2 } from 'lucide-react';
 
 import { EngineerHeader } from '@/components/engineer/engineer-header';
 import { EngineerSidebar } from '@/components/engineer/engineer-sidebar';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuthRedirect } from '@/hooks/use-auth-redirect';
 
 export default function EngineerLayout({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useAuth();
-  const router = useRouter();
+  const { user, isLoading } = useAuthRedirect([Role.ENGINEER]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    if (
-      !isLoading &&
-      user &&
-      user.role !== 'ENGINEER' &&
-      user.role !== 'TENANT_ADMIN' &&
-      user.role !== 'PLATFORM_ADMIN'
-    ) {
-      router.push('/login');
-    }
-  }, [user, isLoading, router]);
 
   if (isLoading || !user) {
     return (
@@ -44,7 +31,9 @@ export default function EngineerLayout({ children }: { children: React.ReactNode
           roleLabel="Engineer"
           onMenuClick={() => setSidebarOpen(true)}
         />
-        <main className="flex-1 overflow-y-auto px-4 pb-4 pt-0 sm:px-6 sm:pb-6 sm:pt-0 lg:px-8 lg:pb-8 lg:pt-0">{children}</main>
+        <main className="flex-1 overflow-y-auto px-4 pt-0 pb-4 sm:px-6 sm:pt-0 sm:pb-6 lg:px-8 lg:pt-0 lg:pb-8">
+          {children}
+        </main>
       </div>
     </div>
   );

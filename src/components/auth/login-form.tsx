@@ -31,6 +31,28 @@ const features = {
   oauth: false,
 };
 
+const ROLE_REDIRECT_PREFIXES = {
+  PLATFORM_ADMIN: ['/platform'],
+  TENANT_ADMIN: [
+    '/dashboard',
+    '/clients',
+    '/projects',
+    '/tickets',
+    '/users',
+    '/sla',
+    '/audit-logs',
+    '/profile',
+  ],
+  ENGINEER: ['/engineer'],
+  CLIENT: ['/client'],
+} as const;
+
+function isAllowedRedirect(role: keyof typeof ROLE_REDIRECT_PREFIXES, redirectTo: string) {
+  return ROLE_REDIRECT_PREFIXES[role].some(
+    (prefix) => redirectTo === prefix || redirectTo.startsWith(`${prefix}/`),
+  );
+}
+
 export function LoginForm() {
   const searchParams = useSearchParams();
   const { login } = useAuth();
@@ -53,10 +75,12 @@ export function LoginForm() {
 
     try {
       const user = await login({ email: data.email, password: data.password });
+      const requestedRedirect = searchParams.get('redirect');
+      const role = user.role as keyof typeof ROLE_DEFAULT_ROUTE;
       const redirectTo =
-        searchParams.get('redirect') ||
-        ROLE_DEFAULT_ROUTE[user.role as keyof typeof ROLE_DEFAULT_ROUTE] ||
-        '/dashboard';
+        requestedRedirect && isAllowedRedirect(role, requestedRedirect)
+          ? requestedRedirect
+          : ROLE_DEFAULT_ROUTE[role] || '/dashboard';
       window.location.assign(redirectTo);
     } catch (err: unknown) {
       setError(
