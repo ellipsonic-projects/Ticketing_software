@@ -25,7 +25,7 @@ const NAV_ITEMS = [
   { label: 'Clients', href: '/clients', icon: Users },
   { label: 'Projects', href: '/projects', icon: FolderOpen },
   { label: 'Tickets', href: '/tickets', icon: Ticket },
-  { label: 'Engineers', href: '/users', icon: UserCog },
+  { label: 'Users', href: '/users', icon: UserCog },
   { label: 'SLA Policies', href: '/sla', icon: Settings2 },
   { label: 'Logs', href: '/audit-logs', icon: ClipboardList },
 ];

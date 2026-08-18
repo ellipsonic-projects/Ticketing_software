@@ -1,9 +1,17 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { motion, Variants } from 'framer-motion';
 import { MoreHorizontal, Search, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { DataTableToolbar } from '@/components/shared/data-table/data-table-toolbar';
+import { Pagination } from '@/components/shared/data-table/pagination';
+import { SearchInput } from '@/components/shared/data-table/search-input';
+import { SortDropdown } from '@/components/shared/data-table/sort-dropdown';
+import { StatusFilter } from '@/components/shared/data-table/status-filter';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,28 +22,21 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { userApi } from '@/services/api/user-api';
 import { useUsers } from '@/hooks/use-users';
-import { DataTableToolbar } from '@/components/shared/data-table/data-table-toolbar';
-import { SearchInput } from '@/components/shared/data-table/search-input';
-import { StatusFilter } from '@/components/shared/data-table/status-filter';
-import { SortDropdown } from '@/components/shared/data-table/sort-dropdown';
-import { Pagination } from '@/components/shared/data-table/pagination';
+import { userApi } from '@/services/api/user-api';
 import { cn, getStringColorGradient, getStringColorHover } from '@/lib/utils';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion, Variants } from 'framer-motion';
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.05 }
-  }
+    transition: { staggerChildren: 0.05 },
+  },
 };
 
 const rowVariants: Variants = {
   hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
 };
 
 export interface UserListProps {
@@ -50,26 +51,26 @@ export function UserList({ selectedUserId, onSelectUser }: UserListProps) {
 
   const page = parseInt(searchParams.get('page') || '1', 10);
   const limit = parseInt(searchParams.get('limit') || '6', 10);
-  
+
   const search = searchParams.get('search') || undefined;
   const status = (searchParams.get('status') as any) || undefined;
   const role = (searchParams.get('role') as any) || undefined;
-  
+
   const sortParam = searchParams.get('sort') || 'createdAt:desc';
   const [sortField, sortOrder] = sortParam.split(':') as [any, any];
 
   const queryParams = new URLSearchParams(searchParams.toString());
   if (!queryParams.has('limit')) queryParams.set('limit', '6');
-  
-  const { data, isLoading } = useUsers({ 
-    page, 
-    pageSize: limit, 
-    search, 
-    status, 
+
+  const { data, isLoading } = useUsers({
+    page,
+    pageSize: limit,
+    search,
+    status,
     role,
     excludeRole: role ? undefined : 'CLIENT',
-    sort: sortField, 
-    sortOrder 
+    sort: sortField,
+    sortOrder,
   });
 
   const users = data?.data || [];
@@ -88,7 +89,6 @@ export function UserList({ selectedUserId, onSelectUser }: UserListProps) {
               paramName="role"
               placeholder="Role..."
               options={[
-                { label: 'Platform Admin', value: 'PLATFORM_ADMIN' },
                 { label: 'Tenant Admin', value: 'TENANT_ADMIN' },
                 { label: 'Engineer', value: 'ENGINEER' },
               ]}
@@ -133,7 +133,7 @@ export function UserList({ selectedUserId, onSelectUser }: UserListProps) {
             </div>
           ) : (
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50/40 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+              <thead className="bg-slate-50/40 text-[11px] font-bold tracking-wider text-slate-500 uppercase">
                 <tr>
                   <th className="px-6 py-4">User</th>
                   <th className="px-6 py-4">Role</th>
@@ -141,7 +141,7 @@ export function UserList({ selectedUserId, onSelectUser }: UserListProps) {
                   <th className="px-6 py-4">Joined</th>
                 </tr>
               </thead>
-              <motion.tbody 
+              <motion.tbody
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
@@ -156,20 +156,27 @@ export function UserList({ selectedUserId, onSelectUser }: UserListProps) {
                     className={cn(
                       'group transition-colors',
                       onSelectUser ? 'cursor-pointer' : '',
-                      getStringColorHover(user.firstName)
+                      getStringColorHover(user.firstName),
                     )}
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
-                        <div className={cn(
-                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200/60 bg-gradient-to-br font-bold shadow-sm ring-1",
-                          getStringColorGradient(user.firstName)
-                        )}>
+                        <div
+                          className={cn(
+                            'flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200/60 bg-gradient-to-br font-bold shadow-sm ring-1',
+                            getStringColorGradient(user.firstName),
+                          )}
+                        >
                           {user.firstName[0]}
                           {user.lastName[0]}
                         </div>
                         <div className="flex flex-col overflow-hidden">
-                          <span className={cn("truncate font-medium transition-colors", selectedUserId === user.id ? "text-indigo-600" : "text-slate-900")}>
+                          <span
+                            className={cn(
+                              'truncate font-medium transition-colors',
+                              selectedUserId === user.id ? 'text-indigo-600' : 'text-slate-900',
+                            )}
+                          >
                             {user.firstName} {user.lastName}
                           </span>
                           <span className="truncate text-xs text-slate-500">{user.email}</span>
@@ -190,12 +197,12 @@ export function UserList({ selectedUserId, onSelectUser }: UserListProps) {
                     <td className="px-6 py-4">
                       <StatusBadge status={user.status} variant="ring" />
                     </td>
-                    <td className="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <td className="px-6 py-4 text-[11px] font-bold tracking-wider text-slate-400 uppercase">
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
-                    </motion.tr>
-                  ))}
-                </motion.tbody>
+                  </motion.tr>
+                ))}
+              </motion.tbody>
             </table>
           )}
         </div>
