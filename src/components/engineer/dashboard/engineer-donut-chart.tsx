@@ -26,14 +26,14 @@ export function EngineerDonutChart() {
     );
   }
 
-  // Adding overdue for completeness to match the mockup
-  const overdueCount = 5;
-  const total = stats.openCount + stats.inProgressCount + stats.resolvedCount + overdueCount;
+  const overdueCount = stats.overdueCount;
+  const total = stats.openCount + stats.inProgressCount + stats.resolvedCount + stats.closedCount;
 
   const data = [
     { name: 'Open', value: stats.openCount, color: '#3b82f6', bg: 'bg-blue-500' },
     { name: 'In Progress', value: stats.inProgressCount, color: '#f59e0b', bg: 'bg-amber-500' },
     { name: 'Resolved', value: stats.resolvedCount, color: '#22c55e', bg: 'bg-green-500' },
+    { name: 'Closed', value: stats.closedCount, color: '#64748b', bg: 'bg-slate-500' },
     { name: 'Overdue', value: overdueCount, color: '#ef4444', bg: 'bg-red-500' },
   ].filter((d) => d.value > 0);
 

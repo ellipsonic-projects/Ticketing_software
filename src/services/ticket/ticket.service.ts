@@ -85,11 +85,12 @@ export class TicketService {
       ]);
     }
 
-    const stats = await ticketRepository.getDashboardSummaryCounts(
-      { clientId: targetClientId, assignedToId },
-      tenantId,
-    );
-    return stats;
+    const options = { clientId: targetClientId, assignedToId };
+    const [stats, sla] = await Promise.all([
+      ticketRepository.getDashboardSummaryCounts(options, tenantId),
+      ticketRepository.getSLAStats(options, tenantId),
+    ]);
+    return { ...stats, sla };
   }
 
   /**

@@ -2,18 +2,35 @@
 
 import Link from 'next/link';
 
-import { AlertCircle, AlertTriangle, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, AlertTriangle, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 
+import { useTicketStats } from '@/hooks/use-tickets';
 import { cn } from '@/lib/utils';
 
 export function EngineerSlaOverview() {
-  // Mock data for SLA overview until stats endpoint provides this granular breakdown.
-  // In a full implementation, this would be computed from backend stats.
+  const { data: stats, isLoading, isError } = useTicketStats();
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[300px] items-center justify-center rounded-2xl border border-slate-200 bg-white">
+        <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  if (isError || !stats) {
+    return (
+      <div className="flex min-h-[300px] items-center justify-center rounded-2xl border border-red-200 bg-red-50 text-red-600">
+        Failed to load SLA data
+      </div>
+    );
+  }
+
   const slaStats = [
     {
       label: 'On Track',
-      count: 24,
-      percentage: 75,
+      count: stats.sla.withinSLACount,
+      percentage: stats.sla.withinSLAPercent,
       icon: CheckCircle2,
       color: 'text-green-500',
       bg: 'bg-green-100',
@@ -21,8 +38,8 @@ export function EngineerSlaOverview() {
     },
     {
       label: 'At Risk',
-      count: 6,
-      percentage: 18.8,
+      count: stats.sla.atRiskCount,
+      percentage: stats.sla.atRiskPercent,
       icon: AlertTriangle,
       color: 'text-amber-500',
       bg: 'bg-amber-100',
@@ -30,8 +47,8 @@ export function EngineerSlaOverview() {
     },
     {
       label: 'Breached',
-      count: 2,
-      percentage: 6.2,
+      count: stats.sla.breachedCount,
+      percentage: stats.sla.breachedPercent,
       icon: AlertCircle,
       color: 'text-red-500',
       bg: 'bg-red-100',

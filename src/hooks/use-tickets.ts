@@ -24,6 +24,15 @@ interface TicketStatsResponse {
   inProgressCount: number;
   resolvedCount: number;
   closedCount: number;
+  overdueCount: number;
+  sla: {
+    withinSLACount: number;
+    atRiskCount: number;
+    breachedCount: number;
+    withinSLAPercent: number;
+    atRiskPercent: number;
+    breachedPercent: number;
+  };
 }
 
 // ---------------------------------------------------------------------------

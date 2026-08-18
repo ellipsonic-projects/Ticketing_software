@@ -91,6 +91,7 @@ export class TicketRepository {
         in_progress_count: bigint;
         resolved_count: bigint;
         closed_count: bigint;
+        overdue_count: bigint;
         resolved_this_week: bigint;
         resolved_last_week: bigint;
         closed_this_week: bigint;
@@ -102,6 +103,11 @@ export class TicketRepository {
         COUNT(CASE WHEN status = 'IN_PROGRESS' THEN 1 END) as in_progress_count,
         COUNT(CASE WHEN status = 'RESOLVED' THEN 1 END) as resolved_count,
         COUNT(CASE WHEN status = 'CLOSED' THEN 1 END) as closed_count,
+        COUNT(CASE WHEN status IN ('OPEN', 'IN_PROGRESS') AND EXISTS (
+          SELECT 1 FROM "TicketSLA"
+          WHERE "TicketSLA"."ticketId" = "Ticket".id
+            AND "TicketSLA"."resolutionBreachAt" < ${now}
+        ) THEN 1 END) as overdue_count,
         COUNT(CASE WHEN status = 'RESOLVED' AND "resolvedAt" >= ${startOfThisWeek} THEN 1 END) as resolved_this_week,
         COUNT(CASE WHEN status = 'RESOLVED' AND "resolvedAt" >= ${startOfLastWeek} AND "resolvedAt" < ${startOfThisWeek} THEN 1 END) as resolved_last_week,
         COUNT(CASE WHEN status = 'CLOSED' AND "closedAt" >= ${startOfThisWeek} THEN 1 END) as closed_this_week,
@@ -116,10 +122,53 @@ export class TicketRepository {
       inProgressCount: Number(row?.in_progress_count || 0),
       resolvedCount: Number(row?.resolved_count || 0),
       closedCount: Number(row?.closed_count || 0),
+      overdueCount: Number(row?.overdue_count || 0),
       resolvedThisWeek: Number(row?.resolved_this_week || 0),
       resolvedLastWeek: Number(row?.resolved_last_week || 0),
       closedThisWeek: Number(row?.closed_this_week || 0),
       closedLastWeek: Number(row?.closed_last_week || 0),
+    };
+  }
+
+  async getSLAStats(options: { clientId?: string; assignedToId?: string }, tenantId: string) {
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        tenantId,
+        ...(options.clientId ? { clientId: options.clientId } : {}),
+        ...(options.assignedToId ? { assignedToId: options.assignedToId } : {}),
+      },
+      include: { sla: true },
+    });
+
+    const now = new Date();
+    let withinSLA = 0;
+    let atRisk = 0;
+    let breached = 0;
+
+    for (const ticket of tickets) {
+      const breachAt = ticket.sla?.resolutionBreachAt;
+      if (!breachAt) {
+        withinSLA++;
+      } else if (ticket.status === 'RESOLVED' || ticket.status === 'CLOSED') {
+        if (ticket.sla?.resolvedAt && ticket.sla.resolvedAt > breachAt) breached++;
+        else withinSLA++;
+      } else if (now > breachAt) {
+        breached++;
+      } else if ((breachAt.getTime() - now.getTime()) / 3_600_000 < 2) {
+        atRisk++;
+      } else {
+        withinSLA++;
+      }
+    }
+
+    const total = tickets.length || 1;
+    return {
+      withinSLACount: withinSLA,
+      atRiskCount: atRisk,
+      breachedCount: breached,
+      withinSLAPercent: Math.round((withinSLA / total) * 100),
+      atRiskPercent: Math.round((atRisk / total) * 100),
+      breachedPercent: Math.round((breached / total) * 100),
     };
   }
 
