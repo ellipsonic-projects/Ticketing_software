@@ -5,6 +5,7 @@ import { AuditService } from '@/services/audit/audit.service';
 import { ticketRepository } from '@/repositories/ticket/ticket.repository';
 import { ServerAuthIdentity as Identity } from '@/lib/auth/auth-context';
 import { TicketQueryBuilder, TicketQuerySchema } from '@/lib/db/ticket-query-builder';
+import { ForbiddenError } from '@/lib/errors/forbidden-error';
 import { NotFoundError } from '@/lib/errors/not-found-error';
 import { ValidationError } from '@/lib/errors/validation-error';
 import { eventDispatcher } from '@/lib/events/dispatcher';
@@ -297,6 +298,10 @@ export class TicketService {
       throw new ValidationError([
         { message: 'Clients cannot update ticket properties directly', field: 'status' },
       ]);
+    }
+
+    if (actor.role === 'ENGINEER' && ticket.assignedToId !== actor.id) {
+      throw new ForbiddenError('Engineers can only update tickets assigned to them');
     }
 
     if (ticket.status === 'CLOSED' && data.status !== 'CLOSED') {

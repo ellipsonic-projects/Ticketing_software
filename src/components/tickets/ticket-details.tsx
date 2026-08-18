@@ -51,7 +51,7 @@ import { cn } from '@/lib/utils';
 
 export function TicketDetails({ id }: { id: string }) {
   const { user } = useAuth();
-  const { data: ticket, isLoading } = useTicket(id);
+  const { data: ticket, isLoading, isError, error } = useTicket(id);
   const { mutate: updateTicket, isPending: isUpdatingTicket } = useUpdateTicket(id);
   const { mutate: assignTicket } = useAssignTicket(id);
 
@@ -90,7 +90,7 @@ export function TicketDetails({ id }: { id: string }) {
     return `TKT-${year}-${String(ticket.number).padStart(6, '0')}`;
   }, [ticket]);
 
-  if (isLoading || !ticket) {
+  if (isLoading) {
     return (
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
@@ -104,8 +104,30 @@ export function TicketDetails({ id }: { id: string }) {
     );
   }
 
+  if (isError || !ticket) {
+    return (
+      <Card className="mx-auto flex min-h-48 w-full max-w-7xl items-center justify-center border-red-200 bg-red-50 p-6 text-center text-red-700">
+        {error instanceof Error ? error.message : 'Unable to load this ticket.'}
+      </Card>
+    );
+  }
+
+  const canUpdateStatus =
+    user?.role === 'TENANT_ADMIN' ||
+    user?.role === 'PLATFORM_ADMIN' ||
+    (user?.role === 'ENGINEER' && ticket.assignedToId === user.id);
+
   const handleStatusChange = (status: TicketStatus) => {
-    updateTicket({ status });
+    updateTicket(
+      { status },
+      {
+        onSuccess: () => toast.success('Ticket status updated'),
+        onError: (updateError) =>
+          toast.error(
+            updateError instanceof Error ? updateError.message : 'Failed to update ticket status',
+          ),
+      },
+    );
   };
 
   const handlePriorityChange = (priority: TicketPriority) => {
@@ -559,9 +581,7 @@ export function TicketDetails({ id }: { id: string }) {
                   <Select
                     value={ticket.status}
                     onValueChange={(val) => handleStatusChange(val as TicketStatus)}
-                    disabled={
-                      ticket.status === 'CLOSED' || user?.role === 'CLIENT' || isUpdatingTicket
-                    }
+                    disabled={ticket.status === 'CLOSED' || !canUpdateStatus || isUpdatingTicket}
                   >
                     <SelectTrigger className="h-11 w-full rounded-lg border-slate-200 bg-white font-bold text-slate-900 shadow-sm transition-colors hover:border-slate-300">
                       <SelectValue placeholder="Select status" />
