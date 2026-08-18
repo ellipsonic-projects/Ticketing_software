@@ -1,0 +1,4 @@
+# Local environment files must never be uploaded. Vercel injects its own
+# environment variables for builds and runtime.
+.env
+.env.*
