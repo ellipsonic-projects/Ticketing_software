@@ -5,19 +5,18 @@ import { useState } from 'react';
 import { TenantStatus } from '@prisma/client';
 import {
   ArrowDownRight,
+  ArrowUpDown,
   ArrowUpRight,
   Building2,
   ChevronLeft,
   ChevronRight,
-  Eye,
   Filter,
-  MoreVertical,
   PauseCircle,
-  Plus,
   Search,
   Users,
 } from 'lucide-react';
 
+import { CreateTenantDialog } from '@/components/tenants/create-tenant-dialog';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -86,6 +85,8 @@ export function PlatformDashboard() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [statusFilter, setStatusFilter] = useState<TenantStatus | undefined>();
+  const [sort, setSort] = useState<'createdAt' | 'name' | 'status'>('createdAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   // Fetch Stats
   const { data: statsResponse, isLoading: isStatsLoading } = useTenantStats(accessToken ?? '');
@@ -98,8 +99,8 @@ export function PlatformDashboard() {
       pageSize,
       search: search || undefined,
       status: statusFilter,
-      sort: 'createdAt',
-      sortOrder: 'desc',
+      sort,
+      sortOrder,
     },
     accessToken ?? '',
   );
@@ -242,10 +243,60 @@ export function PlatformDashboard() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button className="h-10 w-full gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 sm:w-auto">
-              <Plus className="h-4 w-4" />
-              Add Tenant
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium hover:bg-slate-100 sm:w-auto">
+                <ArrowUpDown className="h-4 w-4 text-slate-500" />
+                <span className="font-medium text-slate-700">Sort</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSort('createdAt');
+                    setSortOrder('desc');
+                    setPage(1);
+                  }}
+                >
+                  Newest first
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSort('createdAt');
+                    setSortOrder('asc');
+                    setPage(1);
+                  }}
+                >
+                  Oldest first
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSort('name');
+                    setSortOrder('asc');
+                    setPage(1);
+                  }}
+                >
+                  Name: A to Z
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSort('name');
+                    setSortOrder('desc');
+                    setPage(1);
+                  }}
+                >
+                  Name: Z to A
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSort('status');
+                    setSortOrder('asc');
+                    setPage(1);
+                  }}
+                >
+                  Status: A to Z
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <CreateTenantDialog />
           </div>
         </div>
 
