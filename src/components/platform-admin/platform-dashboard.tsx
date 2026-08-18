@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 import { TenantStatus } from '@prisma/client';
 import {
@@ -10,24 +11,49 @@ import {
   Building2,
   ChevronLeft,
   ChevronRight,
+  Eye,
   Filter,
+  Loader2,
+  MoreVertical,
   PauseCircle,
+  Pencil,
   Search,
+  ShieldAlert,
+  Trash2,
   Users,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { CreateTenantDialog } from '@/components/tenants/create-tenant-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/use-auth';
-import { useTenants, useTenantStats } from '@/hooks/use-tenants';
+import {
+  useDeleteTenant,
+  useTenants,
+  useTenantStats,
+  useUpdateTenantStatus,
+} from '@/hooks/use-tenants';
 import { cn } from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
@@ -87,6 +113,14 @@ export function PlatformDashboard() {
   const [statusFilter, setStatusFilter] = useState<TenantStatus | undefined>();
   const [sort, setSort] = useState<'createdAt' | 'name' | 'status'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [tenantToUpdate, setTenantToUpdate] = useState<{
+    id: string;
+    name: string;
+    status: TenantStatus;
+  } | null>(null);
+  const [tenantToDelete, setTenantToDelete] = useState<{ id: string; name: string } | null>(null);
+  const deleteTenant = useDeleteTenant(accessToken ?? '');
+  const updateTenantStatus = useUpdateTenantStatus(accessToken ?? '');
 
   // Fetch Stats
   const { data: statsResponse, isLoading: isStatsLoading } = useTenantStats(accessToken ?? '');
@@ -107,6 +141,32 @@ export function PlatformDashboard() {
 
   const tenants = listResponse?.data ?? [];
   const pagination = listResponse?.pagination;
+  const isModifying = deleteTenant.isPending || updateTenantStatus.isPending;
+
+  const confirmStatusChange = async () => {
+    if (!tenantToUpdate) return;
+
+    const status = tenantToUpdate.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
+    try {
+      await updateTenantStatus.mutateAsync({ id: tenantToUpdate.id, status });
+      toast.success(`${tenantToUpdate.name} ${status === 'ACTIVE' ? 'activated' : 'suspended'}`);
+      setTenantToUpdate(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to update tenant status');
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!tenantToDelete) return;
+
+    try {
+      await deleteTenant.mutateAsync(tenantToDelete.id);
+      toast.success(`${tenantToDelete.name} deleted successfully`);
+      setTenantToDelete(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to delete tenant');
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6 p-4 sm:p-6 lg:p-8">
@@ -309,6 +369,7 @@ export function PlatformDashboard() {
                 <th className="px-6 py-4">Domain</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Created At</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -339,7 +400,7 @@ export function PlatformDashboard() {
               ) : tenants.length === 0 ? (
                 // Empty State
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
                     No tenants found matching your criteria.
                   </td>
                 </tr>
@@ -388,6 +449,71 @@ export function PlatformDashboard() {
                           day: 'numeric',
                           year: 'numeric',
                         })}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="inline-flex h-8 w-8 items-center justify-center rounded-md p-0 text-slate-500 transition-colors hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-none">
+                            <span className="sr-only">Open tenant actions</span>
+                            <MoreVertical className="h-4 w-4" />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuGroup>
+                              <DropdownMenuLabel className="text-xs font-semibold text-slate-500">
+                                Actions
+                              </DropdownMenuLabel>
+                              <DropdownMenuItem
+                                className="cursor-pointer hover:bg-slate-100"
+                                render={
+                                  <Link
+                                    href={`/platform/tenants/${tenant.id}`}
+                                    className="flex w-full items-center gap-2"
+                                  />
+                                }
+                              >
+                                <Eye className="h-4 w-4 text-slate-400" /> View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="cursor-pointer hover:bg-slate-100"
+                                render={
+                                  <Link
+                                    href={`/platform/tenants/${tenant.id}?tab=edit`}
+                                    className="flex w-full items-center gap-2"
+                                  />
+                                }
+                              >
+                                <Pencil className="h-4 w-4 text-slate-400" /> Edit Tenant
+                              </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className={cn(
+                                'flex cursor-pointer items-center gap-2',
+                                tenant.status === 'ACTIVE'
+                                  ? 'text-amber-600 hover:bg-amber-50 hover:text-amber-700 focus:text-amber-700'
+                                  : 'text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 focus:text-emerald-700',
+                              )}
+                              onClick={() =>
+                                setTenantToUpdate({
+                                  id: tenant.id,
+                                  name: tenant.name,
+                                  status: tenant.status,
+                                })
+                              }
+                            >
+                              <ShieldAlert className="h-4 w-4" />
+                              {tenant.status === 'ACTIVE' ? 'Suspend Tenant' : 'Activate Tenant'}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="flex cursor-pointer items-center gap-2 text-red-600 hover:bg-red-50 hover:text-red-700 focus:bg-red-50 focus:text-red-700"
+                              onClick={() =>
+                                setTenantToDelete({ id: tenant.id, name: tenant.name })
+                              }
+                            >
+                              <Trash2 className="h-4 w-4" /> Delete Tenant
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </td>
                     </tr>
                   );
@@ -459,6 +585,56 @@ export function PlatformDashboard() {
           </div>
         </div>
       </div>
+
+      <AlertDialog
+        open={!!tenantToUpdate}
+        onOpenChange={(open) => !open && !isModifying && setTenantToUpdate(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {tenantToUpdate?.status === 'ACTIVE' ? 'Suspend tenant?' : 'Activate tenant?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {tenantToUpdate?.status === 'ACTIVE'
+                ? `${tenantToUpdate.name} users will lose access immediately.`
+                : `${tenantToUpdate?.name} users will regain access immediately.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isModifying}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmStatusChange} disabled={isModifying}>
+              {isModifying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={!!tenantToDelete}
+        onOpenChange={(open) => !open && !isModifying && setTenantToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete tenant?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will soft-delete {tenantToDelete?.name}. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isModifying}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={isModifying}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isModifying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
