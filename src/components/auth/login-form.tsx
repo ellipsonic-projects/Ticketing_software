@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, ArrowRight, Mail, Shield } from 'lucide-react';
@@ -32,7 +32,6 @@ const features = {
 };
 
 export function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
 
@@ -58,7 +57,7 @@ export function LoginForm() {
         searchParams.get('redirect') ||
         ROLE_DEFAULT_ROUTE[user.role as keyof typeof ROLE_DEFAULT_ROUTE] ||
         '/dashboard';
-      router.push(redirectTo);
+      window.location.assign(redirectTo);
     } catch (err: unknown) {
       setError(
         (err instanceof Error ? err.message : 'An error occurred') ||
@@ -175,7 +174,6 @@ export function LoginForm() {
             <ArrowRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-1" />
           )}
         </AuthButton>
-
       </form>
 
       {features.oauth && (
