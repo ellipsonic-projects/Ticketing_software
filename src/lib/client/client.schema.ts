@@ -48,7 +48,6 @@ export const OnboardClientSchema = CreateClientSchema.extend({
     name: z.string().trim().min(1, 'Project name is required'),
     code: optionalString,
     description: z.string().trim().min(1, 'Project description is required'),
-    status: z.enum(['ACTIVE', 'INACTIVE']).optional().default('ACTIVE'),
   }),
 });
 

@@ -194,7 +194,7 @@ export class ClientService {
           name: data.project.name,
           code: data.project.code || null,
           description: data.project.description || null,
-          status: data.project.status as 'ACTIVE' | 'INACTIVE',
+          status: 'ACTIVE',
           createdById: actorId,
           updatedById: actorId,
         },

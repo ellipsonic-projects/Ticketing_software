@@ -49,6 +49,7 @@ export interface BaseHeaderProps {
   onMenuClick?: () => void;
   themeColor?: 'blue' | 'violet';
   profileHref?: string;
+  showCreateTicket?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -107,11 +108,13 @@ export function BaseHeader({
   onMenuClick,
   themeColor = 'blue',
   profileHref,
+  showCreateTicket = true,
 }: BaseHeaderProps) {
   const { accessToken, logout } = useAuth();
   const pathname = usePathname();
   const createTicketHref = pathname.startsWith('/client') ? '/client/tickets/new' : '/tickets/new';
   const canCreateTicket =
+    showCreateTicket &&
     !pathname.startsWith('/client') &&
     !pathname.startsWith('/platform') &&
     !pathname.startsWith('/engineer');

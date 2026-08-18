@@ -70,7 +70,6 @@ export function OnboardClientWizard() {
         name: '',
         code: '',
         description: '',
-        status: 'ACTIVE',
       },
     },
     mode: 'onTouched',
@@ -94,12 +93,7 @@ export function OnboardClientWizard() {
         'notes',
       ]);
     } else if (step === 2) {
-      isValid = await trigger([
-        'project.name',
-        'project.code',
-        'project.description',
-        'project.status',
-      ]);
+      isValid = await trigger(['project.name', 'project.code', 'project.description']);
     }
 
     if (isValid) {
@@ -293,7 +287,9 @@ export function OnboardClientWizard() {
                     disabled={isPending}
                   />
                   {errors.phone && (
-                    <span className="text-[11px] text-red-500">{errors.phone.message as string}</span>
+                    <span className="text-[11px] text-red-500">
+                      {errors.phone.message as string}
+                    </span>
                   )}
                 </div>
               </div>
@@ -363,32 +359,17 @@ export function OnboardClientWizard() {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="project.code" className="text-xs font-semibold text-slate-700">
-                    Project Code
-                  </Label>
-                  <Input
-                    id="project.code"
-                    {...register('project.code')}
-                    className="h-10 border-slate-200 bg-slate-50"
-                    placeholder="WEB"
-                    disabled={isPending}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="project.status" className="text-xs font-semibold text-slate-700">
-                    Status
-                  </Label>
-                  <select
-                    {...register('project.status')}
-                    className="h-10 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    disabled={isPending}
-                  >
-                    <option value="ACTIVE">Active</option>
-                    <option value="INACTIVE">Inactive</option>
-                  </select>
-                </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="project.code" className="text-xs font-semibold text-slate-700">
+                  Project Code
+                </Label>
+                <Input
+                  id="project.code"
+                  {...register('project.code')}
+                  className="h-10 border-slate-200 bg-slate-50"
+                  placeholder="WEB"
+                  disabled={isPending}
+                />
               </div>
 
               <div className="space-y-1.5">
@@ -455,16 +436,12 @@ export function OnboardClientWizard() {
                       {formValues.project?.code ? `(${formValues.project?.code})` : ''}
                     </span>
                   </div>
-                  <div>
-                    <span className="block text-xs text-slate-500">Status</span>
-                    <span className="font-medium text-slate-900">{formValues.project?.status}</span>
-                  </div>
                 </div>
               </div>
 
               <div className="rounded-md bg-amber-50 p-3 text-xs text-amber-700">
-                Both the client and project will be created together. If either fails, no data will
-                be saved.
+                The client will receive an invitation and becomes active after accepting it. Both
+                the client and project are created together.
               </div>
             </div>
           </div>
