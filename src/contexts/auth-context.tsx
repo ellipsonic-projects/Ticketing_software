@@ -1,6 +1,8 @@
 'use client';
 
-import React, { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+
+import { useQueryClient } from '@tanstack/react-query';
 
 import { setGlobalToken } from '@/services/api/api-client';
 import { authApi, LoginCredentials } from '@/services/api/auth-api';
@@ -38,20 +40,30 @@ export interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const authRequestVersion = useRef(0);
 
   const refresh = useCallback(async () => {
+    const requestVersion = ++authRequestVersion.current;
+
     try {
       const { accessToken: newAccessToken } = await authApi.refresh();
+      if (requestVersion !== authRequestVersion.current) return;
+
       setAccessToken(newAccessToken);
       setGlobalToken(newAccessToken);
 
       const { user: refreshedUser } = await authApi.me(newAccessToken);
+      if (requestVersion !== authRequestVersion.current) return;
+
       setUser(refreshedUser as User);
     } catch {
+      if (requestVersion !== authRequestVersion.current) return;
+
       setUser(null);
       setAccessToken(null);
       setGlobalToken(null);
@@ -71,29 +83,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
-  const login = useCallback(async (credentials: LoginCredentials) => {
-    setError(null);
-    try {
-      setIsLoading(true);
-      const { user: loggedInUser, accessToken: newAccessToken } = await authApi.login(credentials);
-      setAccessToken(newAccessToken);
-      setGlobalToken(newAccessToken);
-      setUser(loggedInUser as User);
-      return loggedInUser as User;
-    } catch (err: unknown) {
-      setError((err instanceof Error ? err.message : 'An error occurred') || 'Login failed');
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const login = useCallback(
+    async (credentials: LoginCredentials) => {
+      const requestVersion = ++authRequestVersion.current;
+      setError(null);
+      try {
+        setIsLoading(true);
+        const { user: loggedInUser, accessToken: newAccessToken } =
+          await authApi.login(credentials);
+        if (requestVersion !== authRequestVersion.current) {
+          throw new Error('A newer authentication request is in progress');
+        }
+
+        queryClient.clear();
+        setAccessToken(newAccessToken);
+        setGlobalToken(newAccessToken);
+        setUser(loggedInUser as User);
+        return loggedInUser as User;
+      } catch (err: unknown) {
+        setError((err instanceof Error ? err.message : 'An error occurred') || 'Login failed');
+        throw err;
+      } finally {
+        if (requestVersion === authRequestVersion.current) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [queryClient],
+  );
 
   const logout = async () => {
+    authRequestVersion.current++;
     try {
       if (accessToken) {
         await authApi.logout(accessToken);
       }
     } finally {
+      queryClient.clear();
       setUser(null);
       setAccessToken(null);
       setGlobalToken(null);
