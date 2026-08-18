@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { TicketStatus } from '@prisma/client';
 import { format } from 'date-fns';
@@ -39,6 +38,7 @@ import { useTickets } from '@/hooks/use-tickets';
 import { cn, getStringColorGradient, getStringColorHover } from '@/lib/utils';
 
 import { AssignEngineerSidebar } from './assign-engineer-sidebar';
+import { TicketDetails } from './ticket-details';
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -96,13 +96,12 @@ const SORT_OPTIONS = [
 // ---------------------------------------------------------------------------
 export function TicketList() {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user } = useAuth();
-  const ticketPath = pathname.startsWith('/engineer') ? '/engineer/tickets' : '/tickets';
 
   const [searchValue, setSearchValue] = useState(searchParams.get('search') || '');
   const [selectedTicketToAssign, setSelectedTicketToAssign] = useState<any | null>(null);
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [sortDialogOpen, setSortDialogOpen] = useState(false);
   const [draftFilters, setDraftFilters] = useState({
@@ -392,32 +391,38 @@ export function TicketList() {
                   <motion.tr
                     variants={rowVariants}
                     key={ticket.id}
+                    tabIndex={0}
+                    onClick={() => setSelectedTicketId(ticket.id)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        setSelectedTicketId(ticket.id);
+                      }
+                    }}
                     className={cn(
-                      'group cursor-pointer border-b border-slate-100/50 transition-colors',
+                      'group cursor-pointer border-b border-slate-100/50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-indigo-500',
                       getStringColorHover(ticket.client?.name || 'ticket'),
                     )}
                   >
                     <TableCell className="pl-0">
                       <input
                         type="checkbox"
+                        onClick={(event) => event.stopPropagation()}
                         className="rounded border-slate-300 text-indigo-600 opacity-0 transition-opacity group-hover:opacity-100 focus:ring-indigo-500"
                       />
                     </TableCell>
 
                     <TableCell className="font-medium text-indigo-600">
-                      <Link href={`${ticketPath}/${ticket.id}`} className="hover:underline">
+                      <span className="hover:underline">
                         TKT-{new Date(ticket.createdAt).getFullYear()}-
                         {ticket.number.toString().padStart(5, '0')}
-                      </Link>
+                      </span>
                     </TableCell>
 
                     <TableCell>
-                      <Link
-                        href={`${ticketPath}/${ticket.id}`}
-                        className="line-clamp-2 pr-4 text-slate-700 hover:text-indigo-600"
-                      >
+                      <span className="line-clamp-2 pr-4 text-slate-700 group-hover:text-indigo-600">
                         {ticket.title}
-                      </Link>
+                      </span>
                     </TableCell>
 
                     <TableCell className="text-slate-600">{ticket.client?.name}</TableCell>
@@ -642,6 +647,16 @@ export function TicketList() {
         ticket={selectedTicketToAssign}
         onClose={() => setSelectedTicketToAssign(null)}
       />
+
+      <Dialog
+        open={selectedTicketId !== null}
+        onOpenChange={(open) => !open && setSelectedTicketId(null)}
+      >
+        <DialogContent className="h-[calc(100vh-2rem)] max-w-[calc(100vw-2rem)] overflow-y-auto p-0 sm:max-w-6xl">
+          <DialogTitle className="sr-only">Ticket details</DialogTitle>
+          {selectedTicketId && <TicketDetails id={selectedTicketId} />}
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={filtersDialogOpen} onOpenChange={setFiltersDialogOpen}>
         <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-md">
